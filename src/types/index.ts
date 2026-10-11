@@ -70,6 +70,17 @@ export interface Stop {
   locality?: Locality;
 }
 
+export interface Cooperative {
+  id: string;
+  name: string;
+  ruc: string;
+  phone: string | null;
+  address: string | null;
+  logo_url: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface Route {
   id: string;
   name: string;
@@ -78,6 +89,7 @@ export interface Route {
   destination_stop_id: string;
   distance_km: number | null;
   duration_min: number | null;
+  base_fare?: number;
   is_active: boolean;
   created_at: string;
   origin_stop?: Stop;
@@ -106,16 +118,23 @@ export interface BusLayoutConfig {
   }[];
 }
 
+export type BusStatus = "active" | "maintenance" | "inactive";
+
 export interface Bus {
   id: string;
+  cooperative_id?: string | null;
   plate: string;
+  unit_number?: string | null;
   model: string | null;
   brand: string | null;
+  chassis?: string | null;
   year: number | null;
   total_seats: number;
   layout_config: BusLayoutConfig;
+  status?: BusStatus;
   is_active: boolean;
   created_at: string;
+  cooperative?: Cooperative;
 }
 
 export interface BusSeat {
@@ -128,12 +147,18 @@ export interface BusSeat {
   is_active: boolean;
 }
 
+export type DriverStatus = "active" | "inactive" | "suspended";
+
 export interface Driver {
   id: string;
-  profile_id: string;
+  profile_id?: string;
+  id_card?: string | null;
+  full_name?: string | null;
+  phone?: string | null;
   license_number: string;
   license_category: string;
   license_expiry: string;
+  status?: DriverStatus;
   is_available: boolean;
   created_at: string;
   profile?: Profile;

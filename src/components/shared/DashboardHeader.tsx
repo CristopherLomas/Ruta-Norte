@@ -1,8 +1,12 @@
+"use client";
+
 import Link from "next/link";
-import { Bus, User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Bus, User, Building2, Car, Route, Users, Calendar, AlertTriangle, Gauge } from "lucide-react";
 import { UserRole } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
+import { cn } from "@/lib/utils";
 
 interface DashboardHeaderProps {
   userEmail: string;
@@ -18,12 +22,30 @@ const ROLE_LABELS: Record<UserRole, { label: string; variant: "default" | "secon
   passenger: { label: "Pasajero", variant: "outline" },
 };
 
+const ADMIN_NAV = [
+  { href: "/admin", label: "Inicio", icon: Gauge },
+  { href: "/admin/cooperativas", label: "Cooperativas", icon: Building2 },
+  { href: "/admin/unidades", label: "Unidades / Buses", icon: Car },
+  { href: "/admin/rutas", label: "Rutas y Paradas", icon: Route },
+  { href: "/admin/conductores", label: "Conductores", icon: Users },
+];
+
+const OPERATOR_NAV = [
+  { href: "/operator", label: "Panel", icon: Gauge },
+  { href: "/operator/viajes", label: "Programar Viajes", icon: Calendar },
+  { href: "/operator/despacho", label: "Despacho en Vivo", icon: Bus },
+  { href: "/operator/incidencias", label: "Incidencias", icon: AlertTriangle },
+];
+
 export function DashboardHeader({
   userEmail,
   userRole,
   moduleTitle,
 }: DashboardHeaderProps) {
+  const pathname = usePathname();
   const roleInfo = ROLE_LABELS[userRole] || { label: userRole, variant: "outline" };
+
+  const navLinks = userRole === "admin" ? ADMIN_NAV : userRole === "operator" ? OPERATOR_NAV : [];
 
   return (
     <header className="border-b bg-brand-surface sticky top-0 z-40 shadow-sm">
@@ -57,6 +79,32 @@ export function DashboardHeader({
           <LogoutButton variant="outline" />
         </div>
       </div>
+
+      {navLinks.length > 0 && (
+        <div className="bg-brand-light border-t border-border px-4 overflow-x-auto">
+          <nav className="container mx-auto flex space-x-1 sm:space-x-4 py-2">
+            {navLinks.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors whitespace-nowrap",
+                    isActive
+                      ? "bg-brand-primary text-white shadow-xs"
+                      : "text-muted-foreground hover:bg-white hover:text-brand-primary"
+                  )}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
