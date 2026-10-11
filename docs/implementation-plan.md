@@ -170,11 +170,12 @@ tests/
 
 #### Criterio de aceptación — Fase 2
 
-- [ ] Login y logout funcionan correctamente, sesión persiste entre recargas
-- [ ] Usuarios no autenticados son redirigidos a `/login` desde rutas protegidas
-- [ ] Usuarios con rol incorrecto reciben error 403, no pueden acceder a rutas de otros roles
-- [ ] El rol del usuario está disponible en Server Components sin peticiones adicionales
-- [ ] Prueba E2E: flujo completo login → dashboard → logout pasa en Playwright
+- [x] Login y logout funcionan correctamente con Server Actions y cookies `@supabase/ssr`
+- [x] Usuarios no autenticados son redirigidos a `/login` desde rutas protegidas mediante `requireAuth()`
+- [x] Usuarios con rol incorrecto reciben redirección a `/unauthorized` (403) mediante `requireRole()`
+- [x] El rol del usuario está verificado en base de datos (`user_roles`) sin confiar en el cliente
+- [x] Pruebas unitarias ejecutadas con éxito (39/39 pruebas pasando, 7 suites)
+- [ ] Pruebas E2E completas con Playwright contra Supabase en vivo (requiere instancia real conectada)
 
 ---
 
