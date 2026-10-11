@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bus, User, Building2, Car, Route, Users, Calendar, AlertTriangle, Gauge } from "lucide-react";
+import { Bus, User, Building2, Car, Route, Users, Calendar, AlertTriangle, Gauge, BarChart3, QrCode } from "lucide-react";
 import { UserRole } from "@/types";
 import { Badge } from "@/components/ui/badge";
 import { LogoutButton } from "@/features/auth/components/LogoutButton";
@@ -28,6 +28,7 @@ const ADMIN_NAV = [
   { href: "/admin/unidades", label: "Unidades / Buses", icon: Car },
   { href: "/admin/rutas", label: "Rutas y Paradas", icon: Route },
   { href: "/admin/conductores", label: "Conductores", icon: Users },
+  { href: "/admin/reportes", label: "Reportes", icon: BarChart3 },
 ];
 
 const OPERATOR_NAV = [
@@ -35,6 +36,11 @@ const OPERATOR_NAV = [
   { href: "/operator/viajes", label: "Programar Viajes", icon: Calendar },
   { href: "/operator/despacho", label: "Despacho en Vivo", icon: Bus },
   { href: "/operator/incidencias", label: "Incidencias", icon: AlertTriangle },
+];
+
+const INSPECTOR_NAV = [
+  { href: "/inspector", label: "Control de Embarque", icon: Gauge },
+  { href: "/inspector/escanear", label: "Escáner QR", icon: QrCode },
 ];
 
 const PASSENGER_NAV = [
@@ -55,6 +61,8 @@ export function DashboardHeader({
       ? ADMIN_NAV
       : userRole === "operator"
       ? OPERATOR_NAV
+      : userRole === "inspector"
+      ? INSPECTOR_NAV
       : userRole === "passenger"
       ? PASSENGER_NAV
       : [];

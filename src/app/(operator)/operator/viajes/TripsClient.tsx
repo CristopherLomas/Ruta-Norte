@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { Plus, Calendar, Clock, Bus, User, Route as RouteIcon, Search, AlertCircle, Loader2 } from "lucide-react";
 import { Trip, Route, Bus as BusType, Driver } from "@/types";
 import { scheduleTripAction, cancelTripAction } from "@/features/trips/actions";
@@ -314,7 +315,17 @@ export function TripsClient({ initialTrips, routes, buses, drivers }: TripsClien
                     <td className="px-6 py-4 text-center">
                       {getTripStatusBadge(trip.status)}
                     </td>
-                    <td className="px-6 py-4 text-right">
+                    <td className="px-6 py-4 text-right flex items-center justify-end gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        asChild
+                        className="text-xs h-8 border-brand-primary/30 text-brand-primary hover:bg-brand-primary/5"
+                      >
+                        <Link href={`/operator/viajes/${trip.id}/manifiesto`}>
+                          Manifiesto
+                        </Link>
+                      </Button>
                       {trip.status === "scheduled" && (
                         <Button
                           size="sm"
