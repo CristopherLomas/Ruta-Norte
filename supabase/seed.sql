@@ -1,5 +1,6 @@
 -- ==============================================================================
--- RUTA NORTE — SEED DATA (DATOS MAESTROS Y DE DEMOSTRACIÓN)
+-- RUTA NORTE — SEED DATA OFICIAL Y REALISTA (NORTE DE ECUADOR / CARCHI & IMBABURA)
+-- ADR-004: Cuentas de demostración seguras identificadas como demo
 -- ==============================================================================
 
 -- 1. ROLES CON UUIDS FIJOS
@@ -13,64 +14,61 @@ ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   description = EXCLUDED.description;
 
--- 2. LOCALIDADES (Norte de Ecuador: Imbabura)
+-- 2. COOPERATIVAS DE TRANSPORTE REALES DEL NORTE DE ECUADOR
+INSERT INTO public.cooperatives (id, name, ruc, phone, address, is_active) VALUES
+  ('11000000-0000-0000-0000-000000000001', 'Cooperativa Pullman Carchi', '0490012345001', '062980123', 'Av. Veintimilla y Pichincha, Tulcán', true),
+  ('11000000-0000-0000-0000-000000000002', 'Transportes Norte', '1091723456001', '062951456', 'Av. Mariano Acosta y Fray Vacas Galindo, Ibarra', true),
+  ('11000000-0000-0000-0000-000000000003', 'Expreso Tulcán', '0490078912001', '062981789', 'Terminal Terrestre de Tulcán, Andén 4', true),
+  ('11000000-0000-0000-0000-000000000004', 'Cooperativa de Transportes Mira', '0490034567001', '062280234', 'Calle Eugenio Espejo y Bolívar, Mira', true)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  ruc = EXCLUDED.ruc;
+
+-- 3. LOCALIDADES Y PARROQUIAS
 INSERT INTO public.localities (id, name, parish, canton, province, latitude, longitude, is_active) VALUES
-  ('10000000-0000-0000-0000-000000000001', 'Ibarra Centro', 'San Francisco', 'Ibarra', 'Imbabura', 0.3517, -78.1223, true),
-  ('10000000-0000-0000-0000-000000000002', 'San Antonio de Ibarra', 'San Antonio', 'Ibarra', 'Imbabura', 0.3308, -78.1639, true),
-  ('10000000-0000-0000-0000-000000000003', 'Otavalo Centro', 'San Luis', 'Otavalo', 'Imbabura', 0.2342, -78.2625, true),
-  ('10000000-0000-0000-0000-000000000004', 'Cotacachi', 'El Sagrario', 'Cotacachi', 'Imbabura', 0.3014, -78.2639, true),
-  ('10000000-0000-0000-0000-000000000005', 'Zuleta', 'Angochagua', 'Ibarra', 'Imbabura', 0.2319, -78.0736, true),
-  ('10000000-0000-0000-0000-000000000006', 'Pimampiro', 'Pimampiro', 'Pimampiro', 'Imbabura', 0.3953, -77.9408, true)
+  ('10000000-0000-0000-0000-000000000001', 'Tulcán Centro', 'González Suárez', 'Tulcán', 'Carchi', 0.8119, -77.7173, true),
+  ('10000000-0000-0000-0000-000000000002', 'Julio Andrade', 'Julio Andrade', 'Tulcán', 'Carchi', 0.6722, -77.7125, true),
+  ('10000000-0000-0000-0000-000000000003', 'San Gabriel', 'San Gabriel', 'Montúfar', 'Carchi', 0.6019, -77.8306, true),
+  ('10000000-0000-0000-0000-000000000004', 'El Ángel', 'El Ángel', 'Espejo', 'Carchi', 0.6231, -77.9397, true),
+  ('10000000-0000-0000-0000-000000000005', 'San Pedro de Huaca', 'Huaca', 'Huaca', 'Carchi', 0.6358, -77.7275, true),
+  ('10000000-0000-0000-0000-000000000006', 'Mira', 'Mira', 'Mira', 'Carchi', 0.5519, -78.0397, true),
+  ('10000000-0000-0000-0000-000000000007', 'Bolívar', 'Bolívar', 'Bolívar', 'Carchi', 0.5028, -77.9042, true)
 ON CONFLICT (id) DO NOTHING;
 
--- 3. PARADAS
+-- 4. PARADAS Y TERMINALES
 INSERT INTO public.stops (id, locality_id, name, address, latitude, longitude, is_active) VALUES
-  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Terminal Terrestre Ibarra', 'Av. Teodoro Gómez y Av. Mariano Acosta', 0.3540, -78.1250, true),
-  ('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'Parque Central San Antonio', 'Calle Ramón Teanga y Bolívar', 0.3312, -78.1645, true),
-  ('20000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000003', 'Terminal Terrestre Otavalo', 'Av. Atahualpa y Panamericana Norte', 0.2360, -78.2610, true),
-  ('20000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000004', 'Terminal Terrestre Cotacachi', 'Calle 10 de Agosto y Bolívar', 0.3020, -78.2642, true),
-  ('20000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000005', 'Plaza Comunal Zuleta', 'Vía Principal Angochagua-Zuleta', 0.2325, -78.0740, true)
+  ('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', 'Terminal Terrestre de Tulcán', 'Av. 24 de Mayo y Panamericana Norte', 0.8125, -77.7180, true),
+  ('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000002', 'Parque Central Julio Andrade', 'Calle Sucre y Panamericana Sur', 0.6725, -77.7130, true),
+  ('20000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000003', 'Terminal Terrestre San Gabriel', 'Calle González Suárez y Montúfar', 0.6025, -77.8310, true),
+  ('20000000-0000-0000-0000-000000000004', '10000000-0000-0000-0000-000000000004', 'Terminal Cantonal El Ángel', 'Av. Espejo y 10 de Agosto', 0.6235, -77.9400, true),
+  ('20000000-0000-0000-0000-000000000005', '10000000-0000-0000-0000-000000000005', 'Parada Panamericana Huaca', 'Panamericana Norte km 24', 0.6360, -77.7280, true),
+  ('20000000-0000-0000-0000-000000000006', '10000000-0000-0000-0000-000000000006', 'Parque Central de Mira', 'Calle Eugenio Espejo y Bolívar', 0.5522, -77.0400, true),
+  ('20000000-0000-0000-0000-000000000007', '10000000-0000-0000-0000-000000000007', 'Parada Principal Bolívar', 'Calle García Moreno y Sucre', 0.5030, -77.9050, true)
 ON CONFLICT (id) DO NOTHING;
 
--- 4. RUTAS
-INSERT INTO public.routes (id, name, code, origin_stop_id, destination_stop_id, distance_km, duration_min, is_active) VALUES
-  ('30000000-0000-0000-0000-000000000001', 'Ibarra - Otavalo (Interparroquial)', 'RN-101', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000003', 25.4, 40, true),
-  ('30000000-0000-0000-0000-000000000002', 'Ibarra - Cotacachi (vía San Antonio)', 'RN-102', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000004', 28.1, 45, true),
-  ('30000000-0000-0000-0000-000000000003', 'Ibarra - Zuleta', 'RN-103', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000005', 21.0, 50, true)
+-- 5. RUTAS INTERPARROQUIALES DEL CARCHI
+INSERT INTO public.routes (id, name, code, origin_stop_id, destination_stop_id, distance_km, duration_min, base_fare, is_active) VALUES
+  ('30000000-0000-0000-0000-000000000001', 'Tulcán – Julio Andrade', 'RN-C01', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000002', 18.5, 30, 0.75, true),
+  ('30000000-0000-0000-0000-000000000002', 'Tulcán – San Gabriel', 'RN-C02', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000003', 42.0, 50, 1.50, true),
+  ('30000000-0000-0000-0000-000000000003', 'Tulcán – El Ángel', 'RN-C03', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000004', 65.0, 75, 2.25, true),
+  ('30000000-0000-0000-0000-000000000004', 'Tulcán – Huaca', 'RN-C04', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000005', 26.0, 35, 1.00, true),
+  ('30000000-0000-0000-0000-000000000005', 'Tulcán – Mira', 'RN-C05', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000006', 78.0, 90, 2.50, true),
+  ('30000000-0000-0000-0000-000000000006', 'Tulcán – Bolívar', 'RN-C06', '20000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000007', 52.0, 60, 1.75, true)
 ON CONFLICT (id) DO NOTHING;
 
--- Secuencia de paradas para RN-101 (Ibarra -> San Antonio -> Otavalo)
-INSERT INTO public.route_stops (route_id, stop_id, sequence_order, distance_from_origin_km, time_from_origin_min, is_boarding_point, is_alighting_point) VALUES
-  ('30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 1, 0.0, 0, true, false),
-  ('30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000002', 2, 6.5, 12, true, true),
-  ('30000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000003', 3, 25.4, 40, false, true)
-ON CONFLICT (route_id, sequence_order) DO NOTHING;
-
--- 5. BUSES (con layout_config JSONB - ADR-003)
-INSERT INTO public.buses (id, plate, model, brand, year, total_seats, layout_config, is_active) VALUES
-  (
-    '40000000-0000-0000-0000-000000000001',
-    'IAA-1234',
-    'OF 1721',
-    'Mercedes-Benz',
-    2022,
-    40,
-    '{"rows": 10, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"], "special_seats": [{"seat_number": "1A", "type": "accessibility"}, {"seat_number": "1B", "type": "accessibility"}]}'::jsonb,
-    true
-  ),
-  (
-    '40000000-0000-0000-0000-000000000002',
-    'IAA-5678',
-    'AK8JRSA',
-    'Hino',
-    2023,
-    40,
-    '{"rows": 10, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb,
-    true
-  )
+-- 6. UNIDADES / BUSES CON PLACAS ECUATORIANAS Y MATRIZ JSONB
+INSERT INTO public.buses (id, cooperative_id, plate, unit_number, model, brand, year, total_seats, layout_config, status, is_active) VALUES
+  ('40000000-0000-0000-0000-000000000001', '11000000-0000-0000-0000-000000000001', 'CAA-0123', 'Disco 05', 'OF 1721', 'Mercedes-Benz', 2022, 40, '{"rows": 10, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"], "special_seats": [{"seat_number": "1A", "type": "accessibility"}, {"seat_number": "1B", "type": "accessibility"}]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000002', '11000000-0000-0000-0000-000000000001', 'CAA-0456', 'Disco 12', 'AK8JRSA', 'Hino', 2023, 40, '{"rows": 10, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000003', '11000000-0000-0000-0000-000000000002', 'PBC-4567', 'Disco 22', '17.230 OD', 'Volkswagen', 2021, 36, '{"rows": 9, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000004', '11000000-0000-0000-0000-000000000002', 'PBC-8901', 'Disco 34', 'OF 1721', 'Mercedes-Benz', 2024, 40, '{"rows": 10, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000005', '11000000-0000-0000-0000-000000000003', 'CAA-0789', 'Disco 03', 'AK8JRSA', 'Hino', 2022, 32, '{"rows": 8, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000006', '11000000-0000-0000-0000-000000000003', 'CAA-0912', 'Disco 18', 'OF 1724', 'Mercedes-Benz', 2023, 40, '{"rows": 10, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000007', '11000000-0000-0000-0000-000000000004', 'CAA-0345', 'Disco 08', 'AK8JRSA', 'Hino', 2021, 32, '{"rows": 8, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true),
+  ('40000000-0000-0000-0000-000000000008', '11000000-0000-0000-0000-000000000004', 'CAA-0678', 'Disco 15', '17.230 OD', 'Volkswagen', 2022, 36, '{"rows": 9, "columns": 4, "column_labels": ["A", "B", "_", "C", "D"]}'::jsonb, 'active', true)
 ON CONFLICT (id) DO NOTHING;
 
--- 6. ASIENTOS FÍSICOS (Bus 40000000-0000-0000-0000-000000000001: 40 asientos)
+-- 7. GENERACIÓN DE ASIENTOS FÍSICOS PARA LA UNIDAD 1 (CAA-0123)
 DO $$
 DECLARE
   r INT;
@@ -88,7 +86,6 @@ BEGIN
       END IF;
 
       seat_num := r || c_label;
-
       IF r = 1 AND (c = 1 OR c = 2) THEN
         s_type := 'accessibility';
       ELSE
@@ -101,3 +98,40 @@ BEGIN
     END LOOP;
   END LOOP;
 END $$;
+
+-- 8. CONDUCTORES PROFESIONALES
+INSERT INTO public.drivers (id, id_card, full_name, phone, license_number, license_category, license_expiry, status, is_available) VALUES
+  ('50000000-0000-0000-0000-000000000001', '0401234567', 'Manuel Benalcázar', '0991234567', 'LIC-04012345', 'Tipo E', '2028-12-31', 'active', true),
+  ('50000000-0000-0000-0000-000000000002', '0401876543', 'Carlos Chuga', '0987654321', 'LIC-04018765', 'Tipo D', '2027-06-30', 'active', true),
+  ('50000000-0000-0000-0000-000000000003', '0401567890', 'Segundo Ruano', '0995551234', 'LIC-04015678', 'Tipo E', '2029-03-15', 'active', true),
+  ('50000000-0000-0000-0000-000000000004', '1002345678', 'Geovanny Narváez', '0983334455', 'LIC-10023456', 'Tipo D', '2028-09-20', 'active', true),
+  ('50000000-0000-0000-0000-000000000005', '0401998877', 'Wilson Portilla', '0997778899', 'LIC-04019988', 'Tipo E', '2027-11-10', 'active', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 9. PROGRAMACIÓN DE VIAJES CALENDARIZADOS (Salidas para hoy y los próximos días)
+INSERT INTO public.trips (id, route_id, bus_id, driver_id, departure_time, arrival_time, status, available_seats) VALUES
+  ('60000000-0000-0000-0000-000000000001', '30000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001', now() + interval '1 hour', now() + interval '1 hour 30 minutes', 'scheduled', 40),
+  ('60000000-0000-0000-0000-000000000002', '30000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000002', '50000000-0000-0000-0000-000000000002', now() + interval '2 hours', now() + interval '2 hours 50 minutes', 'boarding', 38),
+  ('60000000-0000-0000-0000-000000000003', '30000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000003', '50000000-0000-0000-0000-000000000003', now() + interval '4 hours', now() + interval '5 hours 15 minutes', 'scheduled', 36),
+  ('60000000-0000-0000-0000-000000000004', '30000000-0000-0000-0000-000000000001', '40000000-0000-0000-0000-000000000004', '50000000-0000-0000-0000-000000000004', now() + interval '1 day', now() + interval '1 day 30 minutes', 'scheduled', 40),
+  ('60000000-0000-0000-0000-000000000005', '30000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000005', '50000000-0000-0000-0000-000000000005', now() + interval '2 days', now() + interval '2 days 50 minutes', 'scheduled', 32)
+ON CONFLICT (id) DO NOTHING;
+
+-- 10. CUENTAS DEMO INICIALIZADAS CONFORME A ADR-004
+-- Inserción en public.profiles y asignación en public.user_roles
+INSERT INTO public.profiles (id, full_name, phone, is_demo) VALUES
+  ('00000000-0000-0000-0000-000000000010', 'Administrador General (Demo)', '0990000001', true),
+  ('00000000-0000-0000-0000-000000000020', 'Operador de Flota (Demo)', '0990000002', true),
+  ('00000000-0000-0000-0000-000000000030', 'Vendedor Taquilla (Demo)', '0990000003', true),
+  ('00000000-0000-0000-0000-000000000040', 'Inspector de Ruta (Demo)', '0990000004', true),
+  ('00000000-0000-0000-0000-000000000050', 'Pasajero Frecuente (Demo)', '0990000005', true)
+ON CONFLICT (id) DO UPDATE SET
+  full_name = EXCLUDED.full_name;
+
+INSERT INTO public.user_roles (user_id, role_id) VALUES
+  ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001'), -- admin
+  ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000002'), -- operator
+  ('00000000-0000-0000-0000-000000000030', '00000000-0000-0000-0000-000000000003'), -- seller
+  ('00000000-0000-0000-0000-000000000040', '00000000-0000-0000-0000-000000000004'), -- inspector
+  ('00000000-0000-0000-0000-000000000050', '00000000-0000-0000-0000-000000000005')  -- passenger
+ON CONFLICT (user_id, role_id) DO NOTHING;
