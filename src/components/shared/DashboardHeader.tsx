@@ -37,6 +37,11 @@ const OPERATOR_NAV = [
   { href: "/operator/incidencias", label: "Incidencias", icon: AlertTriangle },
 ];
 
+const PASSENGER_NAV = [
+  { href: "/passenger", label: "Inicio", icon: Gauge },
+  { href: "/passenger/boletos", label: "Mis Boletos", icon: Bus },
+];
+
 export function DashboardHeader({
   userEmail,
   userRole,
@@ -45,7 +50,14 @@ export function DashboardHeader({
   const pathname = usePathname();
   const roleInfo = ROLE_LABELS[userRole] || { label: userRole, variant: "outline" };
 
-  const navLinks = userRole === "admin" ? ADMIN_NAV : userRole === "operator" ? OPERATOR_NAV : [];
+  const navLinks =
+    userRole === "admin"
+      ? ADMIN_NAV
+      : userRole === "operator"
+      ? OPERATOR_NAV
+      : userRole === "passenger"
+      ? PASSENGER_NAV
+      : [];
 
   return (
     <header className="border-b bg-brand-surface sticky top-0 z-40 shadow-sm">

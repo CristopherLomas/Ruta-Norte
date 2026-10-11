@@ -39,6 +39,9 @@ export default function PassengerDashboardPage() {
             <p className="text-xs text-muted-foreground mt-1">
               Presente su código QR digital al inspector al momento de abordar.
             </p>
+            <Button variant="link" size="sm" asChild className="p-0 h-auto text-xs text-brand-secondary mt-3">
+              <Link href="/passenger/boletos">Ver mis boletos →</Link>
+            </Button>
           </CardContent>
         </Card>
 
