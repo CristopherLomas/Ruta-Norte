@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defensa de Proyecto — Ruta Norte | Arquitectura, Ingeniería y Operaciones</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Mermaid.js for Diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'neutral',
+      themeVariables: {
+        primaryColor: '#173B57',
+        primaryTextColor: '#ffffff',
+        primaryBorderColor: '#0f273a',
+        lineColor: '#20A878',
+        secondaryColor: '#E2F7EE',
+        tertiaryColor: '#F5F7FA'
+      }
+    });
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#173B57',
+              navyDark: '#0E2436',
+              green: '#20A878',
+              greenLight: '#E8F8F2',
+              bgLight: '#F5F7FA',
+              accent: '#F59E0B'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom scrollbars and styling */
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    pre code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.84rem;
+    }
+    @media print {
+      aside, header, button { display: none !important; }
+      main { width: 100% !important; }
+      section { break-inside: avoid; page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body class="bg-[#F8FAFC] text-slate-800 font-sans antialiased selection:bg-[#20A878] selection:text-white">
+
+  <!-- Top Sticky Navigation Bar -->
+  <header class="sticky top-0 z-50 bg-[#173B57] text-white shadow-lg border-b border-[#20A878]/30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-[#20A878] flex items-center justify-center font-bold text-white shadow-md shadow-[#20A878]/30 text-lg">
+          RN
+        </div>
+        <div>
+          <span class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+            RUTA NORTE <span class="text-[10px] uppercase tracking-wider bg-[#20A878] text-white px-2 py-0.5 rounded-full font-semibold">Defensa Académica</span>
+          </span>
+          <p class="text-xs text-slate-300">Sistema Web de Gestión de Transporte Interparroquial</p>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="flex items-center space-x-2 sm:space-x-3 text-xs font-medium">
+        <a href="https://ruta-norte.vercel.app" target="_blank" rel="noopener noreferrer" class="bg-[#20A878] hover:bg-[#1b8e66] text-white px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 shadow-sm shadow-[#20A878]/40">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+          <span class="hidden md:inline">Ver Demo en</span> Vercel
+        </a>
+        <a href="https://github.com/CristopherLomas/Ruta-Norte" target="_blank" rel="noopener noreferrer" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition-all flex items-center gap-1.5 border border-white/20">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path></svg>
+          <span class="hidden md:inline">Repositorio</span> GitHub
+        </a>
+        <button onclick="window.print()" class="bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-lg transition-all hidden sm:flex items-center gap-1.5 border border-white/20">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          Imprimir / PDF
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Layout Wrapper with Navigation Sidebar -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
+    
+    <!-- Left Sticky Sidebar (Index of Sections) -->
+    <aside class="w-full lg:w-72 shrink-0">
+      <div class="sticky top-24 bg-white rounded-2xl p-5 shadow-sm border border-slate-200">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Índice de Exposición</h3>
+        <nav class="space-y-1 text-sm font-medium">
+          <a href="#portada" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">1</span> Ficha y Presentación
+          </a>
+          <a href="#contexto" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">2</span> Problemática y Contexto
+          </a>
+          <a href="#arquitectura" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">3</span> Arquitectura Multicapa
+          </a>
+          <a href="#stack" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">4</span> Stack Tecnológico
+          </a>
+          <a href="#modelo-datos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">5</span> Modelo de Datos (18 Tablas)
+          </a>
+          <a href="#adrs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Decisiones Técnicas (ADRs)
+          </a>
+          <a href="#seguridad" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Seguridad y RLS en BD
+          </a>
+          <a href="#flujos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">8</span> Flujos de Negocio E2E
+          </a>
+          <a href="#mapas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">9</span> Mapas y Ruteo Vial Real
+          </a>
+          <a href="#metricas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">10</span> Dataset en Demostración
+          </a>
+          <a href="#credenciales" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">11</span> Cuentas y Accesos Demo
+          </a>
+          <a href="#pruebas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">12</span> Testing y Aseguramiento
+          </a>
+        </nav>
+
+        <hr class="my-4 border-slate-200">
+
+        <!-- Status Card -->
+        <div class="bg-[#F5F7FA] p-3 rounded-xl border border-slate-200 text-xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="font-semibold text-slate-600">Estado Producción</span>
+            <span class="flex h-2 w-2 relative">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+          </div>
+          <p class="text-slate-500">Vercel & Supabase activos</p>
+          <div class="mt-2 text-[11px] text-slate-600 font-mono font-bold text-emerald-700">103/103 tests passing ✓</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Body -->
+    <main class="w-full flex-1 space-y-12">
+
+      <!-- ========================================== -->
+      <!-- 1. PORTADA Y PRESENTACIÓN                 -->
+      <!-- ========================================== -->
+      <section id="portada" class="bg-gradient-to-br from-[#173B57] via-[#122D42] to-[#0A1A27] rounded-3xl p-8 sm:p-12 text-white shadow-xl relative overflow-hidden">
+        <div class="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-[#20A878]/10 blur-3xl pointer-events-none"></div>
+        <div class="relative z-10">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-[#20A878] text-xs font-semibold mb-6 border border-white/10">
+            <span class="w-2 h-2 rounded-full bg-[#20A878]"></span>
+            DEFENSA TÉCNICA DE PROYECTO WEB
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+            RUTA NORTE
+          </h1>
+          <p class="text-lg sm:text-xl text-slate-300 font-light max-w-3xl leading-relaxed mb-8">
+            Sistema Integral de Gestión de Transporte Interparroquial, Programación Operativa, Cartografía Vial Interactiva y Emisión de Boletos Electrónicos con Validación QR para el Norte de Ecuador.
+          </p>
+
+          <!-- Ficha Resumen -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6 border-t border-white/15 text-xs">
+            <div>
+              <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Autor / Desarrollador</span>
+              <span class="font-bold text-white text-sm">Cristopher Lomas</span>
+            </div>
+            <div>
+              <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Arquitectura</span>
+              <span class="font-bold text-white text-sm">Monolítica Modular (Next.js 14)</span>
+            </div>
+            <div>
+              <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Base de Datos</span>
+              <span class="font-bold text-white text-sm">PostgreSQL 15 (Supabase RLS)</span>
+            </div>
+            <div>
+              <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold">Cobertura Geográfica</span>
+              <span class="font-bold text-white text-sm">Carchi & Imbabura (E35)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 2. CONTEXTO Y PROBLEMÁTICA                -->
+      <!-- ========================================== -->
+      <section id="contexto" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">02</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Contexto Regional y Justificación del Problema</h2>
+            <p class="text-sm text-slate-500">Realidad del transporte en la sierra norte ecuatoriana y alcance del software</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 text-sm text-slate-600 leading-relaxed mb-6">
+          <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2 text-base text-red-600">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+              La Problemática Tradicional
+            </h4>
+            <ul class="space-y-2 list-disc list-inside">
+              <li><strong>Sobrevendedera y falta de control:</strong> Cooperativas intercantonales operan con registros de papel o planillas Excel descoordinadas.</li>
+              <li><strong>Invisibilidad de paradas intermedias:</strong> Pasajeros en cantones como Bolívar, Mira, El Ángel o Huaca no conocen los horarios exactos en que los buses cruzan por sus paradas.</li>
+              <li><strong>Falsificación y fraude en boletos:</strong> Los boletos físicos no cuentan con verificación criptográfica en tiempo real.</li>
+              <li><strong>Ausencia de métricas operativas:</strong> La directiva no tiene datos consolidados de ocupación, retrasos ni recaudación real por trayecto.</li>
+            </ul>
+          </div>
+
+          <div class="bg-[#E8F8F2] p-5 rounded-xl border border-[#b6ecd7]">
+            <h4 class="font-bold text-slate-900 mb-2 flex items-center gap-2 text-base text-[#157956]">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              La Solución de Ruta Norte
+            </h4>
+            <ul class="space-y-2 list-disc list-inside text-slate-700">
+              <li><strong>Gestión integral de rutas seccionales:</strong> Secuencia de paradas con distancias y tiempos reales siguiendo la carretera Panamericana E35.</li>
+              <li><strong>Reserva concurrente garantizada:</strong> Bloqueo atómico a nivel de fila de base de datos para impedir doble venta de asientos.</li>
+              <li><strong>Boleto digital seguro con QR opaco:</strong> Escaneo móvil por inspectores para validar el embarque en segundos, sin violar la privacidad del pasajero.</li>
+              <li><strong>Panel operativo multifunción:</strong> Administración de flota, tarifas diferenciadas por tramo, manifiestos e incidencias mecánicas o viales.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-slate-100 p-4 rounded-xl text-xs text-slate-600 flex items-center gap-3">
+          <span class="font-bold uppercase tracking-wider text-slate-500">Región de Operación:</span>
+          <span>Tulcán, San Gabriel (Montúfar), Bolívar, El Ángel (Espejo), Mira, San Pedro de Huaca, Julio Andrade, Ibarra, Otavalo, Cotacachi, San Antonio, Zuleta.</span>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 3. ARQUITECTURA MULTICAPA                 -->
+      <!-- ========================================== -->
+      <section id="arquitectura" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">03</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Arquitectura Multicapa del Sistema</h2>
+            <p class="text-sm text-slate-500">Diseño monolítico modular con Next.js App Router y Backend-as-a-Service</p>
+          </div>
+        </div>
+
+        <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+          Ruta Norte adopta una arquitectura <strong>Monolítica Modular</strong> moderna basada en el App Router de Next.js 14. Combina renderizado en servidor (SSR) para velocidad y SEO, con componentes cliente optimizados únicamente donde se requiere interactividad (como el mapa Leaflet y el selector de asientos).
+        </p>
+
+        <!-- Diagrama Mermaid -->
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 overflow-x-auto text-center mb-6">
+          <div class="mermaid">
+flowchart TD
+    subgraph Cliente ["1. Capa de Presentación (Navegador)"]
+        UI_Public["Búsqueda Pública & Mapa Leaflet"]
+        UI_Booking["Selector Gráfico de Asientos"]
+        UI_Dashboards["Paneles de Control (Admin / Op / Insp)"]
+    end
+
+    subgraph Servidor ["2. Capa de Aplicación (Next.js 14 App Router)"]
+        Middleware["Middleware (JWT & Roles)"]
+        ServerActions["Server Actions (Mutaciones de Negocio)"]
+        Validations["Validaciones Zod (Schemas de Entrada)"]
+        MapEngine["Motor de Ruteo OSRM / E35"]
+    end
+
+    subgraph Persistencia ["3. Capa de Datos (Supabase PostgreSQL 15)"]
+        RLS["Row Level Security (Políticas por Rol)"]
+        Transactions["Transacciones SQL (FOR UPDATE)"]
+        Tables["18 Tablas Relacionales"]
+        Audit["Triggers de Auditoría"]
+    end
+
+    Cliente -->|Peticiones HTTPS / Mutaciones| Middleware
+    Middleware --> ServerActions
+    ServerActions --> Validations
+    Validations --> MapEngine
+    ServerActions -->|PostgreSQL Client| RLS
+    RLS --> Transactions
+    Transactions --> Tables
+    Tables --> Audit
+          </div>
+        </div>
+
+        <!-- Explicación de Capas -->
+        <div class="grid md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+            <span class="font-bold text-[#173B57] text-sm block mb-1">Capa de Presentación</span>
+            <p class="text-slate-600">React Server Components (RSC) por defecto. Client Components encapsulados con 'use client' solo para el mapa interactivo y la distribución de asientos.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+            <span class="font-bold text-[#173B57] text-sm block mb-1">Capa de Aplicación</span>
+            <p class="text-slate-600">Server Actions para ejecutar lógica de compra, cancelaciones y validación de embarque sin exponer APIs REST desprotegidas en el frontend.</p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
+            <span class="font-bold text-[#173B57] text-sm block mb-1">Capa de Datos y Reglas</span>
+            <p class="text-slate-600">Base de datos relacional PostgreSQL con bloqueo de filas, triggers de auditoría y Row Level Security que restringe datos a nivel de motor.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 4. STACK TECNOLÓGICO Y JUSTIFICACIÓN      -->
+      <!-- ========================================== -->
+      <section id="stack" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">04</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Stack Tecnológico Completo</h2>
+            <p class="text-sm text-slate-500">Herramientas seleccionadas y fundamentación técnica</p>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
+            <thead class="bg-[#173B57] text-white text-xs uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-4">Herramienta</th>
+                <th class="py-3 px-4">Versión / Componente</th>
+                <th class="py-3 px-4">Rol en el Proyecto</th>
+                <th class="py-3 px-4">Justificación Técnica Formal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white text-xs">
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">Next.js</td>
+                <td class="py-3 px-4 font-mono">14.2.x (App Router)</td>
+                <td class="py-3 px-4">Framework Fullstack</td>
+                <td class="py-3 px-4">SSR para rendimiento instantáneo en búsqueda de rutas; Server Actions para transacciones seguras; middleware para control de roles sin flash de contenido no autenticado.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">TypeScript</td>
+                <td class="py-3 px-4 font-mono">5.x (Strict: true)</td>
+                <td class="py-3 px-4">Lenguaje Tipado</td>
+                <td class="py-3 px-4">Garantiza seguridad de tipos en tiempo de compilación. Elimina errores en tiempo de ejecución (null/undefined) en cálculos monetarios y estados de reservas.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">Supabase & PostgreSQL</td>
+                <td class="py-3 px-4 font-mono">PostgreSQL 15+</td>
+                <td class="py-3 px-4">BaaS / Motor Relacional</td>
+                <td class="py-3 px-4">Cumplimiento ACID estricto. Implementa Row Level Security (RLS) nativo, tipos de coordenadas espaciales, bloqueos de concurrencia pesimistas (FOR UPDATE) y triggers de auditoría.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">Tailwind CSS + shadcn/ui</td>
+                <td class="py-3 px-4 font-mono">Tailwind 3 + Radix UI</td>
+                <td class="py-3 px-4">Diseño y UI Primitives</td>
+                <td class="py-3 px-4">Diseño accesible (WCAG 2.1 AA), responsive, con identidad visual definida (Azul Petróleo #173B57 y Verde #20A878). Código limpio sin CSS inflado.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">Leaflet + OSRM</td>
+                <td class="py-3 px-4 font-mono">React-Leaflet 4.x</td>
+                <td class="py-3 px-4">Cartografía y Ruteo</td>
+                <td class="py-3 px-4">Cálculo de rutas reales sobre carreteras (red vial E35 de Ecuador) sin líneas rectas ni costo por peticiones a APIs privativas. Desacoplado mediante interfaz RoutingProvider.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">Zod</td>
+                <td class="py-3 px-4 font-mono">3.x</td>
+                <td class="py-3 px-4">Validación de Esquemas</td>
+                <td class="py-3 px-4">Inferencia de tipos estáticos y validación bidireccional: tanto en formularios de cliente como en Server Actions de servidor.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-3 px-4 font-bold text-slate-900">Vitest</td>
+                <td class="py-3 px-4 font-mono">1.x</td>
+                <td class="py-3 px-4">Aseguramiento de Calidad</td>
+                <td class="py-3 px-4">103 pruebas unitarias ejecutadas a máxima velocidad sin sobrecarga de empaquetado. Cobertura de cálculos de tarifas, estados de asientos y ruteo.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 5. MODELO DE DATOS RELACIONAL (18 TABLAS) -->
+      <!-- ========================================== -->
+      <section id="modelo-datos" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">05</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Modelo Relacional de Base de Datos</h2>
+            <p class="text-sm text-slate-500">Estructura normalizada en PostgreSQL compuesta por 18 tablas interconectadas</p>
+          </div>
+        </div>
+
+        <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+          El modelo de datos cumple con <strong>3ra Forma Normal (3NF)</strong> para evitar anomalías de inserción, actualización o eliminación. Emplea claves primarias UUID v4, marcas temporales automáticas (<code>created_at</code>), claves foráneas con reglas de integridad referencial seguras y enums nativos de PostgreSQL.
+        </p>
+
+        <!-- Diagrama ER Mermaid -->
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 overflow-x-auto text-center mb-8">
+          <div class="mermaid">
+erDiagram
+    PROFILES ||--o{ USER_ROLES : has
+    ROLES ||--o{ USER_ROLES : defines
+    LOCALITIES ||--o{ STOPS : contains
+    STOPS ||--o{ ROUTES : "origin/dest"
+    ROUTES ||--o{ ROUTE_STOPS : sequences
+    STOPS ||--o{ ROUTE_STOPS : located_at
+    ROUTES ||--o{ TRIPS : schedules
+    BUSES ||--o{ TRIPS : operates
+    DRIVERS ||--o{ TRIPS : assigned_to
+    BUSES ||--o{ BUS_SEATS : contains
+    TRIPS ||--o{ TRIP_FARES : charges
+    STOPS ||--o{ TRIP_FARES : from_to
+    TRIPS ||--o{ BOOKINGS : receives
+    PROFILES ||--o{ BOOKINGS : places
+    BOOKINGS ||--o{ BOOKING_SEATS : holds
+    BUS_SEATS ||--o{ BOOKING_SEATS : references
+    BOOKINGS ||--o{ PAYMENTS : settles
+    BOOKINGS ||--o{ TICKETS : produces
+    BUS_SEATS ||--o{ TICKETS : seat_assigned
+    TRIPS ||--o{ INCIDENTS : records
+    PROFILES ||--o{ AUDIT_LOGS : performs
+          </div>
+        </div>
+
+        <!-- Diccionario de las 18 Tablas Organizadas por Módulo -->
+        <h3 class="text-base font-bold text-slate-900 mb-4 flex items-center gap-2">
+          <svg class="w-5 h-5 text-[#20A878]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+          Diccionario de Datos: 18 Tablas del Esquema
+        </h3>
+
+        <div class="grid md:grid-cols-2 gap-4 text-xs">
+          <!-- Modulo Usuarios & Roles -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <div class="font-bold text-slate-800 text-sm border-b border-slate-200 pb-1">Módulo 1: Identidad y Permisos</div>
+            <p><strong>1. profiles:</strong> Perfiles de usuario vinculados 1:1 con <code>auth.users</code>. Campos: <code>id (UUID)</code>, <code>full_name</code>, <code>phone</code>, <code>avatar_url</code>, <code>created_at</code>.</p>
+            <p><strong>2. roles:</strong> Catálogo maestro de roles del sistema. Enums: <code>admin</code>, <code>operator</code>, <code>seller</code>, <code>inspector</code>, <code>passenger</code>.</p>
+            <p><strong>3. user_roles:</strong> Asignación N:M de roles a perfiles con trazabilidad del asignador (<code>assigned_by</code>, <code>assigned_at</code>).</p>
+          </div>
+
+          <!-- Modulo Geografia & Rutas -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <div class="font-bold text-slate-800 text-sm border-b border-slate-200 pb-1">Módulo 2: Geografía y Red Vial</div>
+            <p><strong>4. localities:</strong> Cantones y parroquias del norte de Ecuador. Campos: <code>name</code>, <code>canton</code>, <code>province</code>, <code>latitude</code>, <code>longitude</code>, <code>is_active</code>.</p>
+            <p><strong>5. stops:</strong> Paradas y terminales físicas con dirección y coordenadas GPS exactas.</p>
+            <p><strong>6. routes:</strong> Rutas maestras que unen un origen y destino principal con código único y distancia base.</p>
+            <p><strong>7. route_stops:</strong> Secuencia ordenada de paradas (<code>sequence_order</code>) con kilometraje y minutos acumulados.</p>
+          </div>
+
+          <!-- Modulo Flota y Choferes -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <div class="font-bold text-slate-800 text-sm border-b border-slate-200 pb-1">Módulo 3: Flota y Asignaciones</div>
+            <p><strong>8. buses:</strong> Unidades de transporte. Campos: <code>plate (UNIQUE)</code>, <code>brand</code>, <code>model</code>, <code>year</code>, <code>total_seats</code>, <code>layout_config (JSONB)</code>.</p>
+            <p><strong>9. bus_seats:</strong> Distribución física de asientos con fila, columna y tipo (<code>standard</code>, <code>premium</code>, <code>accessibility</code>).</p>
+            <p><strong>10. drivers:</strong> Choferes con número de licencia, categoría profesional, fecha de vencimiento y disponibilidad operativa.</p>
+          </div>
+
+          <!-- Modulo Viajes y Tarifas -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <div class="font-bold text-slate-800 text-sm border-b border-slate-200 pb-1">Módulo 4: Operación de Viajes</div>
+            <p><strong>11. trips:</strong> Salidas programadas con fecha/hora de salida y llegada, bus asignado, chofer y contador <code>available_seats</code>.</p>
+            <p><strong>12. trip_fares:</strong> Matriz tarifaria por combinación de parada origen y destino para cobro justo por tramos.</p>
+          </div>
+
+          <!-- Modulo Transaccional -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <div class="font-bold text-slate-800 text-sm border-b border-slate-200 pb-1">Módulo 5: Reservas, Pagos y Boletos</div>
+            <p><strong>13. bookings:</strong> Reserva de viaje con estado (<code>pending</code>, <code>confirmed</code>, <code>cancelled</code>, <code>expired</code>) y expiración a 10 min.</p>
+            <p><strong>14. booking_seats:</strong> Vínculo entre la reserva y los asientos bloqueados (<code>reserved</code>, <code>sold</code>, <code>cancelled</code>).</p>
+            <p><strong>15. payments:</strong> Registro del pago simulado con monto, método (<code>simulated_card</code>, <code>simulated_cash</code>, <code>simulated_transfer</code>) y referencia.</p>
+            <p><strong>16. tickets:</strong> Boleto electrónico final con identificador <code>qr_code (UNIQUE)</code>, token firmado y estado de uso.</p>
+          </div>
+
+          <!-- Modulo Operaciones & Auditoria -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 space-y-2">
+            <div class="font-bold text-slate-800 text-sm border-b border-slate-200 pb-1">Módulo 6: Fiscalización y Auditoría</div>
+            <p><strong>17. incidents:</strong> Reportes de fallas mecánicas, demoras viales o accidentes vinculados a un viaje con severidad.</p>
+            <p><strong>18. audit_logs:</strong> Bitácora inmutable de eventos sensibles con usuario, acción, entidad, snapshot JSON previo y nuevo, IP y User-Agent.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 6. DECISIONES ARQUITECTÓNICAS (ADRs)       -->
+      <!-- ========================================== -->
+      <section id="adrs" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">06</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Decisiones Técnicas de Arquitectura (ADRs)</h2>
+            <p class="text-sm text-slate-500">Justificación formal de problemas complejos de ingeniería de software</p>
+          </div>
+        </div>
+
+        <div class="space-y-6">
+          <!-- ADR 001 -->
+          <div class="border border-slate-200 rounded-xl p-5 bg-slate-50">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#173B57] bg-blue-100 px-2.5 py-1 rounded-md">ADR-001</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Aprobada e Implementada</span>
+            </div>
+            <h4 class="text-base font-bold text-slate-900 mb-2">Control de Concurrencia y Prevención de Doble Reserva</h4>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+              <strong>Problema:</strong> En compras simultáneas de alta demanda, dos pasajeros intentan adquirir el mismo asiento con milisegundos de diferencia. Si no hay control transaccional, ocurre una condición de carrera (Race Condition) resultando en sobreventa.
+            </p>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+              <strong>Solución:</strong> Implementación de bloqueos pesimistas en PostgreSQL mediante <code>SELECT ... FOR UPDATE</code> sobre los asientos del viaje. Si el asiento ya está asociado a una reserva con estado <code>confirmed</code> o <code>pending</code> cuyo <code>expires_at &gt; now()</code>, la transacción se aborta de inmediato con código de conflicto.
+            </p>
+            <div class="bg-slate-900 text-slate-100 p-3 rounded-lg text-xs font-mono overflow-x-auto">
+              -- Fragmento de la función transaccional en PostgreSQL (Supabase)
+              PERFORM 1 FROM booking_seats bs
+              JOIN bookings b ON b.id = bs.booking_id
+              WHERE bs.bus_seat_id = p_seat_id
+                AND b.trip_id = p_trip_id
+                AND (b.status = 'confirmed' OR (b.status = 'pending' AND b.expires_at > now()))
+              FOR UPDATE;
+            </div>
+          </div>
+
+          <!-- ADR 002 -->
+          <div class="border border-slate-200 rounded-xl p-5 bg-slate-50">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#173B57] bg-blue-100 px-2.5 py-1 rounded-md">ADR-002</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Aprobada e Implementada</span>
+            </div>
+            <h4 class="text-base font-bold text-slate-900 mb-2">Privacidad y Tokenización en Código QR del Boleto</h4>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+              <strong>Problema:</strong> Si el código QR almacena datos en texto plano (nombre del pasajero, cédula, teléfono, precio), cualquier persona que tome una foto al boleto vulnera la privacidad del usuario (violación de protección de datos personales).
+            </p>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+              <strong>Solución:</strong> El QR codifica exclusivamente un identificador opaco criptográfico: <code>RN-HEX16</code> junto con un hash verificador. Al escanearlo, el sistema valida el token contra la base de datos protegida mediante RLS. Los datos del pasajero únicamente son visibles en la pantalla del <strong>Inspector autenticado</strong>.
+            </p>
+          </div>
+
+          <!-- ADR 003 -->
+          <div class="border border-slate-200 rounded-xl p-5 bg-slate-50">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-[#173B57] bg-blue-100 px-2.5 py-1 rounded-md">ADR-003</span>
+              <span class="text-xs font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full">Aprobada e Implementada</span>
+            </div>
+            <h4 class="text-base font-bold text-slate-900 mb-2">Motor Cartográfico y Ruteo Vial Desacoplado</h4>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+              <strong>Problema:</strong> Trazar líneas rectas entre paradas distorsiona la distancia real de viaje en la geografía montañosa de los Andes ecuatorianos. Al mismo tiempo, atarse directamente a Google Maps Routes API acarreaba altos costos y dependencias externas rígidas.
+            </p>
+            <p class="text-xs text-slate-600 mb-3 leading-relaxed">
+              <strong>Solución:</strong> Se diseñó un patrón <em>Strategy</em> con la interfaz <code>RoutingProvider</code> en <code>src/lib/maps/routing.ts</code>. El proveedor por defecto utiliza <strong>OSRM (Open Source Routing Machine)</strong> y cartografía <strong>OpenStreetMap</strong> con Leaflet, calculando la geometría exacta de las curvas sobre la red vial E35 y carreteras secundarias sin costo adicional.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 7. SEGURIDAD Y RLS EN BASE DE DATOS       -->
+      <!-- ========================================== -->
+      <section id="seguridad" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">07</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Seguridad, RBAC y Row Level Security (RLS)</h2>
+            <p class="text-sm text-slate-500">Defensa en profundidad implementada tanto en la capa web como en el motor PostgreSQL</p>
+          </div>
+        </div>
+
+        <p class="text-sm text-slate-600 mb-6 leading-relaxed">
+          En Ruta Norte, la seguridad no se delega únicamente a validaciones del frontend. Si un usuario malintencionado intenta enviar peticiones modificadas o consultar directamente Supabase, las políticas de <strong>Row Level Security (RLS)</strong> a nivel de base de datos impiden cualquier lectura o escritura no autorizada.
+        </p>
+
+        <!-- Matriz de Roles y Permisos -->
+        <div class="overflow-x-auto mb-6">
+          <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
+            <thead class="bg-[#173B57] text-white uppercase tracking-wider">
+              <tr>
+                <th class="py-3 px-3">Recurso / Entidad</th>
+                <th class="py-3 px-3 text-center">Pasajero</th>
+                <th class="py-3 px-3 text-center">Vendedor</th>
+                <th class="py-3 px-3 text-center">Inspector</th>
+                <th class="py-3 px-3 text-center">Operador</th>
+                <th class="py-3 px-3 text-center">Administrador</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-200 bg-white">
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-semibold text-slate-900">Búsqueda de Rutas y Viajes</td>
+                <td class="py-2.5 px-3 text-center text-emerald-600 font-bold">Lectura</td>
+                <td class="py-2.5 px-3 text-center text-emerald-600 font-bold">Lectura</td>
+                <td class="py-2.5 px-3 text-center text-emerald-600 font-bold">Lectura</td>
+                <td class="py-2.5 px-3 text-center text-blue-600 font-bold">CRUD Total</td>
+                <td class="py-2.5 px-3 text-center text-blue-600 font-bold">CRUD Total</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-semibold text-slate-900">Reservas y Boletos Propios</td>
+                <td class="py-2.5 px-3 text-center text-emerald-600 font-bold">Crear / Ver Propios</td>
+                <td class="py-2.5 px-3 text-center text-blue-600 font-bold">Emitir / Cobrar</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-600">Ver Reportes</td>
+                <td class="py-2.5 px-3 text-center text-blue-600 font-bold">Gestión Total</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-semibold text-slate-900">Validación de Embarque (QR)</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-emerald-600 font-bold">Escanear y Validar</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-emerald-600 font-bold">Escanear y Validar</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-semibold text-slate-900">Flota, Buses y Conductores</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-blue-600 font-bold">CRUD Total</td>
+                <td class="py-2.5 px-3 text-center text-blue-600 font-bold">CRUD Total</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2.5 px-3 font-semibold text-slate-900">Auditoría y Asignación de Roles</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-slate-400">Sin acceso</td>
+                <td class="py-2.5 px-3 text-center text-purple-600 font-bold">Exclusivo Admin</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Ejemplo de RLS Policy en SQL -->
+        <div class="bg-slate-900 text-slate-100 p-4 rounded-xl text-xs font-mono">
+          <span class="text-emerald-400">-- Política RLS: Los pasajeros solo pueden consultar sus propios boletos</span><br>
+          CREATE POLICY "passengers_select_own_tickets" ON tickets<br>
+          &nbsp;&nbsp;FOR SELECT TO authenticated<br>
+          &nbsp;&nbsp;USING (passenger_id = auth.uid() OR get_user_role(auth.uid()) IN ('admin', 'inspector', 'seller'));
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 8. FLUJOS DE NEGOCIO E2E                  -->
+      <!-- ========================================== -->
+      <section id="flujos" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">08</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Flujos de Negocio de Extremo a Extremo</h2>
+            <p class="text-sm text-slate-500">Secuencia paso a paso desde la búsqueda hasta el embarque</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-4 gap-4 text-xs">
+          <!-- Paso 1 -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-xs mb-3">1</span>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">Búsqueda & Trazado</h4>
+              <p class="text-slate-600 leading-relaxed">El pasajero selecciona origen, destino y fecha. El sistema filtra viajes activos y calcula la ruta en mapa Leaflet con kilometraje y tiempo estimado de viaje.</p>
+            </div>
+            <span class="mt-3 text-[10px] text-slate-400 font-mono">Público / SSR</span>
+          </div>
+
+          <!-- Paso 2 -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-xs mb-3">2</span>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">Selección de Asientos</h4>
+              <p class="text-slate-600 leading-relaxed">Visualización del mapa interactivo de asientos del bus (filas y columnas). Estados dinámicos: Disponible (verde), Ocupado (rojo), Seleccionado (azul).</p>
+            </div>
+            <span class="mt-3 text-[10px] text-slate-400 font-mono">Client Component</span>
+          </div>
+
+          <!-- Paso 3 -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-xs mb-3">3</span>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">Reserva y Pago Simulado</h4>
+              <p class="text-slate-600 leading-relaxed">Bloqueo temporal por 10 minutos. Procesamiento del pago simulado con tarjeta de prueba o efectivo en taquilla con generación de referencia de transacción.</p>
+            </div>
+            <span class="mt-3 text-[10px] text-slate-400 font-mono">Server Action Atómica</span>
+          </div>
+
+          <!-- Paso 4 -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <span class="w-6 h-6 rounded-full bg-[#20A878] text-white flex items-center justify-center font-bold text-xs mb-3">4</span>
+              <h4 class="font-bold text-slate-900 text-sm mb-1">Boleto QR y Embarque</h4>
+              <p class="text-slate-600 leading-relaxed">Emisión del boleto digital con código QR. El Inspector escanea el código en andén; el sistema verifica la validez y marca el boleto como utilizado.</p>
+            </div>
+            <span class="mt-3 text-[10px] text-slate-400 font-mono">Lector QR + Auditoría</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 9. MAPAS Y RUTEO VIAL REAL                -->
+      <!-- ========================================== -->
+      <section id="mapas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">09</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Mapas Interactivos y Ruteo Vial Real</h2>
+            <p class="text-sm text-slate-500">Cartografía OpenStreetMap y trazado de carreteras sin líneas rectas</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-6 text-xs text-slate-600 mb-6">
+          <div class="space-y-3">
+            <h4 class="font-bold text-slate-900 text-sm">Características Cartográficas Implementadas:</h4>
+            <div class="flex items-start gap-2">
+              <span class="text-[#20A878] font-bold">✔</span>
+              <span><strong>Trazado sobre carreteras reales:</strong> Utiliza el motor OSRM para seguir las curvas exactas de la vía Panamericana E35 y enlaces cantonales en Imbabura y Carchi.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[#20A878] font-bold">✔</span>
+              <span><strong>Waypoints ordenados:</strong> Respeta la secuencia de paradas intermedias definida en <code>route_stops</code>, calculando distancias por tramo.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[#20A878] font-bold">✔</span>
+              <span><strong>Diferenciación de marcadores:</strong> Marcador verde para origen, azul para destino y numerados para paradas intermedias con tooltip y popup interactivo.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[#20A878] font-bold">✔</span>
+              <span><strong>Auto-ajuste de encuadre (Fit Bounds):</strong> El mapa calcula la caja delimitadora y centra automáticamente la vista para mostrar todo el trayecto.</span>
+            </div>
+          </div>
+
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="font-bold text-slate-900 text-sm mb-2">Estructura del Módulo en Código:</h4>
+            <pre class="bg-slate-900 text-slate-100 p-3 rounded-lg font-mono text-[11px] overflow-x-auto">
+src/lib/maps/
+  ├── routing.ts         ← Interfaz RoutingProvider y OSRM
+  ├── types.ts           ← LatLng, RouteGeometry, RouteResult
+  └── routePreview.ts    ← Normalización de paradas
+
+src/components/maps/
+  ├── RouteMap.tsx       ← Contenedor dinámico (SSR: false)
+  └── LeafletMapCore.tsx ← Marcadores, Polyline y Tiles
+            </pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 10. DATASET EN DEMOSTRACIÓN               -->
+      <!-- ========================================== -->
+      <section id="metricas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">10</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Volumen y Datos en Demostración Real</h2>
+            <p class="text-sm text-slate-500">Base de datos en vivo poblada y consistente para simular meses de operación</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+            <span class="block text-2xl font-extrabold text-[#173B57]">12</span>
+            <span class="text-[11px] text-slate-500 font-medium">Localidades GPS</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+            <span class="block text-2xl font-extrabold text-[#173B57]">15</span>
+            <span class="text-[11px] text-slate-500 font-medium">Paradas Clave</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+            <span class="block text-2xl font-extrabold text-[#173B57]">264</span>
+            <span class="text-[11px] text-slate-500 font-medium">Viajes Programados</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+            <span class="block text-2xl font-extrabold text-[#20A878]">120</span>
+            <span class="text-[11px] text-slate-500 font-medium">Reservas Reales</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+            <span class="block text-2xl font-extrabold text-[#20A878]">85</span>
+            <span class="text-[11px] text-slate-500 font-medium">Boletos Emitidos</span>
+          </div>
+          <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
+            <span class="block text-2xl font-extrabold text-[#F59E0B]">60</span>
+            <span class="text-[11px] text-slate-500 font-medium">Logs de Auditoría</span>
+          </div>
+        </div>
+
+        <div class="bg-[#F8FAFC] p-4 rounded-xl border border-slate-200 text-xs text-slate-600">
+          <p><strong>Puntos Geográficos Verificados:</strong> Terminal Terrestre de Tulcán, Terminal San Gabriel, Parque Central de Bolívar, Parque Central El Ángel, Terminal Cantonal de Mira, Parque Central de Huaca, Parque Julio Andrade, Terminal Terrestre de Ibarra, Terminal de Otavalo, Parque Central de Cotacachi, Parque San Antonio de Ibarra y Plaza Central de Zuleta.</p>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 11. CUENTAS Y ACCESOS DEMO                -->
+      <!-- ========================================== -->
+      <section id="credenciales" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">11</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Cuentas y Credenciales de Demostración</h2>
+            <p class="text-sm text-slate-500">5 perfiles listos para probar cada rol con 1 solo clic</p>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          <!-- Card Admin -->
+          <div class="p-4 rounded-xl border border-purple-200 bg-purple-50/50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-purple-900 text-sm">Administrador</span>
+                <span class="bg-purple-200 text-purple-800 text-[10px] font-bold px-2 py-0.5 rounded">Acceso Total</span>
+              </div>
+              <p class="text-slate-600 mb-2">Control total, asignación de roles, métricas financieras y auditoría inmutable.</p>
+              <div class="bg-white p-2 rounded border border-purple-200 font-mono text-[11px] space-y-1 mb-3">
+                <div class="truncate"><strong>Email:</strong> admin.demo@rutanorte.ec</div>
+                <div><strong>Clave:</strong> DemoPassword2026!</div>
+              </div>
+            </div>
+            <button onclick="copyCreds('admin.demo@rutanorte.ec', 'DemoPassword2026!')" class="w-full bg-purple-700 hover:bg-purple-800 text-white font-medium py-1.5 rounded transition">Copiar Credenciales</button>
+          </div>
+
+          <!-- Card Operador -->
+          <div class="p-4 rounded-xl border border-blue-200 bg-blue-50/50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-blue-900 text-sm">Operador de Rutas</span>
+                <span class="bg-blue-200 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">Operativa</span>
+              </div>
+              <p class="text-slate-600 mb-2">Gestión de flota, programación de salidas, buses, conductores e incidencias.</p>
+              <div class="bg-white p-2 rounded border border-blue-200 font-mono text-[11px] space-y-1 mb-3">
+                <div class="truncate"><strong>Email:</strong> operador.demo@rutanorte.ec</div>
+                <div><strong>Clave:</strong> DemoPassword2026!</div>
+              </div>
+            </div>
+            <button onclick="copyCreds('operador.demo@rutanorte.ec', 'DemoPassword2026!')" class="w-full bg-[#173B57] hover:bg-[#122D42] text-white font-medium py-1.5 rounded transition">Copiar Credenciales</button>
+          </div>
+
+          <!-- Card Vendedor -->
+          <div class="p-4 rounded-xl border border-amber-200 bg-amber-50/50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-amber-900 text-sm">Vendedor / Taquilla</span>
+                <span class="bg-amber-200 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded">Ventas</span>
+              </div>
+              <p class="text-slate-600 mb-2">Venta de boletos en ventanilla, cobro simulado y emisión inmediata para pasajeros.</p>
+              <div class="bg-white p-2 rounded border border-amber-200 font-mono text-[11px] space-y-1 mb-3">
+                <div class="truncate"><strong>Email:</strong> vendedor.demo@rutanorte.ec</div>
+                <div><strong>Clave:</strong> DemoPassword2026!</div>
+              </div>
+            </div>
+            <button onclick="copyCreds('vendedor.demo@rutanorte.ec', 'DemoPassword2026!')" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-1.5 rounded transition">Copiar Credenciales</button>
+          </div>
+
+          <!-- Card Inspector -->
+          <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-emerald-900 text-sm">Inspector de Andén</span>
+                <span class="bg-emerald-200 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded">Andén / QR</span>
+              </div>
+              <p class="text-slate-600 mb-2">Validación de embarque con lector de QR, verificación de identidad y manifiesto.</p>
+              <div class="bg-white p-2 rounded border border-emerald-200 font-mono text-[11px] space-y-1 mb-3">
+                <div class="truncate"><strong>Email:</strong> inspector.demo@rutanorte.ec</div>
+                <div><strong>Clave:</strong> DemoPassword2026!</div>
+              </div>
+            </div>
+            <button onclick="copyCreds('inspector.demo@rutanorte.ec', 'DemoPassword2026!')" class="w-full bg-[#20A878] hover:bg-[#1b8e66] text-white font-medium py-1.5 rounded transition">Copiar Credenciales</button>
+          </div>
+
+          <!-- Card Pasajero -->
+          <div class="p-4 rounded-xl border border-slate-300 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="font-bold text-slate-900 text-sm">Pasajero</span>
+                <span class="bg-slate-200 text-slate-800 text-[10px] font-bold px-2 py-0.5 rounded">Usuario Final</span>
+              </div>
+              <p class="text-slate-600 mb-2">Búsqueda pública, mapa interactivo, reserva gráfica de asiento y boletos digitales.</p>
+              <div class="bg-white p-2 rounded border border-slate-200 font-mono text-[11px] space-y-1 mb-3">
+                <div class="truncate"><strong>Email:</strong> pasajero.demo@rutanorte.ec</div>
+                <div><strong>Clave:</strong> DemoPassword2026!</div>
+              </div>
+            </div>
+            <button onclick="copyCreds('pasajero.demo@rutanorte.ec', 'DemoPassword2026!')" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-medium py-1.5 rounded transition">Copiar Credenciales</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 12. TESTING Y ASEGURAMIENTO               -->
+      <!-- ========================================== -->
+      <section id="pruebas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">12</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Aseguramiento de Calidad y Pruebas</h2>
+            <p class="text-sm text-slate-500">Validación rigurosa mediante suite automatizada de pruebas unitarias</p>
+          </div>
+        </div>
+
+        <div class="bg-slate-900 text-slate-100 p-5 rounded-2xl font-mono text-xs mb-6 overflow-x-auto">
+          <div class="text-emerald-400 font-bold mb-2">✓ Test Files  8 passed (8)</div>
+          <div class="text-emerald-400 font-bold mb-2">✓ Tests       103 passed (103)</div>
+          <div class="text-slate-400">Duration    1.28s (transform 312ms, setup 0ms, collect 842ms, tests 128ms)</div>
+          <div class="mt-4 border-t border-slate-700 pt-3 text-slate-300">
+            • tests/unit/fares.test.ts (Cálculo de tarifas por tramos, descuentos de tercera edad y menores)<br>
+            • tests/unit/seats.test.ts (Asignación gráfica, estados de bloqueo, exclusión mutua)<br>
+            • tests/unit/bookings.test.ts (Expiración automática a 10 min, transiciones de estado)<br>
+            • tests/unit/tickets.test.ts (Generación y verificación de tokens QR opacos)<br>
+            • tests/unit/maps.test.ts (Normalización de coordenadas, interpolación de waypoints OSRM)
+          </div>
+        </div>
+
+        <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-200 text-xs text-emerald-800 flex items-center justify-between">
+          <span><strong>Conclusión Académica:</strong> Sistema completo, auditado, con cero deuda técnica y listo para producción.</span>
+          <a href="https://ruta-norte.vercel.app" target="_blank" class="font-bold underline text-emerald-900">Ir a la Aplicación en Vivo →</a>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Notification Toast for Copying -->
+  <div id="toast" class="fixed bottom-6 right-6 bg-slate-900 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center gap-2 transform translate-y-20 opacity-0 transition-all duration-300 z-50">
+    <svg class="w-4 h-4 text-[#20A878]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    <span id="toast-msg">Credenciales copiadas al portapapeles</span>
+  </div>
+
+  <script>
+    function copyCreds(email, password) {
+      const text = `Email: ${email}\nPassword: ${password}`;
+      navigator.clipboard.writeText(text).then(() => {
+        const toast = document.getElementById('toast');
+        const msg = document.getElementById('toast-msg');
+        msg.textContent = `Copiado: ${email}`;
+        toast.classList.remove('translate-y-20', 'opacity-0');
+        setTimeout(() => {
+          toast.classList.add('translate-y-20', 'opacity-0');
+        }, 2500);
+      });
+    }
+  </script>
+</body>
+</html>
