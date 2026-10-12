@@ -118,7 +118,16 @@ INSERT INTO public.trips (id, route_id, bus_id, driver_id, departure_time, arriv
 ON CONFLICT (id) DO NOTHING;
 
 -- 10. CUENTAS DEMO INICIALIZADAS CONFORME A ADR-004
--- Inserción en public.profiles y asignación en public.user_roles
+-- Insertar primero en auth.users para satisfacer la clave foránea de profiles
+INSERT INTO auth.users (id, instance_id, aud, role, email, encrypted_password, email_confirmed_at, raw_app_meta_data, raw_user_meta_data, created_at, updated_at) VALUES
+  ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'admin@rutanorte.ec', crypt('Admin123!', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Administrador General"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'operador@rutanorte.ec', crypt('Operador123!', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Operador de Flota"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000030', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'vendedor@rutanorte.ec', crypt('Vendedor123!', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Vendedor Taquilla"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000040', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'inspector@rutanorte.ec', crypt('Inspector123!', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Inspector de Ruta"}', now(), now()),
+  ('00000000-0000-0000-0000-000000000050', '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', 'pasajero@rutanorte.ec', crypt('Pasajero123!', gen_salt('bf')), now(), '{"provider":"email","providers":["email"]}', '{"full_name":"Pasajero Frecuente"}', now(), now())
+ON CONFLICT (id) DO NOTHING;
+
+-- Inserción / actualización en public.profiles
 INSERT INTO public.profiles (id, full_name, phone, is_demo) VALUES
   ('00000000-0000-0000-0000-000000000010', 'Administrador General (Demo)', '0990000001', true),
   ('00000000-0000-0000-0000-000000000020', 'Operador de Flota (Demo)', '0990000002', true),
@@ -126,8 +135,10 @@ INSERT INTO public.profiles (id, full_name, phone, is_demo) VALUES
   ('00000000-0000-0000-0000-000000000040', 'Inspector de Ruta (Demo)', '0990000004', true),
   ('00000000-0000-0000-0000-000000000050', 'Pasajero Frecuente (Demo)', '0990000005', true)
 ON CONFLICT (id) DO UPDATE SET
-  full_name = EXCLUDED.full_name;
+  full_name = EXCLUDED.full_name,
+  is_demo = true;
 
+-- Asignación explícita de roles de sistema
 INSERT INTO public.user_roles (user_id, role_id) VALUES
   ('00000000-0000-0000-0000-000000000010', '00000000-0000-0000-0000-000000000001'), -- admin
   ('00000000-0000-0000-0000-000000000020', '00000000-0000-0000-0000-000000000002'), -- operator

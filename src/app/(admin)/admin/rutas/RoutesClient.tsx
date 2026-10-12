@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { formatCurrency } from "@/lib/utils";
+import { RouteMapCard, StopCoordinateEditor } from "@/lib/maps";
 
 interface RoutesClientProps {
   initialRoutes: Route[];
@@ -29,9 +30,13 @@ export function RoutesClient({ initialRoutes, stops }: RoutesClientProps) {
   const [code, setCode] = React.useState("");
   const [originStopId, setOriginStopId] = React.useState(stops[0]?.id || "");
   const [destinationStopId, setDestinationStopId] = React.useState(stops[1]?.id || "");
+  const [currentStops, setCurrentStops] = React.useState<Stop[]>(stops);
   const [distanceKm, setDistanceKm] = React.useState(25.0);
   const [durationMin, setDurationMin] = React.useState(45);
   const [baseFare, setBaseFare] = React.useState(2.5);
+
+  const selectedOriginStop = currentStops.find((s) => s.id === originStopId);
+  const selectedDestStop = currentStops.find((s) => s.id === destinationStopId);
 
   const filteredRoutes = routes.filter(
     (r) =>
@@ -212,6 +217,37 @@ export function RoutesClient({ initialRoutes, stops }: RoutesClientProps) {
                 </div>
               </div>
 
+              {/* Previsualización del trazado vial de la ruta */}
+              {selectedOriginStop && selectedDestStop && (
+                <div className="pt-2 border-t">
+                  <div className="mb-2">
+                    <span className="text-xs font-bold text-slate-700 block">
+                      Previsualización Cartográfica y Vial en Tiempo Real
+                    </span>
+                    <span className="text-[11px] text-muted-foreground block">
+                      Verifique que la ruta una las carreteras correctas antes de guardarla.
+                    </span>
+                  </div>
+                  <RouteMapCard
+                    origin={{
+                      id: selectedOriginStop.id,
+                      name: selectedOriginStop.name,
+                      latitude: selectedOriginStop.latitude,
+                      longitude: selectedOriginStop.longitude,
+                    }}
+                    destination={{
+                      id: selectedDestStop.id,
+                      name: selectedDestStop.name,
+                      latitude: selectedDestStop.latitude,
+                      longitude: selectedDestStop.longitude,
+                    }}
+                    scheduledDurationMin={durationMin}
+                    height="300px"
+                    showStopsList={false}
+                  />
+                </div>
+              )}
+
               <div className="flex justify-end gap-3 pt-2">
                 <Button type="button" variant="outline" onClick={() => setIsFormOpen(false)}>
                   Cancelar
@@ -300,6 +336,18 @@ export function RoutesClient({ initialRoutes, stops }: RoutesClientProps) {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Módulo de Administración de Coordenadas de Paradas */}
+      <div className="pt-6 border-t">
+        <StopCoordinateEditor
+          stops={currentStops}
+          onUpdated={(updatedStop) => {
+            setCurrentStops((prev) =>
+              prev.map((s) => (s.id === updatedStop.id ? updatedStop : s))
+            );
+          }}
+        />
       </div>
     </div>
   );

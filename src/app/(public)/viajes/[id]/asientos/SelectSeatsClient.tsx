@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { SeatMapSelector, SeatWithStatus } from "@/components/shared/SeatMapSelector";
 import { TripSearchResult } from "@/features/trips/actions/search";
 import { createReservationAction } from "@/features/bookings/actions";
+import { RouteMapCard } from "@/lib/maps";
 
 interface SelectSeatsClientProps {
   trip: TripSearchResult;
@@ -155,6 +156,25 @@ export function SelectSeatsClient({ trip }: SelectSeatsClientProps) {
           </div>
         </CardContent>
       </Card>
+
+      {/* Mapa interactivo y cálculo vial de la ruta */}
+      <RouteMapCard
+        origin={{
+          id: trip.route.origin_stop.id,
+          name: trip.route.origin_stop.name,
+          latitude: trip.route.origin_stop.latitude,
+          longitude: trip.route.origin_stop.longitude,
+        }}
+        destination={{
+          id: trip.route.destination_stop.id,
+          name: trip.route.destination_stop.name,
+          latitude: trip.route.destination_stop.latitude,
+          longitude: trip.route.destination_stop.longitude,
+        }}
+        scheduledDurationMin={trip.route.duration_min}
+        departureTime={departureHour}
+        height="360px"
+      />
 
       {/* Alerta de error si aplica */}
       {errorMsg && (

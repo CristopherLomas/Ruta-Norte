@@ -26,6 +26,9 @@ CREATE POLICY "cooperatives_admin_operator_manage" ON public.cooperatives
   USING (public.has_role(auth.uid(), 'admin', 'operator'))
   WITH CHECK (public.has_role(auth.uid(), 'admin', 'operator'));
 
+-- Asegurar columna is_demo en profiles si la tabla ya fue creada
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS is_demo BOOLEAN DEFAULT false NOT NULL;
+
 -- 2. Añadir columnas a buses para vinculación de cooperativa, disco y estado operativo
 ALTER TABLE public.buses
   ADD COLUMN IF NOT EXISTS cooperative_id UUID REFERENCES public.cooperatives(id) ON DELETE SET NULL,
@@ -39,6 +42,9 @@ ALTER TABLE public.drivers
   ADD COLUMN IF NOT EXISTS full_name TEXT,
   ADD COLUMN IF NOT EXISTS phone TEXT,
   ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'suspended'));
+
+-- Permitir que profile_id sea opcional para choferes registrados directamente por la cooperativa
+ALTER TABLE public.drivers ALTER COLUMN profile_id DROP NOT NULL;
 
 -- 4. Añadir columna base_fare a routes si no existe
 ALTER TABLE public.routes

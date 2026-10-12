@@ -41,7 +41,7 @@ export default async function HomePage() {
       <section className="bg-gradient-to-b from-brand-light via-white to-slate-50/50 pt-12 pb-8 border-b">
         <div className="container mx-auto px-4 text-center max-w-3xl">
           <Badge variant="secondary" className="mb-3 bg-brand-secondary/15 text-brand-secondary border-brand-secondary/30">
-            Norte de Ecuador · Ibarra, Otavalo, Cotacachi, Zuleta, San Antonio
+            Norte de Ecuador · Tulcán, San Gabriel, El Ángel, Mira, Huaca, Bolívar
           </Badge>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-brand-primary">
             Viaja Seguro por las Parroquias del Norte

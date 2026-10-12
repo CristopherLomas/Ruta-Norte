@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, Calendar, ArrowRight, Bus, Clock, ShieldCheck, AlertCircle } from "lucide-react";
+import { Search, MapPin, Calendar, ArrowRight, Bus, Clock, ShieldCheck, AlertCircle, Map as MapIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Stop } from "@/types";
 import { searchTripsAction, TripSearchResult } from "@/features/trips/actions/search";
+import { RouteMapCard } from "@/lib/maps";
 
 interface TripSearchClientProps {
   stops: Stop[];
@@ -16,11 +17,13 @@ interface TripSearchClientProps {
 export function TripSearchClient({ stops }: TripSearchClientProps) {
   const router = useRouter();
 
+  // Identificar parada por defecto (Tulcán como origen si existe)
+  const defaultOrigin = stops.find((s) => s.name.toLowerCase().includes("tulcán")) || stops[0];
+  const defaultDest = stops.find((s) => s.id !== defaultOrigin?.id) || stops[1];
+
   // Estados del formulario
-  const [originStopId, setOriginStopId] = React.useState<string>(stops[0]?.id || "");
-  const [destinationStopId, setDestinationStopId] = React.useState<string>(
-    stops.find((s) => s.id !== stops[0]?.id)?.id || ""
-  );
+  const [originStopId, setOriginStopId] = React.useState<string>(defaultOrigin?.id || "");
+  const [destinationStopId, setDestinationStopId] = React.useState<string>(defaultDest?.id || "");
   const [departureDate, setDepartureDate] = React.useState<string>(() => {
     return new Date().toISOString().split("T")[0];
   });
@@ -29,6 +32,10 @@ export function TripSearchClient({ stops }: TripSearchClientProps) {
   const [hasSearched, setHasSearched] = React.useState(false);
   const [results, setResults] = React.useState<TripSearchResult[]>([]);
   const [errorMsg, setErrorMsg] = React.useState<string | null>(null);
+  const [showRoadMap, setShowRoadMap] = React.useState(true);
+
+  const selectedOriginStop = stops.find((s) => s.id === originStopId);
+  const selectedDestinationStop = stops.find((s) => s.id === destinationStopId);
 
   // Manejar búsqueda
   const handleSearch = async (e: React.FormEvent) => {
@@ -97,7 +104,7 @@ export function TripSearchClient({ stops }: TripSearchClientProps) {
                 <option value="" disabled>Seleccione origen</option>
                 {stops.map((stop) => (
                   <option key={stop.id} value={stop.id}>
-                    {stop.name} ({stop.locality?.canton || "Imbabura"})
+                    {stop.name} {stop.locality?.canton ? `(${stop.locality.canton})` : ""}
                   </option>
                 ))}
               </select>
@@ -118,7 +125,7 @@ export function TripSearchClient({ stops }: TripSearchClientProps) {
                 <option value="" disabled>Seleccione destino</option>
                 {stops.map((stop) => (
                   <option key={stop.id} value={stop.id}>
-                    {stop.name} ({stop.locality?.canton || "Imbabura"})
+                    {stop.name} {stop.locality?.canton ? `(${stop.locality.canton})` : ""}
                   </option>
                 ))}
               </select>
@@ -164,6 +171,46 @@ export function TripSearchClient({ stops }: TripSearchClientProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Visualización del Mapa Interactivo y Trazado de Carretera del Trayecto */}
+      {selectedOriginStop && selectedDestinationStop && selectedOriginStop.id !== selectedDestinationStop.id && (
+        <div className="max-w-4xl mx-auto space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <span className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+              <MapIcon className="h-4 w-4 text-brand-secondary" />
+              Visualización Cartográfica del Trayecto Seleccionado
+            </span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowRoadMap(!showRoadMap)}
+              className="text-xs text-brand-primary h-7 gap-1"
+            >
+              {showRoadMap ? "Ocultar Mapa" : "Mostrar Mapa Interactivo"}
+            </Button>
+          </div>
+
+          {showRoadMap && (
+            <RouteMapCard
+              origin={{
+                id: selectedOriginStop.id,
+                name: selectedOriginStop.name,
+                latitude: selectedOriginStop.latitude,
+                longitude: selectedOriginStop.longitude,
+              }}
+              destination={{
+                id: selectedDestinationStop.id,
+                name: selectedDestinationStop.name,
+                latitude: selectedDestinationStop.latitude,
+                longitude: selectedDestinationStop.longitude,
+              }}
+              height="380px"
+              showStopsList={true}
+            />
+          )}
+        </div>
+      )}
 
       {/* 2. Resultados de la Búsqueda */}
       <div className="max-w-4xl mx-auto space-y-4">
