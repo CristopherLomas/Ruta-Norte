@@ -124,29 +124,32 @@
           <a href="#stack" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">4</span> Stack & Trade-offs
           </a>
+          <a href="#estructura" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition bg-emerald-50/50 font-semibold text-emerald-950">
+            <span class="w-5 text-center text-[#20A878] font-bold">5</span> Estructura del Código
+          </a>
           <a href="#modelo-datos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">5</span> Modelo de Datos (18 Tablas)
+            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Modelo de Datos (18 Tablas)
           </a>
           <a href="#adrs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Decisiones Técnicas (ADRs)
+            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Decisiones Técnicas (ADRs)
           </a>
           <a href="#seguridad" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Seguridad y RLS en BD
+            <span class="w-5 text-center text-[#173B57] font-bold">8</span> Seguridad y RLS en BD
           </a>
           <a href="#flujos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">8</span> Flujos de Negocio E2E
+            <span class="w-5 text-center text-[#173B57] font-bold">9</span> Flujos de Negocio E2E
           </a>
           <a href="#mapas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">9</span> Mapas y Ruteo Vial Real
+            <span class="w-5 text-center text-[#173B57] font-bold">10</span> Mapas y Ruteo Vial Real
           </a>
           <a href="#metricas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">10</span> Dataset en Demostración
+            <span class="w-5 text-center text-[#173B57] font-bold">11</span> Dataset en Demostración
           </a>
           <a href="#credenciales" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">11</span> Cuentas y Accesos Demo
+            <span class="w-5 text-center text-[#173B57] font-bold">12</span> Cuentas y Accesos Demo
           </a>
           <a href="#pruebas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">12</span> Testing y Aseguramiento
+            <span class="w-5 text-center text-[#173B57] font-bold">13</span> Testing y Aseguramiento
           </a>
         </nav>
 
@@ -526,7 +529,7 @@ sequenceDiagram
                 <td class="py-3 px-3 font-semibold text-blue-900">PostgreSQL 15+ (Supabase)</td>
                 <td class="py-3 px-3 text-slate-500">MongoDB (NoSQL) / Firebase Firestore</td>
                 <td class="py-3 px-3">Cumplimiento ACID estricto. Permite modelado relacional en 3NF (Rutas -> Paradas ordenadas -> Asientos -> Boletos). Soporta bloqueos pesimistas nativos <code>FOR UPDATE</code> y Row Level Security en el motor.</td>
-                <td class="py-3 px-3 text-red-700">Las bases NoSQL carecen de integridad referencial estricta y bloqueos de fila nativos para asientos, obligando a usar bloqueos distribuidos complejos y costosos.</td>
+                <td class="py-3 px-3 text-red-700">Las bases NoSQL carecen de integridad referencial relacional y bloqueos pesimistas nativos para evitar sobreventa.</td>
               </tr>
               <tr class="hover:bg-slate-50">
                 <td class="py-3 px-3 font-bold text-slate-900">Cartografía y Ruteo</td>
@@ -540,14 +543,14 @@ sequenceDiagram
                 <td class="py-3 px-3 font-semibold text-blue-900">Tailwind CSS + shadcn/ui</td>
                 <td class="py-3 px-3 text-slate-500">Material UI (MUI) / Ant Design / Bootstrap</td>
                 <td class="py-3 px-3">shadcn/ui no es una librería externa en <code>node_modules</code>, sino primitivos accesibles de Radix UI copiados en el código. Cero sobrecarga de runtime, personalización absoluta y total accesibilidad (WCAG 2.1 AA).</td>
-                <td class="py-3 px-3 text-red-700">MUI y Ant Design inyectan estilos en runtime (*CSS-in-JS*), aumentando el tamaño del bundle en más de 200 KB y degradando el rendimiento en dispositivos móviles.</td>
+                <td class="py-3 px-3 text-red-700">MUI y Ant Design inyectan estilos en runtime (CSS-in-JS), aumentando el tamaño del bundle en más de 200 KB y degradando el rendimiento en dispositivos móviles.</td>
               </tr>
               <tr class="hover:bg-slate-50">
                 <td class="py-3 px-3 font-bold text-slate-900">Lenguaje & Tipado</td>
                 <td class="py-3 px-3 font-semibold text-blue-900">TypeScript 5 (Strict: true)</td>
                 <td class="py-3 px-3 text-slate-500">JavaScript tradicional</td>
                 <td class="py-3 px-3">Cero tipos <code>any</code> implícitos. Previene en tiempo de compilación errores comunes en producción como <code>undefined is not a function</code> en cálculos de tarifas o procesamiento de boletos.</td>
-                <td class="py-3 px-3 text-red-700">JavaScript puro no ofrece garantías en transacciones complejas ni contratos fiables entre los diferentes módulos del sistema.</td>
+                <td class="py-3 px-3 text-red-700">JavaScript puro no ofrece garantías en transacciones complejas ni contratos entre capas.</td>
               </tr>
               <tr class="hover:bg-slate-50">
                 <td class="py-3 px-3 font-bold text-slate-900">Validación de Esquemas</td>
@@ -591,11 +594,175 @@ sequenceDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 5. MODELO DE DATOS RELACIONAL (18 TABLAS) -->
+      <!-- 5. ESTRUCTURA DE CARPETAS Y CÓDIGO (NUEVO) -->
+      <!-- ========================================== -->
+      <section id="estructura" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">05</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Estructura del Proyecto y Organización del Código</h2>
+            <p class="text-sm text-slate-500">Organización física del repositorio, separación de responsabilidades y Screaming Architecture</p>
+          </div>
+        </div>
+
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+          El código fuente está estructurado siguiendo los principios de <strong>Screaming Architecture</strong> (Arquitectura que grita su dominio) y las mejores prácticas del <strong>Next.js 14 App Router</strong>. La lógica no está dispersa en carpetas genéricas, sino encapsulada por características de negocio (<em>features</em>) y niveles de autorización.
+        </p>
+
+        <!-- Árbol de Directorios Interactivo / Visual -->
+        <div class="bg-slate-900 text-slate-100 p-6 rounded-2xl font-mono text-xs mb-8 overflow-x-auto shadow-inner">
+          <div class="text-emerald-400 font-bold mb-3">// ÁRBOL COMPLETO DEL REPOSITORIO (RUTA NORTE)</div>
+<pre class="leading-relaxed">
+<span class="text-[#20A878] font-bold">Rutas/</span>
+├── <span class="text-sky-300 font-bold">src/</span>
+│   ├── <span class="text-amber-300 font-bold">app/</span>                                 <span class="text-slate-400"># Next.js 14 App Router (Rutas, layouts y páginas)</span>
+│   │   ├── <span class="text-purple-300">(public)/</span>                        <span class="text-slate-400"># Búsqueda pública, detalle de viaje, checkout y boletos</span>
+│   │   ├── <span class="text-purple-300">(auth)/</span>                          <span class="text-slate-400"># Formularios de Login, Registro y Recuperación</span>
+│   │   ├── <span class="text-purple-300">(admin)/</span>                         <span class="text-slate-400"># Panel de Administración: usuarios, flota, auditoría</span>
+│   │   ├── <span class="text-purple-300">(operator)/</span>                      <span class="text-slate-400"># Panel de Operador: programación de viajes, incidencias</span>
+│   │   ├── <span class="text-purple-300">(seller)/</span>                        <span class="text-slate-400"># Panel de Vendedor: taquilla y cobro de boletos</span>
+│   │   ├── <span class="text-purple-300">(inspector)/</span>                     <span class="text-slate-400"># Panel de Inspector: manifiesto y lector de QR</span>
+│   │   ├── <span class="text-purple-300">(passenger)/</span>                     <span class="text-slate-400"># Portal del Pasajero: historial y descarga de boletos</span>
+│   │   ├── unauthorized/                    <span class="text-slate-400"># Pantalla 403 de acceso denegado por rol</span>
+│   │   ├── layout.tsx                       <span class="text-slate-400"># Layout raíz (HTML, fuentes, navbar global)</span>
+│   │   └── page.tsx                         <span class="text-slate-400"># Landing page pública y buscador de viajes</span>
+│   │
+│   ├── <span class="text-amber-300 font-bold">features/</span>                            <span class="text-slate-400"># Lógica de Negocio Encapsulada por Dominio (DDD)</span>
+│   │   ├── <span class="text-blue-300">bookings/</span>                        <span class="text-slate-400"># Reservas: Server Actions, temporizador de 10 min</span>
+│   │   ├── <span class="text-blue-300">trips/</span>                           <span class="text-slate-400"># Salidas de buses, cálculo de asientos disponibles</span>
+│   │   ├── <span class="text-blue-300">tickets/</span>                         <span class="text-slate-400"># Emisión de boleto, tokenización QR (RN-HEX16)</span>
+│   │   ├── <span class="text-blue-300">inspector/</span>                       <span class="text-slate-400"># Escaneo de QR, validación de embarque en andén</span>
+│   │   ├── <span class="text-blue-300">routes/</span>, <span class="text-blue-300">buses/</span>, <span class="text-blue-300">drivers/</span>         <span class="text-slate-400"># CRUDs de rutas, buses, layout de asientos y choferes</span>
+│   │   ├── <span class="text-blue-300">incidents/</span>                       <span class="text-slate-400"># Reportes operativos (retrasos, averías, accidentes)</span>
+│   │   └── <span class="text-blue-300">reports/</span>                         <span class="text-slate-400"># Gráficos e indicadores financieros (Recharts)</span>
+│   │
+│   ├── <span class="text-amber-300 font-bold">components/</span>                          <span class="text-slate-400"># Componentes de Presentación Reutilizables</span>
+│   │   ├── <span class="text-blue-300">ui/</span>                              <span class="text-slate-400"># Primitivos shadcn/ui (Button, Card, Badge, Input, Alert)</span>
+│   │   └── <span class="text-blue-300">shared/</span>                          <span class="text-slate-400"># Componentes compartidos (DashboardHeader, TicketCard)</span>
+│   │
+│   ├── <span class="text-amber-300 font-bold">lib/</span>                                 <span class="text-slate-400"># Servicios de Infraestructura y Utilidades</span>
+│   │   ├── <span class="text-blue-300">supabase/</span>                        <span class="text-slate-400"># Clientes tipados: server.ts, client.ts, admin.ts, middleware.ts</span>
+│   │   ├── <span class="text-blue-300">maps/</span>                            <span class="text-slate-400"># Motor de ruteo OSRM, tipos cartográficos y visor Leaflet</span>
+│   │   ├── <span class="text-blue-300">auth/</span>                            <span class="text-slate-400"># Guardias de sesión (guards.ts), checkRole(), redirects.ts</span>
+│   │   └── <span class="text-blue-300">validations/</span>                     <span class="text-slate-400"># Schemas Zod (cédula ecuatoriana, formularios y inputs)</span>
+│   │
+│   ├── <span class="text-amber-300 font-bold">types/</span>                               <span class="text-slate-400"># Contratos e Interfaces TypeScript Globales (index.ts)</span>
+│   └── <span class="text-amber-300 font-bold">middleware.ts</span>                        <span class="text-slate-400"># Guardia Edge: control de sesiones y protección RBAC</span>
+│
+├── <span class="text-sky-300 font-bold">supabase/</span>                                <span class="text-slate-400"># Capa de Persistencia y Base de Datos</span>
+│   ├── <span class="text-amber-300 font-bold">migrations/</span>                          <span class="text-slate-400"># Migraciones SQL cronológicas versionadas (001 a 007)</span>
+│   ├── FULL_DATABASE_SETUP.sql              <span class="text-slate-400"># DDL consolidado (18 tablas, RLS, triggers y enums)</span>
+│   └── seed.sql                             <span class="text-slate-400"># Catálogos base de localidades, paradas y roles</span>
+│
+├── <span class="text-sky-300 font-bold">scripts/</span>                                 <span class="text-slate-400"># Herramientas de Automatización y Poblado</span>
+│   ├── seed-complete-demo.js                <span class="text-slate-400"># Generador de dataset masivo: 264 viajes, 120 reservas, 85 tickets</span>
+│   └── setup-demo-users.js                  <span class="text-slate-400"># Creación y vinculación de los 5 usuarios demo en Supabase Auth</span>
+│
+├── <span class="text-sky-300 font-bold">tests/</span>                                   <span class="text-slate-400"># Aseguramiento de Calidad y Pruebas</span>
+│   ├── <span class="text-amber-300 font-bold">unit/</span>                                <span class="text-slate-400"># 103 pruebas unitarias en Vitest (tarifas, asientos, reservas, QR)</span>
+│   └── <span class="text-amber-300 font-bold">e2e/</span>                                 <span class="text-slate-400"># Suites de integración de flujos completos en Playwright</span>
+│
+└── <span class="text-sky-300 font-bold">docs/</span>                                    <span class="text-slate-400"># Memoria Técnica y Documentación de Ingeniería</span>
+    ├── architecture.md, data-model.md, requirements.md, security-model.md, implementation-plan.md
+</pre>
+        </div>
+
+        <!-- Tarjetas Descriptivas por Directorio Clave -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+          
+          <!-- Card src/app -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2 font-bold text-slate-900 text-sm">
+                <span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-mono text-xs">src/app/</span>
+                <span>Enrutamiento y Vistas</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed mb-3">
+                Aprovecha los <strong>Route Groups</strong> de Next.js (carpetas entre paréntesis como <code>(admin)</code>, <code>(seller)</code>). Permiten agrupar pantallas con <em>layouts</em> y guardias de autorización dedicados sin contaminar la URL visible del navegador.
+              </p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">Route Groups + Server Components</span>
+          </div>
+
+          <!-- Card src/features -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2 font-bold text-slate-900 text-sm">
+                <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-900 font-mono text-xs">src/features/</span>
+                <span>Lógica de Dominio</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed mb-3">
+                Cada módulo (<em>booking</em>, <em>ticket</em>, <em>trip</em>) contiene sus <strong>Server Actions</strong>, hooks reactivos, componentes específicos y validaciones Zod. Si un módulo se modifica, los demás permanecen totalmente desacoplados.
+              </p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">Cohesión Alta · Acoplamiento Bajo</span>
+          </div>
+
+          <!-- Card src/lib -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2 font-bold text-slate-900 text-sm">
+                <span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 font-mono text-xs">src/lib/</span>
+                <span>Infraestructura & Clientes</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed mb-3">
+                Separa la conexión a Supabase en 4 contextos: <code>server.ts</code> (con cookies de sesión), <code>client.ts</code> (navegador), <code>admin.ts</code> (llave maestra en backend) y <code>middleware.ts</code>. Incluye el motor cartográfico OSRM y validación de cédulas.
+              </p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">Separación de Privilegios</span>
+          </div>
+
+          <!-- Card src/components -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2 font-bold text-slate-900 text-sm">
+                <span class="px-2 py-0.5 rounded bg-purple-100 text-purple-900 font-mono text-xs">src/components/</span>
+                <span>Componentes UI</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed mb-3">
+                En <code>ui/</code> residen los bloques primitivos accesibles construidos sobre Radix UI y estilizados con Tailwind. En <code>shared/</code> se ubican componentes de negocio transversales como <code>ReservationTimer.tsx</code> y <code>TicketCard.tsx</code>.
+              </p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">shadcn/ui + Radix Primitives</span>
+          </div>
+
+          <!-- Card supabase -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2 font-bold text-slate-900 text-sm">
+                <span class="px-2 py-0.5 rounded bg-red-100 text-red-900 font-mono text-xs">supabase/</span>
+                <span>Base de Datos & DDL</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed mb-3">
+                Contiene el historial cronológico de migraciones SQL, la activación de Row Level Security (RLS), la definición de funciones PL/pgSQL transaccionales y los datos semilla para despliegues reproducibles.
+              </p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">PostgreSQL 15 + RLS + Triggers</span>
+          </div>
+
+          <!-- Card tests & scripts -->
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-2 mb-2 font-bold text-slate-900 text-sm">
+                <span class="px-2 py-0.5 rounded bg-slate-200 text-slate-800 font-mono text-xs">tests/ & scripts/</span>
+                <span>QA y Automatización</span>
+              </div>
+              <p class="text-slate-600 leading-relaxed mb-3">
+                Suite automatizada de 103 pruebas unitarias en Vitest para validar reglas de negocio sin depender de red externa. Scripts Node.js para poblar la base de datos de manera idempotente con miles de registros en segundos.
+              </p>
+            </div>
+            <span class="text-[11px] font-mono text-slate-500">103 Tests Vitest + Seeds Node.js</span>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 6. MODELO DE DATOS RELACIONAL (18 TABLAS) -->
       <!-- ========================================== -->
       <section id="modelo-datos" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">05</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">06</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Modelo Relacional de Base de Datos</h2>
             <p class="text-sm text-slate-500">Estructura normalizada en PostgreSQL compuesta por 18 tablas interconectadas</p>
@@ -692,11 +859,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 6. DECISIONES ARQUITECTÓNICAS (ADRs)       -->
+      <!-- 7. DECISIONES ARQUITECTÓNICAS (ADRs)       -->
       <!-- ========================================== -->
       <section id="adrs" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">06</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">07</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Decisiones Técnicas de Arquitectura (ADRs)</h2>
             <p class="text-sm text-slate-500">Justificación formal de problemas complejos de ingeniería de software</p>
@@ -761,11 +928,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 7. SEGURIDAD Y RLS EN BASE DE DATOS       -->
+      <!-- 8. SEGURIDAD Y RLS EN BASE DE DATOS       -->
       <!-- ========================================== -->
       <section id="seguridad" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">07</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">08</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Seguridad, RBAC y Row Level Security (RLS)</h2>
             <p class="text-sm text-slate-500">Defensa en profundidad implementada tanto en la capa web como en el motor PostgreSQL</p>
@@ -844,11 +1011,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 8. FLUJOS DE NEGOCIO E2E                  -->
+      <!-- 9. FLUJOS DE NEGOCIO E2E                  -->
       <!-- ========================================== -->
       <section id="flujos" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">08</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">09</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Flujos de Negocio de Extremo a Extremo</h2>
             <p class="text-sm text-slate-500">Secuencia paso a paso desde la búsqueda hasta el embarque</p>
@@ -899,11 +1066,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 9. MAPAS Y RUTEO VIAL REAL                -->
+      <!-- 10. MAPAS Y RUTEO VIAL REAL               -->
       <!-- ========================================== -->
       <section id="mapas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">09</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">10</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Mapas Interactivos y Ruteo Vial Real</h2>
             <p class="text-sm text-slate-500">Cartografía OpenStreetMap y trazado de carreteras sin líneas rectas</p>
@@ -948,11 +1115,11 @@ src/components/maps/
       </section>
 
       <!-- ========================================== -->
-      <!-- 10. DATASET EN DEMOSTRACIÓN               -->
+      <!-- 11. DATASET EN DEMOSTRACIÓN               -->
       <!-- ========================================== -->
       <section id="metricas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">10</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">11</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Volumen y Datos en Demostración Real</h2>
             <p class="text-sm text-slate-500">Base de datos en vivo poblada y consistente para simular meses de operación</p>
@@ -992,11 +1159,11 @@ src/components/maps/
       </section>
 
       <!-- ========================================== -->
-      <!-- 11. CUENTAS Y ACCESOS DEMO                -->
+      <!-- 12. CUENTAS Y ACCESOS DEMO                -->
       <!-- ========================================== -->
       <section id="credenciales" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">11</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">12</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Cuentas y Credenciales de Demostración</h2>
             <p class="text-sm text-slate-500">5 perfiles listos para probar cada rol con 1 solo clic</p>
@@ -1087,11 +1254,11 @@ src/components/maps/
       </section>
 
       <!-- ========================================== -->
-      <!-- 12. TESTING Y ASEGURAMIENTO               -->
+      <!-- 13. TESTING Y ASEGURAMIENTO               -->
       <!-- ========================================== -->
       <section id="pruebas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">12</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">13</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Aseguramiento de Calidad y Pruebas</h2>
             <p class="text-sm text-slate-500">Validación rigurosa mediante suite automatizada de pruebas unitarias</p>
