@@ -119,7 +119,7 @@
             <span class="w-5 text-center text-[#173B57] font-bold">5</span> Stack Tecnológico
           </a>
           <a href="#estructura" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Estructura de Carpetas
+            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Carpetas Frontend & Backend
           </a>
           <a href="#endpoints" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">7</span> Endpoints & Actions
@@ -471,47 +471,146 @@ flowchart LR
       </section>
 
       <!-- ========================================== -->
-      <!-- 6. ESTRUCTURA DE CARPETAS Y CÓDIGO         -->
+      <!-- 6. ESTRUCTURA DE CARPETAS: FRONTEND & BACKEND -->
       <!-- ========================================== -->
       <section id="estructura" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">06</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Estructura del Proyecto y Organización del Código</h2>
-            <p class="text-xs text-slate-500">Distribución física de carpetas bajo Screaming Architecture</p>
+            <h2 class="text-xl font-bold text-slate-900">Estructura del Proyecto: División Frontend vs Backend</h2>
+            <p class="text-xs text-slate-500">Mapeo riguroso de cada carpeta del repositorio clasificada por su capa de ejecución y propósito</p>
           </div>
         </div>
 
-        <div class="grid md:grid-cols-2 gap-4 text-xs font-mono mb-4">
-          <div class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto">
-            <span class="text-emerald-400 font-bold block mb-2">// CAPA DE APLICACIÓN Y VISTAS</span>
-            <div class="text-slate-300 leading-relaxed">
-              src/<br>
-              ├── app/ (Rutas & Layouts por Route Groups)<br>
-              │   ├── (public)/     → Buscador, viajes, checkout, boletos<br>
-              │   ├── (auth)/       → Login, registro, recuperación<br>
-              │   ├── (passenger)/  → Portal del pasajero y mis-boletos<br>
-              │   ├── (seller)/     → Taquilla de venta y emisión rápida<br>
-              │   ├── (inspector)/  → Validación y escáner de QR<br>
-              │   ├── (operator)/   → Programación de salidas e incidencias<br>
-              │   └── (admin)/      → Rutas, buses, choferes, reportes<br>
-              ├── middleware.ts     → Guardia perimetral en Edge
+        <!-- Grid de 2 Columnas: Frontend a la Izquierda, Backend a la Derecha -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-5">
+
+          <!-- COLUMNA FRONTEND -->
+          <div class="border-2 border-sky-200 rounded-2xl p-5 bg-gradient-to-b from-sky-50/40 to-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3 border-b border-sky-100 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-sky-500"></span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-sky-900">CARPETAS DE FRONTEND</span>
+                </div>
+                <span class="text-[11px] font-mono text-sky-700 bg-sky-100 px-2 py-0.5 rounded">Capa Cliente & UI</span>
+              </div>
+              
+              <div class="space-y-3 text-xs">
+                <!-- Carpeta 1 -->
+                <div class="bg-white p-3 rounded-xl border border-sky-100 shadow-2xs">
+                  <div class="font-mono font-bold text-sky-900 text-[13px] mb-1">📁 src/app/ (Vistas & Rutas por Rol)</div>
+                  <p class="text-slate-600 mb-2 leading-relaxed">Páginas interactivas, layouts navegables y plantillas organizadas en Route Groups:</p>
+                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-sky-200">
+                    <li>• <strong class="text-slate-800">(public)/:</strong> Buscador de viajes, checkout, visor de boleto QR.</li>
+                    <li>• <strong class="text-slate-800">(auth)/:</strong> Formularios de login, registro y recuperación.</li>
+                    <li>• <strong class="text-slate-800">(passenger)/:</strong> Portal del pasajero e historial de boletos.</li>
+                    <li>• <strong class="text-slate-800">(seller)/:</strong> Taquilla física para emisión rápida de pasajes.</li>
+                    <li>• <strong class="text-slate-800">(inspector)/:</strong> Visor de validación y lector de cámara QR.</li>
+                    <li>• <strong class="text-slate-800">(operator)/:</strong> Control de despachos, buses e incidencias.</li>
+                    <li>• <strong class="text-slate-800">(admin)/:</strong> Gestión de flota, tarifas, rutas y reportes.</li>
+                  </ul>
+                </div>
+
+                <!-- Carpeta 2 -->
+                <div class="bg-white p-3 rounded-xl border border-sky-100 shadow-2xs">
+                  <div class="font-mono font-bold text-sky-900 text-[13px] mb-1">📁 src/components/ (Librería de Componentes)</div>
+                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-sky-200">
+                    <li>• <strong class="text-slate-800">ui/:</strong> Primitivos de shadcn/ui sobre Radix accesibles (Button, Dialog, Select, Tabs, etc.).</li>
+                    <li>• <strong class="text-slate-800">shared/:</strong> Barras de navegación, Sidebar, SeatMap, TicketBadge y modales.</li>
+                    <li>• <strong class="text-slate-800">maps/:</strong> Visor Leaflet interactivo (<code class="text-sky-800">InteractiveMap.tsx</code>) con marcadores y polilíneas.</li>
+                  </ul>
+                </div>
+
+                <!-- Carpeta 3 -->
+                <div class="bg-white p-3 rounded-xl border border-sky-100 shadow-2xs">
+                  <div class="font-mono font-bold text-sky-900 text-[13px] mb-1">📁 src/features/*/components/ (UI de Dominio)</div>
+                  <p class="text-[11px] text-slate-600 leading-relaxed">Componentes interactivos de cliente (<code class="text-sky-800">'use client'</code>): selector gráfico de asientos con temporizador de 10 min, escáner de cámara QR y gráficos dinámicos con <strong>Recharts</strong>.</p>
+                </div>
+
+                <!-- Carpeta 4 -->
+                <div class="bg-white p-2.5 rounded-xl border border-sky-100 text-[11px] text-slate-600 font-mono">
+                  <strong>🎨 Estilos Globales:</strong> <code>src/app/globals.css</code> (Tokens Tailwind, CSS variables de color institucional y capas Leaflet).
+                </div>
+              </div>
             </div>
           </div>
 
-          <div class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto">
-            <span class="text-emerald-400 font-bold block mb-2">// CAPA DE DOMINIO, INFRA Y TESTS</span>
-            <div class="text-slate-300 leading-relaxed">
-              src/<br>
-              ├── features/         → Lógica encapsulada (DDD)<br>
-              │   ├── bookings/     → Reserva atómica y temporizador<br>
-              │   ├── tickets/      → Emisión de boleto y QR opaco<br>
-              │   ├── inspector/    → Validación de andén<br>
-              │   └── trips/        → Búsqueda y manifiestos<br>
-              ├── lib/              → Clientes Supabase, OSRM y Zod<br>
-              ├── components/       → shadcn/ui y componentes compartidos<br>
-              supabase/migrations/  → 18 tablas, RLS y triggers SQL<br>
-              tests/unit/           → 103 pruebas unitarias en Vitest
+          <!-- COLUMNA BACKEND -->
+          <div class="border-2 border-emerald-200 rounded-2xl p-5 bg-gradient-to-b from-emerald-50/40 to-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3 border-b border-emerald-100 pb-2.5">
+                <div class="flex items-center gap-2">
+                  <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-900">CARPETAS DE BACKEND</span>
+                </div>
+                <span class="text-[11px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Capa Servidor, RPC & BD</span>
+              </div>
+              
+              <div class="space-y-3 text-xs">
+                <!-- Carpeta 1 -->
+                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 src/features/*/actions/ (Server Actions RPC)</div>
+                  <p class="text-slate-600 mb-2 leading-relaxed">Endpoints de mutación tipados en el servidor (<code class="text-emerald-800">'use server'</code>) con protección CSRF nativa y Zod:</p>
+                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-emerald-200">
+                    <li>• <strong class="text-slate-800">bookings/actions/:</strong> Bloqueo pesimista <code class="text-emerald-800">FOR UPDATE</code> y expiración.</li>
+                    <li>• <strong class="text-slate-800">payments/actions/:</strong> Procesamiento transaccional de cobro simulado.</li>
+                    <li>• <strong class="text-slate-800">tickets/actions/:</strong> Emisión y generación de token criptográfico opaco.</li>
+                    <li>• <strong class="text-slate-800">inspector/actions/:</strong> Validación de embarque y prevención de doble uso.</li>
+                    <li>• <strong class="text-slate-800">trips/actions/:</strong> Motor de búsqueda y cálculo de tarifas por tramos.</li>
+                  </ul>
+                </div>
+
+                <!-- Carpeta 2 -->
+                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 src/app/api/ (Route Handlers HTTP)</div>
+                  <p class="text-[11px] text-slate-600 leading-relaxed font-mono">
+                    Endpoints REST estándar para servicios externos o dispositivos de andén (ej. <code>api/tickets/validate/route.ts</code>).
+                  </p>
+                </div>
+
+                <!-- Carpeta 3 -->
+                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 src/lib/ & src/middleware.ts (Infraestructura Servidor)</div>
+                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-emerald-200">
+                    <li>• <strong class="text-slate-800">middleware.ts:</strong> Guardia Edge perimetral con sesión JWT y RBAC.</li>
+                    <li>• <strong class="text-slate-800">lib/supabase/:</strong> Clientes seguros (<code class="text-emerald-800">server.ts</code>, cookies <code class="text-emerald-800">HttpOnly</code>, Service Role).</li>
+                    <li>• <strong class="text-slate-800">lib/auth/:</strong> Helpers de autorización (<code class="text-emerald-800">requireRole</code>, <code class="text-emerald-800">checkRole</code>).</li>
+                    <li>• <strong class="text-slate-800">lib/maps/:</strong> Cliente OSRM para cálculo vial de distancias y tiempos.</li>
+                  </ul>
+                </div>
+
+                <!-- Carpeta 4 -->
+                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 supabase/ (Base de Datos & Seguridad RLS)</div>
+                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-emerald-200">
+                    <li>• <strong class="text-slate-800">migrations/:</strong> 18 tablas, políticas RLS, funciones PL/pgSQL y triggers.</li>
+                    <li>• <strong class="text-slate-800">seed.sql/:</strong> Dataset maestro poblado (18 localidades, rutas, flota y demo).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Barra Inferior: Contratos Compartidos y Calidad -->
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl border border-slate-800 text-xs">
+          <div class="flex items-center gap-2 text-amber-400 font-bold mb-2">
+            <span>🔄</span> CONTRATOS COMPARTIDOS ENTRE FRONTEND Y BACKEND (Tipado Estricto de Punta a Punta)
+          </div>
+          <div class="grid sm:grid-cols-3 gap-3 font-mono text-[11px] text-slate-300">
+            <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
+              <span class="text-emerald-400 font-bold block mb-1">📁 src/types/</span>
+              Interfaces compartidas: <code class="text-slate-200">database.types.ts</code>, <code class="text-slate-200">ActionResult&lt;T&gt;</code> y catálogo de roles.
+            </div>
+            <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
+              <span class="text-emerald-400 font-bold block mb-1">📁 src/lib/validations/</span>
+              Esquemas Zod compartidos: validan formularios de UI y Server Actions con <code class="text-slate-200">z.infer&lt;typeof schema&gt;</code>.
+            </div>
+            <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
+              <span class="text-emerald-400 font-bold block mb-1">📁 tests/</span>
+              103 pruebas unitarias en Vitest (<code class="text-slate-200">tests/unit/</code>) y pruebas E2E en Playwright (<code class="text-slate-200">tests/e2e/</code>).
             </div>
           </div>
         </div>
