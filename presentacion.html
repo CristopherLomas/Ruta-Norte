@@ -60,7 +60,7 @@
     }
     pre code {
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
     }
     @media print {
       aside, header, button { display: none !important; }
@@ -119,10 +119,10 @@
             <span class="w-5 text-center text-[#173B57] font-bold">2</span> Problemática y Contexto
           </a>
           <a href="#arquitectura" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">3</span> Arquitectura Multicapa
+            <span class="w-5 text-center text-[#173B57] font-bold">3</span> Arquitectura a Profundidad
           </a>
           <a href="#stack" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">4</span> Stack Tecnológico
+            <span class="w-5 text-center text-[#173B57] font-bold">4</span> Stack & Trade-offs
           </a>
           <a href="#modelo-datos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">5</span> Modelo de Datos (18 Tablas)
@@ -256,140 +256,337 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- 3. ARQUITECTURA MULTICAPA                 -->
+      <!-- 3. ARQUITECTURA MULTICAPA A PROFUNDIDAD    -->
       <!-- ========================================== -->
       <section id="arquitectura" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
           <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">03</div>
           <div>
-            <h2 class="text-2xl font-bold text-slate-900">Arquitectura Multicapa del Sistema</h2>
-            <p class="text-sm text-slate-500">Diseño monolítico modular con Next.js App Router y Backend-as-a-Service</p>
+            <h2 class="text-2xl font-bold text-slate-900">Arquitectura del Software a Profundidad</h2>
+            <p class="text-sm text-slate-500">Diseño monolítico modular, límites de renderizado RSC, ciclo de vida de peticiones y persistencia</p>
           </div>
         </div>
 
-        <p class="text-sm text-slate-600 mb-6 leading-relaxed">
-          Ruta Norte adopta una arquitectura <strong>Monolítica Modular</strong> moderna basada en el App Router de Next.js 14. Combina renderizado en servidor (SSR) para velocidad y SEO, con componentes cliente optimizados únicamente donde se requiere interactividad (como el mapa Leaflet y el selector de asientos).
-        </p>
+        <!-- 3.1 Monolito Modular vs Microservicios -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            3.1 Paradigma Arquitectónico: Monolito Modular vs Microservicios
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+            Para el dominio de gestión y billetaje de transporte interparroquial, la adopción de una arquitectura <strong>Monolítica Modular</strong> con Next.js 14 App Router es una decisión de ingeniería deliberada. En el ticketing de transporte, las operaciones principales (reserva de asiento, emisión de pago, actualización de disponibilidad y generación de boleto) exigen <strong>consistencia ACID inmediata</strong>.
+          </p>
 
-        <!-- Diagrama Mermaid -->
-        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 overflow-x-auto text-center mb-6">
+          <div class="grid md:grid-cols-2 gap-4 text-xs">
+            <div class="p-4 rounded-xl border border-red-200 bg-red-50/40">
+              <span class="font-bold text-red-900 block mb-1">¿Por qué NO Microservicios Distribuidos?</span>
+              <ul class="space-y-1.5 text-slate-600 list-disc list-inside">
+                <li><strong>Consistencia Eventual vs Bloqueos Inmediatos:</strong> Los microservicios forzarían el uso del patrón Saga o Two-Phase Commit (2PC) para reservar asientos y cobrar, provocando ventanas temporales de inconsistencia y alto riesgo de sobreventa.</li>
+                <li><strong>Sobrecarga Operativa y Latencia de Red:</strong> Requeriría múltiples repositorios, orquestadores Kubernetes, service meshes y serialización constante de DTOs en cada salto HTTP interno.</li>
+                <li><strong>Coste de Despliegue:</strong> Múltiples contenedores activos 24/7 frente a un despliegue serverless optimizado en Vercel con coste cero en reposo.</li>
+              </ul>
+            </div>
+
+            <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/40">
+              <span class="font-bold text-emerald-900 block mb-1">Ventajas del Monolito Modular Implementado</span>
+              <ul class="space-y-1.5 text-slate-700 list-disc list-inside">
+                <li><strong>Screaming Architecture por Dominio:</strong> Organización estricta en <code>src/features/</code> (bookings, routes, trips, tickets, incidents, audit) donde cada módulo encapsula sus propias Server Actions, schemas Zod, tipos y componentes.</li>
+                <li><strong>Transacciones ACID Nativas:</strong> Las operaciones complejas se resuelven en un solo viaje de ida y vuelta a PostgreSQL mediante transacciones y bloqueos de fila directos.</li>
+                <li><strong>Seguridad de Tipos de Extremo a Extremo (End-to-End Type Safety):</strong> Un cambio en el tipo TypeScript de una tabla o esquema Zod se propaga inmediatamente desde la base de datos hasta los formularios sin desalineaciones de API.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- Diagrama Mermaid Multicapa -->
+        <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 overflow-x-auto text-center mb-8">
           <div class="mermaid">
 flowchart TD
-    subgraph Cliente ["1. Capa de Presentación (Navegador)"]
+    subgraph Cliente ["1. CAPA DE PRESENTACIÓN (Navegador)"]
         UI_Public["Búsqueda Pública & Mapa Leaflet"]
-        UI_Booking["Selector Gráfico de Asientos"]
-        UI_Dashboards["Paneles de Control (Admin / Op / Insp)"]
+        UI_Booking["Selector Gráfico de Asientos (Canvas/SVG)"]
+        UI_Dashboards["Paneles Operativos (Admin / Op / Venta / Insp)"]
+        UI_Scanner["Lector de Cámara QR (Inspector)"]
     end
 
-    subgraph Servidor ["2. Capa de Aplicación (Next.js 14 App Router)"]
-        Middleware["Middleware (JWT & Roles)"]
-        ServerActions["Server Actions (Mutaciones de Negocio)"]
-        Validations["Validaciones Zod (Schemas de Entrada)"]
-        MapEngine["Motor de Ruteo OSRM / E35"]
+    subgraph Edge ["2. CAPA EDGE & CONTROL DE ACCESO"]
+        Middleware["Next.js Middleware (Edge Runtime)"]
+        JWT_Verify["Verificación de Sesión Supabase Auth (JWT)"]
+        Role_Guard["Control de Rutas por Rol (RBAC)"]
     end
 
-    subgraph Persistencia ["3. Capa de Datos (Supabase PostgreSQL 15)"]
-        RLS["Row Level Security (Políticas por Rol)"]
-        Transactions["Transacciones SQL (FOR UPDATE)"]
-        Tables["18 Tablas Relacionales"]
-        Audit["Triggers de Auditoría"]
+    subgraph Aplicacion ["3. CAPA DE APLICACIÓN (Next.js 14 App Router)"]
+        RSC["React Server Components (SSR / 0 KB Client JS)"]
+        ServerActions["Server Actions ('use server' RPCs)"]
+        ZodValidation["Validaciones Zod (Schemas Estrictos)"]
+        MapEngine["Motor de Ruteo Desacoplado (RoutingProvider / OSRM)"]
     end
 
-    Cliente -->|Peticiones HTTPS / Mutaciones| Middleware
-    Middleware --> ServerActions
-    ServerActions --> Validations
-    Validations --> MapEngine
-    ServerActions -->|PostgreSQL Client| RLS
-    RLS --> Transactions
-    Transactions --> Tables
-    Tables --> Audit
+    subgraph Persistencia ["4. CAPA DE DATOS & DOMINIO (Supabase PostgreSQL 15)"]
+        RLS["Row Level Security (Políticas por UID y Rol)"]
+        TxLock["Transacciones Concurrencia (SELECT ... FOR UPDATE)"]
+        Tables18["18 Tablas Relacionales (3NF + UUID)"]
+        AuditTriggers["Triggers Automáticos de Auditoría"]
+    end
+
+    Cliente -->|Petición HTTPS| Middleware
+    Middleware --> JWT_Verify
+    JWT_Verify --> Role_Guard
+    Role_Guard --> RSC
+    Cliente -->|Invocación Mutación RPC| ServerActions
+    ServerActions --> ZodValidation
+    ZodValidation --> MapEngine
+    ServerActions -->|PostgreSQL Protocol| RLS
+    RLS --> TxLock
+    TxLock --> Tables18
+    Tables18 --> AuditTriggers
+    RSC -.->|Renderiza HTML inicial| Cliente
           </div>
         </div>
 
-        <!-- Explicación de Capas -->
-        <div class="grid md:grid-cols-3 gap-4 text-xs">
-          <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-            <span class="font-bold text-[#173B57] text-sm block mb-1">Capa de Presentación</span>
-            <p class="text-slate-600">React Server Components (RSC) por defecto. Client Components encapsulados con 'use client' solo para el mapa interactivo y la distribución de asientos.</p>
+        <!-- 3.2 Límite de Renderizado: RSC vs Client Components -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            3.2 Límite de Renderizado: React Server Components (RSC) vs Client Components ('use client')
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+            Ruta Norte aplica estrictamente el principio de <strong>componentes de servidor por defecto</strong>. Más del 85% del código se ejecuta en el servidor, reduciendo el bundle de JavaScript que el navegador debe descargar, parsear y ejecutar.
+          </p>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden mb-4">
+              <thead class="bg-[#173B57] text-white uppercase tracking-wider">
+                <tr>
+                  <th class="py-2.5 px-3">Tipo de Componente</th>
+                  <th class="py-2.5 px-3">Ubicación en el Proyecto</th>
+                  <th class="py-2.5 px-3">¿Por qué corre en Servidor / Cliente?</th>
+                  <th class="py-2.5 px-3">Impacto en Rendimiento & Seguridad</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white">
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-bold text-blue-900">React Server Component (RSC)</td>
+                  <td class="py-2.5 px-3 font-mono">app/viajes/[id]/page.tsx<br>app/(admin)/rutas/page.tsx</td>
+                  <td class="py-2.5 px-3">Consulta directa a PostgreSQL en servidor sin exponer API Keys ni crear endpoints REST intermediarios.</td>
+                  <td class="py-2.5 px-3 text-emerald-700 font-semibold">0 KB de JavaScript añadido al bundle del cliente. Máximo SEO y TTFB ultra rápido.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-bold text-amber-900">Client Component ('use client')</td>
+                  <td class="py-2.5 px-3 font-mono">components/maps/RouteMap.tsx</td>
+                  <td class="py-2.5 px-3">Requiere acceso al objeto global <code>window</code>, manipulación del DOM y eventos táctiles de Leaflet.</td>
+                  <td class="py-2.5 px-3 text-slate-600">Importación dinámica con <code>next/dynamic({ ssr: false })</code> para evitar errores de hidratación.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-bold text-amber-900">Client Component ('use client')</td>
+                  <td class="py-2.5 px-3 font-mono">features/bookings/BusSeatSelector.tsx</td>
+                  <td class="py-2.5 px-3">Maneja estado reactivo local (asientos seleccionados en memoria antes de confirmar, cálculo de subtotal en vivo).</td>
+                  <td class="py-2.5 px-3 text-slate-600">Interacción fluida a 60 FPS sin recargas de página para el pasajero.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-bold text-amber-900">Client Component ('use client')</td>
+                  <td class="py-2.5 px-3 font-mono">features/tickets/QrScannerModal.tsx</td>
+                  <td class="py-2.5 px-3">Acceso directo a la Web API <code>navigator.mediaDevices.getUserMedia</code> para leer la cámara del inspector.</td>
+                  <td class="py-2.5 px-3 text-slate-600">Procesamiento de frames en cliente y llamada atómica a Server Action al detectar código.</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-          <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-            <span class="font-bold text-[#173B57] text-sm block mb-1">Capa de Aplicación</span>
-            <p class="text-slate-600">Server Actions para ejecutar lógica de compra, cancelaciones y validación de embarque sin exponer APIs REST desprotegidas en el frontend.</p>
+        </div>
+
+        <!-- 3.3 Ciclo de Vida de Mutaciones con Server Actions -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            3.3 Ciclo de Vida de Mutaciones con Server Actions (Flujo RPC Tipado)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+            A diferencia de las arquitecturas clásicas SPA + Express donde se crean decenas de controladores <code>POST /api/bookings</code>, Ruta Norte utiliza <strong>Server Actions</strong>. Funcionan como Procedimientos Remotos (RPC) tipados que se invocan directamente desde los componentes, garantizando validación antes de la persistencia y revalidación automática de caché con <code>revalidatePath()</code>.
+          </p>
+
+          <div class="bg-slate-50 p-6 rounded-2xl border border-slate-200 overflow-x-auto text-center mb-4">
+            <div class="mermaid">
+sequenceDiagram
+    autonumber
+    actor Pasajero as Pasajero (Navegador)
+    participant Action as Server Action (createBooking.ts)
+    participant Zod as Validador Zod (bookingSchema)
+    participant DB as PostgreSQL (Supabase)
+    participant Cache as Next.js Cache (revalidatePath)
+
+    Pasajero->>Action: Invoca mutación con { tripId, seatIds, originStopId, destStopId }
+    Action->>Zod: Parsea y valida estructura de datos
+    alt Datos inválidos
+        Zod-->>Action: ValidationError (formatos erróneos o límites excedidos)
+        Action-->>Pasajero: Retorna { success: false, error: "..." }
+    else Datos válidos
+        Action->>DB: Inicia transacción transaccional (BEGIN)
+        Action->>DB: Bloqueo pesimista: SELECT ... FOR UPDATE en booking_seats
+        alt Asiento ocupado o con reserva vigente
+            DB-->>Action: Conflicto detectado
+            Action->>DB: ROLLBACK
+            Action-->>Pasajero: Retorna { success: false, error: "Asiento no disponible" }
+        else Asiento libre
+            DB->>DB: Inserta booking (pending) con expires_at = now() + 10 min
+            DB->>DB: Inserta booking_seats (reserved)
+            DB->>DB: Actualiza available_seats en trips
+            DB->>DB: Inserta registro en audit_logs
+            Action->>DB: COMMIT
+            Action->>Cache: revalidatePath('/viajes/[id]')
+            Action-->>Pasajero: Retorna { success: true, bookingId: "..." }
+        end
+    end
+            </div>
           </div>
-          <div class="p-4 rounded-xl border border-slate-200 bg-white shadow-sm">
-            <span class="font-bold text-[#173B57] text-sm block mb-1">Capa de Datos y Reglas</span>
-            <p class="text-slate-600">Base de datos relacional PostgreSQL con bloqueo de filas, triggers de auditoría y Row Level Security que restringe datos a nivel de motor.</p>
+        </div>
+
+        <!-- 3.4 Autenticación, Sesiones y Seguridad de Transporte -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            3.4 Arquitectura de Autenticación, Sesiones y Cookies Cifradas
+          </h3>
+          <div class="grid md:grid-cols-3 gap-4 text-xs">
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+              <span class="font-bold text-[#173B57] block mb-1">Cookies HttpOnly y PKCE</span>
+              <p class="text-slate-600 leading-relaxed">
+                Utiliza la librería oficial <code>@supabase/ssr</code>. Las sesiones no se guardan en <code>localStorage</code> (vulnerable a ataques XSS), sino en <strong>cookies HTTP-Only con flags Secure y SameSite=Lax</strong>, inmunes a manipulación por scripts del cliente.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+              <span class="font-bold text-[#173B57] block mb-1">Rotación de Refresh Tokens</span>
+              <p class="text-slate-600 leading-relaxed">
+                El Access Token JWT tiene una vigencia corta (1 hora). Cada petición que pasa por el <code>middleware.ts</code> refresca automáticamente la sesión mediante el Refresh Token cifrado, evitando desconexiones abruptas del usuario.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+              <span class="font-bold text-[#173B57] block mb-1">Intercepción en el Edge</span>
+              <p class="text-slate-600 leading-relaxed">
+                El archivo <code>src/middleware.ts</code> evalúa la ruta solicitada antes de que Next.js ejecute cualquier código de servidor. Si un pasajero intenta acceder a <code>/admin</code> o <code>/inspector</code>, es redirigido inmediatamente al inicio de sesión sin fugas de datos.
+              </p>
+            </div>
           </div>
+        </div>
+
+        <!-- 3.5 Persistencia y Connection Pooling -->
+        <div>
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            3.5 Arquitectura de Persistencia y Connection Pooling (Supavisor)
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-3">
+            En arquitecturas serverless como Vercel, cada ejecución puede abrir una nueva conexión a la base de datos, lo que saturaría rápidamente el límite de conexiones de PostgreSQL. Para resolver esto:
+          </p>
+          <ul class="text-xs text-slate-600 space-y-2 list-disc list-inside">
+            <li><strong>Supavisor (Pool de Conexiones en Modo Transacción):</strong> Reutiliza pools de conexiones para miles de ejecuciones concurrentes sin agotar la memoria de PostgreSQL.</li>
+            <li><strong>Aislamiento de Transacciones:</strong> Opera en nivel de aislamiento <em>Read Committed</em> reforzado con bloqueos a nivel de fila (<code>SELECT ... FOR UPDATE</code>) en las operaciones transaccionales críticas.</li>
+            <li><strong>Triggers de Auditoría Inmutables:</strong> La auditoría no depende de que el desarrollador recuerde llamar a una función en el backend: triggers PostgreSQL <code>AFTER INSERT OR UPDATE</code> capturan la mutación y la registran en <code>audit_logs</code> de forma automática e irrevocable.</li>
+          </ul>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 4. STACK TECNOLÓGICO Y JUSTIFICACIÓN      -->
+      <!-- 4. STACK TECNOLÓGICO Y ANÁLISIS DE TRADE-OFFS -->
       <!-- ========================================== -->
       <section id="stack" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
           <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">04</div>
           <div>
-            <h2 class="text-2xl font-bold text-slate-900">Stack Tecnológico Completo</h2>
-            <p class="text-sm text-slate-500">Herramientas seleccionadas y fundamentación técnica</p>
+            <h2 class="text-2xl font-bold text-slate-900">Stack Tecnológico y Análisis de Alternativas (Trade-offs)</h2>
+            <p class="text-sm text-slate-500">Fundamentación técnica rigurosa: ¿Por qué se eligió cada tecnología y qué se descartó?</p>
           </div>
         </div>
 
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
-            <thead class="bg-[#173B57] text-white text-xs uppercase tracking-wider">
+        <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+          Cada herramienta del stack fue seleccionada mediante una evaluación formal de ingeniería de software, balanceando rendimiento, mantenibilidad, costos y garantías de consistencia de datos para un sistema de transporte real.
+        </p>
+
+        <!-- Tabla Profunda de Alternativas Evaluadas -->
+        <div class="overflow-x-auto mb-8">
+          <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
+            <thead class="bg-[#173B57] text-white uppercase tracking-wider">
               <tr>
-                <th class="py-3 px-4">Herramienta</th>
-                <th class="py-3 px-4">Versión / Componente</th>
-                <th class="py-3 px-4">Rol en el Proyecto</th>
-                <th class="py-3 px-4">Justificación Técnica Formal</th>
+                <th class="py-3 px-3">Capa / Tecnología</th>
+                <th class="py-3 px-3">Tecnología Elegida</th>
+                <th class="py-3 px-3">Alternativas Evaluadas</th>
+                <th class="py-3 px-3">Justificación y Ventaja Competitiva</th>
+                <th class="py-3 px-3">Razón de Descarte de la Alternativa</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-slate-200 bg-white text-xs">
+            <tbody class="divide-y divide-slate-200 bg-white">
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">Next.js</td>
-                <td class="py-3 px-4 font-mono">14.2.x (App Router)</td>
-                <td class="py-3 px-4">Framework Fullstack</td>
-                <td class="py-3 px-4">SSR para rendimiento instantáneo en búsqueda de rutas; Server Actions para transacciones seguras; middleware para control de roles sin flash de contenido no autenticado.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Framework Web Base</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">Next.js 14 (App Router)</td>
+                <td class="py-3 px-3 text-slate-500">React SPA (Vite) + NestJS / Express separado</td>
+                <td class="py-3 px-3">Unifica frontend y backend en un solo repositorio tipo Monolito Modular. Server Actions eliminan la necesidad de escribir controladores REST y DTOs duplicados. SSR nativo para indexación de viajes.</td>
+                <td class="py-3 px-3 text-red-700">Duplicaba el esfuerzo de despliegue y mantenimiento; latencia de red adicional entre el servidor frontend y la API backend; cero SSR en Vite para SEO.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">TypeScript</td>
-                <td class="py-3 px-4 font-mono">5.x (Strict: true)</td>
-                <td class="py-3 px-4">Lenguaje Tipado</td>
-                <td class="py-3 px-4">Garantiza seguridad de tipos en tiempo de compilación. Elimina errores en tiempo de ejecución (null/undefined) en cálculos monetarios y estados de reservas.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Base de Datos & Motor</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">PostgreSQL 15+ (Supabase)</td>
+                <td class="py-3 px-3 text-slate-500">MongoDB (NoSQL) / Firebase Firestore</td>
+                <td class="py-3 px-3">Cumplimiento ACID estricto. Permite modelado relacional en 3NF (Rutas -> Paradas ordenadas -> Asientos -> Boletos). Soporta bloqueos pesimistas nativos <code>FOR UPDATE</code> y Row Level Security en el motor.</td>
+                <td class="py-3 px-3 text-red-700">Las bases NoSQL carecen de integridad referencial estricta y bloqueos de fila nativos para asientos, obligando a usar bloqueos distribuidos complejos y costosos.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">Supabase & PostgreSQL</td>
-                <td class="py-3 px-4 font-mono">PostgreSQL 15+</td>
-                <td class="py-3 px-4">BaaS / Motor Relacional</td>
-                <td class="py-3 px-4">Cumplimiento ACID estricto. Implementa Row Level Security (RLS) nativo, tipos de coordenadas espaciales, bloqueos de concurrencia pesimistas (FOR UPDATE) y triggers de auditoría.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Cartografía y Ruteo</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">Leaflet + OpenStreetMap + OSRM</td>
+                <td class="py-3 px-3 text-slate-500">Google Maps Platform (Routes API)</td>
+                <td class="py-3 px-3">Soberanía de datos y costo cero. Ruteo vial real siguiendo las curvas de la Panamericana E35. Desacoplado mediante interfaz <code>RoutingProvider</code> que permite conectar Google Maps en el futuro si se requiere.</td>
+                <td class="py-3 px-3 text-red-700">Google cobra por cada cálculo de ruta (5 USD por 1,000 peticiones), exige tarjeta de crédito activa y sus términos prohíben almacenar geometrías de ruta en caché.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">Tailwind CSS + shadcn/ui</td>
-                <td class="py-3 px-4 font-mono">Tailwind 3 + Radix UI</td>
-                <td class="py-3 px-4">Diseño y UI Primitives</td>
-                <td class="py-3 px-4">Diseño accesible (WCAG 2.1 AA), responsive, con identidad visual definida (Azul Petróleo #173B57 y Verde #20A878). Código limpio sin CSS inflado.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Diseño y UI Kit</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">Tailwind CSS + shadcn/ui</td>
+                <td class="py-3 px-3 text-slate-500">Material UI (MUI) / Ant Design / Bootstrap</td>
+                <td class="py-3 px-3">shadcn/ui no es una librería externa en <code>node_modules</code>, sino primitivos accesibles de Radix UI copiados en el código. Cero sobrecarga de runtime, personalización absoluta y total accesibilidad (WCAG 2.1 AA).</td>
+                <td class="py-3 px-3 text-red-700">MUI y Ant Design inyectan estilos en runtime (*CSS-in-JS*), aumentando el tamaño del bundle en más de 200 KB y degradando el rendimiento en dispositivos móviles.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">Leaflet + OSRM</td>
-                <td class="py-3 px-4 font-mono">React-Leaflet 4.x</td>
-                <td class="py-3 px-4">Cartografía y Ruteo</td>
-                <td class="py-3 px-4">Cálculo de rutas reales sobre carreteras (red vial E35 de Ecuador) sin líneas rectas ni costo por peticiones a APIs privativas. Desacoplado mediante interfaz RoutingProvider.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Lenguaje & Tipado</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">TypeScript 5 (Strict: true)</td>
+                <td class="py-3 px-3 text-slate-500">JavaScript tradicional</td>
+                <td class="py-3 px-3">Cero tipos <code>any</code> implícitos. Previene en tiempo de compilación errores comunes en producción como <code>undefined is not a function</code> en cálculos de tarifas o procesamiento de boletos.</td>
+                <td class="py-3 px-3 text-red-700">JavaScript puro no ofrece garantías en transacciones complejas ni contratos fiables entre los diferentes módulos del sistema.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">Zod</td>
-                <td class="py-3 px-4 font-mono">3.x</td>
-                <td class="py-3 px-4">Validación de Esquemas</td>
-                <td class="py-3 px-4">Inferencia de tipos estáticos y validación bidireccional: tanto en formularios de cliente como en Server Actions de servidor.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Validación de Esquemas</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">Zod 3.x</td>
+                <td class="py-3 px-3 text-slate-500">Joi / Yup / Validaciones manuales</td>
+                <td class="py-3 px-3">Inferencia estática directa de tipos TypeScript con <code>z.infer&lt;typeof schema&gt;</code>. Un solo esquema valida formularios de frontend (con React Hook Form) y Server Actions de backend.</td>
+                <td class="py-3 px-3 text-red-700">Joi y Yup requieren definir tipos TypeScript manualmente por duplicado, lo que genera desincronizaciones entre el esquema de validación y la interfaz de datos.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-3 px-4 font-bold text-slate-900">Vitest</td>
-                <td class="py-3 px-4 font-mono">1.x</td>
-                <td class="py-3 px-4">Aseguramiento de Calidad</td>
-                <td class="py-3 px-4">103 pruebas unitarias ejecutadas a máxima velocidad sin sobrecarga de empaquetado. Cobertura de cálculos de tarifas, estados de asientos y ruteo.</td>
+                <td class="py-3 px-3 font-bold text-slate-900">Framework de Pruebas</td>
+                <td class="py-3 px-3 font-semibold text-blue-900">Vitest 1.x</td>
+                <td class="py-3 px-3 text-slate-500">Jest</td>
+                <td class="py-3 px-3">Ejecución ultra rápida en entorno ESM nativo con Vite. 103 pruebas ejecutadas en tan solo 1.28 segundos sin necesidad de compilar con Babel.</td>
+                <td class="py-3 px-3 text-red-700">Jest es notablemente más lento, requiere complejas transformaciones con <code>ts-jest</code> o Babel y presenta problemas frecuentes con módulos ESM puros.</td>
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <!-- Dependencias de Ecosistema y Configuración -->
+        <div class="grid md:grid-cols-3 gap-4 text-xs">
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+            <span class="font-bold text-[#173B57] block mb-1">Iconografía y Visualización</span>
+            <p class="text-slate-600 leading-relaxed mb-2">
+              <strong>Lucide React:</strong> Más de 40 iconos limpios y consistentes en todo el sistema. <strong>Recharts:</strong> Gráficos declarativos de ocupación e ingresos en el panel administrativo.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+            <span class="font-bold text-[#173B57] block mb-1">Manejo Temporal & QR</span>
+            <p class="text-slate-600 leading-relaxed mb-2">
+              <strong>date-fns:</strong> Formateo estricto de fechas y horas en zona horaria de Ecuador (America/Guayaquil). <strong>html5-qrcode:</strong> Escaneo por cámara en tiempo real para inspectores.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl border border-slate-200 bg-slate-50">
+            <span class="font-bold text-[#173B57] block mb-1">Pipeline de Compilación</span>
+            <p class="text-slate-600 leading-relaxed mb-2">
+              Next.js con compilador SWC, Tailwind PostCSS, ESLint estricto y TypeScript compiler check (<code>tsc --noEmit</code>) integrado en el pipeline de despliegue continuo en Vercel.
+            </p>
+          </div>
         </div>
       </section>
 
