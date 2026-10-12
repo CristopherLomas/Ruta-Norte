@@ -124,32 +124,35 @@
           <a href="#stack" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">4</span> Stack & Trade-offs
           </a>
-          <a href="#estructura" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition bg-emerald-50/50 font-semibold text-emerald-950">
-            <span class="w-5 text-center text-[#20A878] font-bold">5</span> Estructura del Código
+          <a href="#estructura" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
+            <span class="w-5 text-center text-[#173B57] font-bold">5</span> Estructura del Código
+          </a>
+          <a href="#endpoints" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition bg-emerald-50/50 font-semibold text-emerald-950">
+            <span class="w-5 text-center text-[#20A878] font-bold">6</span> Endpoints, Actions & URLs
           </a>
           <a href="#modelo-datos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Modelo de Datos (18 Tablas)
+            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Modelo de Datos (18 Tablas)
           </a>
           <a href="#adrs" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Decisiones Técnicas (ADRs)
+            <span class="w-5 text-center text-[#173B57] font-bold">8</span> Decisiones Técnicas (ADRs)
           </a>
           <a href="#seguridad" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">8</span> Seguridad y RLS en BD
+            <span class="w-5 text-center text-[#173B57] font-bold">9</span> Seguridad y RLS en BD
           </a>
           <a href="#flujos" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">9</span> Flujos de Negocio E2E
+            <span class="w-5 text-center text-[#173B57] font-bold">10</span> Flujos de Negocio E2E
           </a>
           <a href="#mapas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">10</span> Mapas y Ruteo Vial Real
+            <span class="w-5 text-center text-[#173B57] font-bold">11</span> Mapas y Ruteo Vial Real
           </a>
           <a href="#metricas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">11</span> Dataset en Demostración
+            <span class="w-5 text-center text-[#173B57] font-bold">12</span> Dataset en Demostración
           </a>
           <a href="#credenciales" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">12</span> Cuentas y Accesos Demo
+            <span class="w-5 text-center text-[#173B57] font-bold">13</span> Cuentas y Accesos Demo
           </a>
           <a href="#pruebas" class="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">13</span> Testing y Aseguramiento
+            <span class="w-5 text-center text-[#173B57] font-bold">14</span> Testing y Aseguramiento
           </a>
         </nav>
 
@@ -370,25 +373,25 @@ flowchart TD
               <tbody class="divide-y divide-slate-200 bg-white">
                 <tr class="hover:bg-slate-50">
                   <td class="py-2.5 px-3 font-bold text-blue-900">React Server Component (RSC)</td>
-                  <td class="py-2.5 px-3 font-mono">app/viajes/[id]/page.tsx<br>app/(admin)/rutas/page.tsx</td>
+                  <td class="py-2.5 px-3 font-mono">app/viajes/[id]/page.tsx<br>app/(admin)/admin/rutas/page.tsx</td>
                   <td class="py-2.5 px-3">Consulta directa a PostgreSQL en servidor sin exponer API Keys ni crear endpoints REST intermediarios.</td>
                   <td class="py-2.5 px-3 text-emerald-700 font-semibold">0 KB de JavaScript añadido al bundle del cliente. Máximo SEO y TTFB ultra rápido.</td>
                 </tr>
                 <tr class="hover:bg-slate-50">
                   <td class="py-2.5 px-3 font-bold text-amber-900">Client Component ('use client')</td>
-                  <td class="py-2.5 px-3 font-mono">components/maps/RouteMap.tsx</td>
+                  <td class="py-2.5 px-3 font-mono">lib/maps/InteractiveMap.tsx</td>
                   <td class="py-2.5 px-3">Requiere acceso al objeto global <code>window</code>, manipulación del DOM y eventos táctiles de Leaflet.</td>
                   <td class="py-2.5 px-3 text-slate-600">Importación dinámica con <code>next/dynamic({ ssr: false })</code> para evitar errores de hidratación.</td>
                 </tr>
                 <tr class="hover:bg-slate-50">
                   <td class="py-2.5 px-3 font-bold text-amber-900">Client Component ('use client')</td>
-                  <td class="py-2.5 px-3 font-mono">features/bookings/BusSeatSelector.tsx</td>
+                  <td class="py-2.5 px-3 font-mono">components/shared/SeatMapSelector.tsx</td>
                   <td class="py-2.5 px-3">Maneja estado reactivo local (asientos seleccionados en memoria antes de confirmar, cálculo de subtotal en vivo).</td>
                   <td class="py-2.5 px-3 text-slate-600">Interacción fluida a 60 FPS sin recargas de página para el pasajero.</td>
                 </tr>
                 <tr class="hover:bg-slate-50">
                   <td class="py-2.5 px-3 font-bold text-amber-900">Client Component ('use client')</td>
-                  <td class="py-2.5 px-3 font-mono">features/tickets/QrScannerModal.tsx</td>
+                  <td class="py-2.5 px-3 font-mono">features/inspector/components/QrScannerClient.tsx</td>
                   <td class="py-2.5 px-3">Acceso directo a la Web API <code>navigator.mediaDevices.getUserMedia</code> para leer la cámara del inspector.</td>
                   <td class="py-2.5 px-3 text-slate-600">Procesamiento de frames en cliente y llamada atómica a Server Action al detectar código.</td>
                 </tr>
@@ -412,9 +415,9 @@ flowchart TD
 sequenceDiagram
     autonumber
     actor Pasajero as Pasajero (Navegador)
-    participant Action as Server Action (createBooking.ts)
-    participant Zod as Validador Zod (bookingSchema)
-    participant DB as PostgreSQL (Supabase)
+    participant Action as Server Action (createReservationAction)
+    participant Zod as Validador Zod (createBookingSchema)
+    participant DB as PostgreSQL RPC (reserve_seats)
     participant Cache as Next.js Cache (revalidatePath)
 
     Pasajero->>Action: Invoca mutación con { tripId, seatIds, originStopId, destStopId }
@@ -423,20 +426,17 @@ sequenceDiagram
         Zod-->>Action: ValidationError (formatos erróneos o límites excedidos)
         Action-->>Pasajero: Retorna { success: false, error: "..." }
     else Datos válidos
-        Action->>DB: Inicia transacción transaccional (BEGIN)
-        Action->>DB: Bloqueo pesimista: SELECT ... FOR UPDATE en booking_seats
+        Action->>DB: Inicia transacción: SELECT ... FOR UPDATE en booking_seats
         alt Asiento ocupado o con reserva vigente
-            DB-->>Action: Conflicto detectado
-            Action->>DB: ROLLBACK
-            Action-->>Pasajero: Retorna { success: false, error: "Asiento no disponible" }
+            DB-->>Action: Conflicto: ASIENTO_YA_OCUPADO
+            Action-->>Pasajero: Retorna { success: false, error: "Asiento ocupado" }
         else Asiento libre
             DB->>DB: Inserta booking (pending) con expires_at = now() + 10 min
             DB->>DB: Inserta booking_seats (reserved)
             DB->>DB: Actualiza available_seats en trips
-            DB->>DB: Inserta registro en audit_logs
-            Action->>DB: COMMIT
+            DB-->>Action: Retorna bookingId generado
             Action->>Cache: revalidatePath('/viajes/[id]')
-            Action-->>Pasajero: Retorna { success: true, bookingId: "..." }
+            Action-->>Pasajero: Retorna { success: true, data: { bookingId, expiresAt } }
         end
     end
             </div>
@@ -594,7 +594,7 @@ sequenceDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 5. ESTRUCTURA DE CARPETAS Y CÓDIGO (NUEVO) -->
+      <!-- 5. ESTRUCTURA DE CARPETAS Y CÓDIGO         -->
       <!-- ========================================== -->
       <section id="estructura" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
@@ -758,11 +758,312 @@ sequenceDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 6. MODELO DE DATOS RELACIONAL (18 TABLAS) -->
+      <!-- 6. ENDPOINTS, SERVER ACTIONS Y RUTAS (NUEVO) -->
+      <!-- ========================================== -->
+      <section id="endpoints" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
+        <div class="flex items-center gap-3 mb-6">
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">06</div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Catálogo de Endpoints, Server Actions y Rutas</h2>
+            <p class="text-sm text-slate-500">Explicación técnica de la capa de comunicación: URLs de cliente, RPCs de mutación y funciones de base de datos</p>
+          </div>
+        </div>
+
+        <!-- 6.1 Concepto de API en Next.js 14 App Router -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            6.1 El Paradigma de Comunicación: ¿Por qué Server Actions en lugar de REST clásico?
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-4">
+            En arquitecturas tradicionales (por ejemplo React + Express), cada operación requiere exponer un endpoint REST tipo <code>POST /api/v1/bookings</code>, parsear el body manualmente, validar tokens de autenticación en cabeceras y sincronizar interfaces TypeScript en dos repositorios.
+          </p>
+          <div class="grid md:grid-cols-3 gap-4 text-xs">
+            <div class="p-4 rounded-xl border border-blue-200 bg-blue-50/50">
+              <span class="font-bold text-blue-950 block mb-1">1. Server Actions ('use server')</span>
+              <p class="text-slate-600 leading-relaxed">
+                Funcionan como <strong>RPCs (Remote Procedure Calls) tipadas</strong> ejecutadas sobre HTTP POST con CSRF nativo. Los componentes invocan directamente la función de backend sin necesidad de rutas intermedias.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl border border-emerald-200 bg-emerald-50/50">
+              <span class="font-bold text-emerald-950 block mb-1">2. Funciones RPC en PostgreSQL</span>
+              <p class="text-slate-600 leading-relaxed">
+                Operaciones que requieren bloqueos atómicos (<code>reserve_seats</code>, <code>validate_ticket_boarding</code>) se ejecutan dentro del motor de PostgreSQL vía <code>supabase.rpc()</code> en milisegundos.
+              </p>
+            </div>
+            <div class="p-4 rounded-xl border border-purple-200 bg-purple-50/50">
+              <span class="font-bold text-purple-950 block mb-1">3. Rutas Web Protegidas por Middleware</span>
+              <p class="text-slate-600 leading-relaxed">
+                Páginas renderizadas en el servidor (SSR) organizadas por Route Groups con verificación de sesión y permisos en el Edge Runtime antes de comenzar el renderizado.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6.2 Matriz de Páginas Web y URLs (26 Rutas) -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            6.2 Mapa de Rutas Web del Sistema (URLs de la Aplicación)
+          </h3>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
+              <thead class="bg-[#173B57] text-white uppercase tracking-wider">
+                <tr>
+                  <th class="py-2.5 px-3">Ruta URL</th>
+                  <th class="py-2.5 px-3">Grupo / Módulo</th>
+                  <th class="py-2.5 px-3">Rol Requerido</th>
+                  <th class="py-2.5 px-3">Propósito y Contenido de la Pantalla</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white">
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /</td>
+                  <td class="py-2 px-3">(public)</td>
+                  <td class="py-2 px-3 text-emerald-700 font-semibold">Público</td>
+                  <td class="py-2 px-3">Landing page corporativa con buscador interactivo de viajes por origen, destino y fecha.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /viajes/[id]/asientos</td>
+                  <td class="py-2 px-3">(public)</td>
+                  <td class="py-2 px-3 text-emerald-700 font-semibold">Público</td>
+                  <td class="py-2 px-3">Visualizador del mapa interactivo de la unidad, precios por tramo y selección gráfica de asientos.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /checkout/[bookingId]</td>
+                  <td class="py-2 px-3">(public)</td>
+                  <td class="py-2 px-3 text-slate-800">Autenticado</td>
+                  <td class="py-2 px-3">Pasarela de pago simulado con temporizador de 10 min y confirmación de reserva.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /boletos/[id]</td>
+                  <td class="py-2 px-3">(public)</td>
+                  <td class="py-2 px-3 text-emerald-700 font-semibold">Público</td>
+                  <td class="py-2 px-3">Visualización y descarga del boleto electrónico con código QR opaco e instrucciones de andén.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-slate-900">GET /login, /register</td>
+                  <td class="py-2 px-3">(auth)</td>
+                  <td class="py-2 px-3 text-emerald-700 font-semibold">Público</td>
+                  <td class="py-2 px-3">Autenticación Supabase con selector rápido de usuarios demo y validación de cédula.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-purple-900">GET /passenger</td>
+                  <td class="py-2 px-3">(passenger)</td>
+                  <td class="py-2 px-3 text-purple-700 font-bold">Pasajero</td>
+                  <td class="py-2 px-3">Portal del cliente: próximos viajes reservados, alertas de salida y accesos directos.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-purple-900">GET /passenger/boletos</td>
+                  <td class="py-2 px-3">(passenger)</td>
+                  <td class="py-2 px-3 text-purple-700 font-bold">Pasajero</td>
+                  <td class="py-2 px-3">Billetera de boletos electrónicos emitidos con filtros por estado (emitido, usado, cancelado).</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-amber-900">GET /seller</td>
+                  <td class="py-2 px-3">(seller)</td>
+                  <td class="py-2 px-3 text-amber-700 font-bold">Vendedor</td>
+                  <td class="py-2 px-3">Taquilla virtual: emisión rápida de boletos para pasajeros presenciales con cobro en efectivo.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-emerald-900">GET /inspector</td>
+                  <td class="py-2 px-3">(inspector)</td>
+                  <td class="py-2 px-3 text-emerald-700 font-bold">Inspector</td>
+                  <td class="py-2 px-3">Panel de control de andén y lista de salidas activas programadas para fiscalización.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-emerald-900">GET /inspector/escanear</td>
+                  <td class="py-2 px-3">(inspector)</td>
+                  <td class="py-2 px-3 text-emerald-700 font-bold">Inspector</td>
+                  <td class="py-2 px-3">Escáner móvil con cámara en vivo (html5-qrcode) para validar boletos y registrar embarque.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /operator/viajes</td>
+                  <td class="py-2 px-3">(operator)</td>
+                  <td class="py-2 px-3 text-blue-700 font-bold">Operador</td>
+                  <td class="py-2 px-3">Planificación de horarios, asignación de unidades de transporte y conductores disponibles.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /operator/viajes/[id]/manifiesto</td>
+                  <td class="py-2 px-3">(operator)</td>
+                  <td class="py-2 px-3 text-blue-700 font-bold">Operador</td>
+                  <td class="py-2 px-3">Manifiesto oficial de pasajeros para control de ruta con listado de cédulas y asientos.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-blue-900">GET /operator/incidencias</td>
+                  <td class="py-2 px-3">(operator)</td>
+                  <td class="py-2 px-3 text-blue-700 font-bold">Operador</td>
+                  <td class="py-2 px-3">Bitácora de retrasos viales, fallas mecánicas o contingencias reportadas en carretera.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-red-900">GET /admin/rutas</td>
+                  <td class="py-2 px-3">(admin)</td>
+                  <td class="py-2 px-3 text-red-700 font-bold">Admin</td>
+                  <td class="py-2 px-3">Editor de rutas seccionales, mapa interactivo de paradas y cálculo de distancias viales.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-red-900">GET /admin/unidades, /conductores</td>
+                  <td class="py-2 px-3">(admin)</td>
+                  <td class="py-2 px-3 text-red-700 font-bold">Admin</td>
+                  <td class="py-2 px-3">Gestión de la flota (placas, asientos, modelos) y registro de choferes profesionales.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2 px-3 font-mono font-bold text-red-900">GET /admin/reportes</td>
+                  <td class="py-2 px-3">(admin)</td>
+                  <td class="py-2 px-3 text-red-700 font-bold">Admin</td>
+                  <td class="py-2 px-3">Analítica financiera de ingresos por ruta, porcentaje de ocupación y tasa de cancelación.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 6.3 Catálogo Exhaustivo de Server Actions (Endpoints RPC de Backend) -->
+        <div class="mb-8">
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            6.3 Catálogo de Server Actions (Endpoints RPC de Negocio)
+          </h3>
+          <p class="text-xs text-slate-600 mb-3">
+            Cada acción de servidor cuenta con validación de entrada mediante <strong>Zod</strong>, verificación de sesión del usuario en cookies y retorno de contrato tipado <code>ActionResult&lt;T&gt;</code>:
+          </p>
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
+              <thead class="bg-[#173B57] text-white uppercase tracking-wider">
+                <tr>
+                  <th class="py-2.5 px-3">Server Action (Endpoint RPC)</th>
+                  <th class="py-2.5 px-3">Módulo</th>
+                  <th class="py-2.5 px-3">Parámetros de Entrada (Zod Schema)</th>
+                  <th class="py-2.5 px-3">Rol Mínimo</th>
+                  <th class="py-2.5 px-3">Operación en Persistencia / Base de Datos</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-200 bg-white">
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-blue-900">createReservationAction</td>
+                  <td class="py-2.5 px-3">bookings</td>
+                  <td class="py-2.5 px-3 font-mono">CreateBookingInput { tripId, seatIds, originStopId, destStopId }</td>
+                  <td class="py-2.5 px-3 text-emerald-700">Autenticado</td>
+                  <td class="py-2.5 px-3">Ejecuta la función RPC <code>reserve_seats</code> en PostgreSQL adquiriendo bloqueos <code>FOR UPDATE</code> sobre los asientos seleccionados con expiración a 10 min.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-blue-900">cancelReservationAction</td>
+                  <td class="py-2.5 px-3">bookings</td>
+                  <td class="py-2.5 px-3 font-mono">{ bookingId: UUID }</td>
+                  <td class="py-2.5 px-3 text-emerald-700">Propietario / Admin</td>
+                  <td class="py-2.5 px-3">Transiciona la reserva a <code>cancelled</code>, libera los registros en <code>booking_seats</code> e incrementa <code>available_seats</code>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-blue-900">processPaymentAction</td>
+                  <td class="py-2.5 px-3">payments</td>
+                  <td class="py-2.5 px-3 font-mono">PaymentInput { bookingId, amount, method, reference }</td>
+                  <td class="py-2.5 px-3 text-emerald-700">Autenticado / Vendedor</td>
+                  <td class="py-2.5 px-3">Inserta en <code>payments</code>, confirma la reserva, emite los boletos en <code>tickets</code> generando tokens criptográficos <code>RN-HEX16</code>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-emerald-900">validateBoardingAction</td>
+                  <td class="py-2.5 px-3">inspector</td>
+                  <td class="py-2.5 px-3 font-mono">{ qrPayload: string, tripId?: string }</td>
+                  <td class="py-2.5 px-3 text-emerald-700 font-bold">Inspector / Admin</td>
+                  <td class="py-2.5 px-3">Invoca <code>validate_ticket_boarding</code>: verifica que el boleto no haya sido usado previamente, actualiza <code>boarded_at = now()</code> y su estado a <code>used</code>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-blue-900">searchTripsAction</td>
+                  <td class="py-2.5 px-3">trips</td>
+                  <td class="py-2.5 px-3 font-mono">{ originStopId, destinationStopId, date }</td>
+                  <td class="py-2.5 px-3 text-emerald-700">Público</td>
+                  <td class="py-2.5 px-3">Consulta viajes programados activos, calcula disponibilidad de asientos y tarifas vigentes entre las paradas del tramo.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-blue-900">dispatchTripAction</td>
+                  <td class="py-2.5 px-3">trips</td>
+                  <td class="py-2.5 px-3 font-mono">{ tripId: UUID, newStatus: TripStatus }</td>
+                  <td class="py-2.5 px-3 text-blue-700 font-bold">Operador / Admin</td>
+                  <td class="py-2.5 px-3">Actualiza el estado operativo del viaje (<code>scheduled → boarding → in_progress → completed</code>) y revalida las pantallas de andén.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-red-900">createRouteAction</td>
+                  <td class="py-2.5 px-3">routes</td>
+                  <td class="py-2.5 px-3 font-mono">CreateRouteInput { code, name, stops: [...] }</td>
+                  <td class="py-2.5 px-3 text-red-700 font-bold">Admin</td>
+                  <td class="py-2.5 px-3">Crea la cabecera en <code>routes</code> e inserta la secuencia ordenada de paradas en <code>route_stops</code> con distancias calculadas.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-red-900">createBusAction</td>
+                  <td class="py-2.5 px-3">buses</td>
+                  <td class="py-2.5 px-3 font-mono">CreateBusInput { plate, brand, model, totalSeats }</td>
+                  <td class="py-2.5 px-3 text-red-700 font-bold">Admin</td>
+                  <td class="py-2.5 px-3">Inserta la unidad en <code>buses</code> y genera automáticamente la cuadrícula de asientos físicos en <code>bus_seats</code>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-amber-900">reportIncidentAction</td>
+                  <td class="py-2.5 px-3">incidents</td>
+                  <td class="py-2.5 px-3 font-mono">{ tripId, type, description, severity }</td>
+                  <td class="py-2.5 px-3 text-amber-700 font-bold">Operador / Chofer</td>
+                  <td class="py-2.5 px-3">Registra una novedad operativa (avería, retraso vial, cierre de carretera E35) vinculada a un viaje en <code>incidents</code>.</td>
+                </tr>
+                <tr class="hover:bg-slate-50">
+                  <td class="py-2.5 px-3 font-mono font-bold text-sky-900">updateStopCoordinatesAction</td>
+                  <td class="py-2.5 px-3">maps</td>
+                  <td class="py-2.5 px-3 font-mono">{ stopId: UUID, latitude: number, longitude: number }</td>
+                  <td class="py-2.5 px-3 text-red-700 font-bold">Admin</td>
+                  <td class="py-2.5 px-3">Actualiza las coordenadas GPS verificadas de una parada física en <code>stops</code> para alimentar el ruteo OSRM.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 6.4 Funciones RPC Críticas en PostgreSQL -->
+        <div>
+          <h3 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-[#173B57]"></span>
+            6.4 Endpoints Nativos en PostgreSQL (Funciones PL/pgSQL RPC)
+          </h3>
+          <div class="grid md:grid-cols-2 gap-4 text-xs font-mono">
+            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto">
+              <span class="text-emerald-400 font-bold">// 1. RPC: reserve_seats() [Concurrencia Pesimista]</span>
+              <pre class="mt-2 text-[11px] text-slate-300">
+CREATE OR REPLACE FUNCTION reserve_seats(
+  p_trip_id UUID,
+  p_passenger_id UUID,
+  p_origin_stop_id UUID,
+  p_destination_stop_id UUID,
+  p_seat_ids UUID[],
+  p_expires_minutes INT DEFAULT 10
+) RETURNS UUID AS $$
+  -- Bloquea las filas de los asientos con FOR UPDATE
+  -- Verifica que no exista solapamiento de reservas activas
+  -- Inserta booking y booking_seats atómicamente
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+              </pre>
+            </div>
+
+            <div class="bg-slate-900 text-slate-100 p-4 rounded-xl overflow-x-auto">
+              <span class="text-emerald-400 font-bold">// 2. RPC: validate_ticket_boarding() [Andén]</span>
+              <pre class="mt-2 text-[11px] text-slate-300">
+CREATE OR REPLACE FUNCTION validate_ticket_boarding(
+  p_qr_code VARCHAR,
+  p_inspector_id UUID
+) RETURNS JSONB AS $$
+  -- Busca el boleto por hash de token opaco
+  -- Valida: estado == 'issued' y viaje activo
+  -- Actualiza estado = 'used' y boarded_at = now()
+  -- Registra inspector en audit_logs y retorna datos
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+              </pre>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ========================================== -->
+      <!-- 7. MODELO DE DATOS RELACIONAL (18 TABLAS) -->
       <!-- ========================================== -->
       <section id="modelo-datos" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">06</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">07</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Modelo Relacional de Base de Datos</h2>
             <p class="text-sm text-slate-500">Estructura normalizada en PostgreSQL compuesta por 18 tablas interconectadas</p>
@@ -788,7 +1089,7 @@ erDiagram
     DRIVERS ||--o{ TRIPS : assigned_to
     BUSES ||--o{ BUS_SEATS : contains
     TRIPS ||--o{ TRIP_FARES : charges
-    STOPS ||--o{ TRIP_FARES : from_to
+    STOPS ||--o{ TRIP_FARES : from-to
     TRIPS ||--o{ BOOKINGS : receives
     PROFILES ||--o{ BOOKINGS : places
     BOOKINGS ||--o{ BOOKING_SEATS : holds
@@ -859,11 +1160,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 7. DECISIONES ARQUITECTÓNICAS (ADRs)       -->
+      <!-- 8. DECISIONES ARQUITECTÓNICAS (ADRs)       -->
       <!-- ========================================== -->
       <section id="adrs" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">07</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">08</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Decisiones Técnicas de Arquitectura (ADRs)</h2>
             <p class="text-sm text-slate-500">Justificación formal de problemas complejos de ingeniería de software</p>
@@ -928,11 +1229,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 8. SEGURIDAD Y RLS EN BASE DE DATOS       -->
+      <!-- 9. SEGURIDAD Y RLS EN BASE DE DATOS       -->
       <!-- ========================================== -->
       <section id="seguridad" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">08</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">09</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Seguridad, RBAC y Row Level Security (RLS)</h2>
             <p class="text-sm text-slate-500">Defensa en profundidad implementada tanto en la capa web como en el motor PostgreSQL</p>
@@ -1011,11 +1312,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 9. FLUJOS DE NEGOCIO E2E                  -->
+      <!-- 10. FLUJOS DE NEGOCIO E2E                 -->
       <!-- ========================================== -->
       <section id="flujos" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">09</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">10</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Flujos de Negocio de Extremo a Extremo</h2>
             <p class="text-sm text-slate-500">Secuencia paso a paso desde la búsqueda hasta el embarque</p>
@@ -1066,11 +1367,11 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 10. MAPAS Y RUTEO VIAL REAL               -->
+      <!-- 11. MAPAS Y RUTEO VIAL REAL               -->
       <!-- ========================================== -->
       <section id="mapas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">10</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">11</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Mapas Interactivos y Ruteo Vial Real</h2>
             <p class="text-sm text-slate-500">Cartografía OpenStreetMap y trazado de carreteras sin líneas rectas</p>
@@ -1115,11 +1416,11 @@ src/components/maps/
       </section>
 
       <!-- ========================================== -->
-      <!-- 11. DATASET EN DEMOSTRACIÓN               -->
+      <!-- 12. DATASET EN DEMOSTRACIÓN               -->
       <!-- ========================================== -->
       <section id="metricas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">11</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">12</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Volumen y Datos en Demostración Real</h2>
             <p class="text-sm text-slate-500">Base de datos en vivo poblada y consistente para simular meses de operación</p>
@@ -1159,11 +1460,11 @@ src/components/maps/
       </section>
 
       <!-- ========================================== -->
-      <!-- 12. CUENTAS Y ACCESOS DEMO                -->
+      <!-- 13. CUENTAS Y ACCESOS DEMO                -->
       <!-- ========================================== -->
       <section id="credenciales" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">12</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">13</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Cuentas y Credenciales de Demostración</h2>
             <p class="text-sm text-slate-500">5 perfiles listos para probar cada rol con 1 solo clic</p>
@@ -1254,11 +1555,11 @@ src/components/maps/
       </section>
 
       <!-- ========================================== -->
-      <!-- 13. TESTING Y ASEGURAMIENTO               -->
+      <!-- 14. TESTING Y ASEGURAMIENTO               -->
       <!-- ========================================== -->
       <section id="pruebas" class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">13</div>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-lg">14</div>
           <div>
             <h2 class="text-2xl font-bold text-slate-900">Aseguramiento de Calidad y Pruebas</h2>
             <p class="text-sm text-slate-500">Validación rigurosa mediante suite automatizada de pruebas unitarias</p>
