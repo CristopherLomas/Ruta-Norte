@@ -404,27 +404,6 @@ flowchart LR
             </p>
           </div>
         </div>
-
-        <!-- Diagrama de Secuencia Transaccional -->
-        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
-          <div class="mermaid">
-sequenceDiagram
-    autonumber
-    actor U as Pasajero / Inspector
-    participant SA as Server Action (Backend)
-    participant Z as Zod Schema
-    participant DB as PostgreSQL (Supabase)
-    participant C as Next.js Cache
-
-    U->>SA: Invoca acción con datos de formulario
-    SA->>Z: Valida estructura y tipos
-    Z-->>SA: Datos aprobados
-    SA->>DB: Ejecuta transacción con bloqueo FOR UPDATE
-    DB-->>SA: Transacción confirmada (COMMIT)
-    SA->>C: revalidatePath() actualiza vistas afectadas
-    SA-->>U: Retorna ActionResult tipado
-          </div>
-        </div>
       </section>
 
       <!-- ========================================== -->
