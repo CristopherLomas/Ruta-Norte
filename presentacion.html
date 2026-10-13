@@ -110,7 +110,7 @@
             <span class="w-5 text-center text-[#173B57] font-bold">2</span> Problema vs Solución
           </a>
           <a href="#division-frotend-backend" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition bg-emerald-50 text-emerald-900 font-semibold">
-            <span class="w-5 text-center text-[#20A878] font-bold">3</span> Frontend vs Backend
+            <span class="w-5 text-center text-[#20A878] font-bold">3</span> 3 Capas Empresarial
           </a>
           <a href="#arquitectura" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">4</span> Arquitectura & Flujos
@@ -119,10 +119,10 @@
             <span class="w-5 text-center text-[#173B57] font-bold">5</span> Stack Tecnológico
           </a>
           <a href="#estructura" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Carpetas Frontend & Backend
+            <span class="w-5 text-center text-[#173B57] font-bold">6</span> frontend / backend / database
           </a>
           <a href="#endpoints" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Endpoints & Actions
+            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Endpoints REST (Spring Boot)
           </a>
           <a href="#modelo-datos" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">8</span> Modelo de Datos (18 T)
@@ -199,8 +199,8 @@
             </div>
             <div>
               <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold mb-1">Arquitectura</span>
-              <span class="font-bold text-white text-sm block">Monolítica Modular</span>
-              <span class="text-slate-400 text-[11px]">Next.js 14 App Router</span>
+              <span class="font-bold text-white text-sm block">3 Capas Empresarial</span>
+              <span class="text-slate-400 text-[11px]">Spring Boot + Next.js</span>
             </div>
             <div>
               <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold mb-1">Base de Datos</span>
@@ -256,118 +256,155 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- 3. DIVISIÓN FRONTEND VS BACKEND (CLAVE)   -->
+      <!-- 3. ARQUITECTURA 3 CAPAS: FRONTEND / BACKEND / DB -->
       <!-- ========================================== -->
       <section id="division-frotend-backend" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#20A878] flex items-center justify-center font-bold text-sm">03</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">División Clara: Frontend vs Backend</h2>
-            <p class="text-xs text-slate-500">Separación de responsabilidades, tecnologías de cada lado y puente de comunicación</p>
+            <h2 class="text-xl font-bold text-slate-900">Arquitectura Empresarial en 3 Capas Desacopladas</h2>
+            <p class="text-xs text-slate-500">Frontend (Cliente Web) · Backend (Spring Boot 3 REST API) · Database (PostgreSQL 15+)</p>
           </div>
         </div>
 
-        <!-- Tarjetas Comparativas Frontend vs Backend -->
-        <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Tarjetas Comparativas Frontend vs Backend vs Database -->
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
           
-          <!-- Lado FRONTEND -->
-          <div class="border-2 border-sky-200 rounded-2xl p-5 bg-gradient-to-b from-sky-50/50 to-white">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2.5 py-1 rounded-md">CAPA CLIENTE (FRONTEND)</span>
-              <span class="text-[11px] font-mono text-slate-500">Ejecutado en el Navegador</span>
+          <!-- Capa 1: FRONTEND -->
+          <div class="border-2 border-sky-200 rounded-2xl p-4 bg-gradient-to-b from-sky-50/50 to-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">CAPA 1: FRONTEND</span>
+                <span class="text-[10px] font-mono text-slate-500">Puerto 3000</span>
+              </div>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Cliente Web React / Next.js</h3>
+              
+              <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-sky-600 font-bold">▸</span>
+                  <span><strong>Componentes UI:</strong> Catálogo shadcn/ui sobre Radix accesible WCAG 2.1 AA.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-sky-600 font-bold">▸</span>
+                  <span><strong>Cartografía Leaflet:</strong> Renderizado de trazado vial real de la sierra norte.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-sky-600 font-bold">▸</span>
+                  <span><strong>Selector Gráfico:</strong> Matriz interactiva de asientos con cuenta regresiva.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-sky-600 font-bold">▸</span>
+                  <span><strong>Escáner QR:</strong> Stream de cámara en navegador para inspectores.</span>
+                </li>
+              </ul>
             </div>
-            <h3 class="text-base font-extrabold text-slate-900 mb-3">Interfaz de Usuario e Interactividad</h3>
-            
-            <ul class="space-y-2 text-xs text-slate-700 mb-4">
-              <li class="flex items-start gap-2">
-                <span class="text-sky-600 font-bold">▸</span>
-                <span><strong>Componentes Cliente ('use client'):</strong> Solo en hojas interactivas (mapa Leaflet, selector de asientos, modal escáner de cámara QR).</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-sky-600 font-bold">▸</span>
-                <span><strong>Estilos & UI Primitives:</strong> Tailwind CSS + shadcn/ui sobre Radix UI accesible (WCAG 2.1 AA) sin runtime pesado.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-sky-600 font-bold">▸</span>
-                <span><strong>Cartografía Interactiva:</strong> Leaflet canvas con renderizado de polilíneas viales, popups de paradas y zoom fluido.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-sky-600 font-bold">▸</span>
-                <span><strong>Manejo de Formularios:</strong> React Hook Form sincronizado con validadores Zod y estados reactivos a 60 FPS.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-sky-600 font-bold">▸</span>
-                <span><strong>Cero Secretos:</strong> Solo conoce la <code>anon_key</code> pública de Supabase; nunca accede a claves maestras.</span>
-              </li>
-            </ul>
-
-            <div class="bg-white p-3 rounded-xl border border-sky-100 text-[11px] text-slate-600 font-mono">
-              <strong>Archivos clave:</strong> components/ui/*, components/shared/*, lib/maps/InteractiveMap.tsx, features/inspector/components/QrScannerClient.tsx
+            <div class="bg-white p-2 rounded-lg border border-sky-100 text-[10px] text-slate-600 font-mono">
+              <strong>Carpeta raíz:</strong> <code>frontend/</code>
             </div>
           </div>
 
-          <!-- Lado BACKEND -->
-          <div class="border-2 border-emerald-200 rounded-2xl p-5 bg-gradient-to-b from-emerald-50/50 to-white">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-xs font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-md">CAPA SERVIDOR & DATOS (BACKEND)</span>
-              <span class="text-[11px] font-mono text-slate-500">Servidor Node.js / Edge + PostgreSQL</span>
+          <!-- Capa 2: BACKEND -->
+          <div class="border-2 border-emerald-200 rounded-2xl p-4 bg-gradient-to-b from-emerald-50/50 to-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">CAPA 2: BACKEND</span>
+                <span class="text-[10px] font-mono text-slate-500">Puerto 8080</span>
+              </div>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Spring Boot 3 (Java 17+)</h3>
+
+              <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">▸</span>
+                  <span><strong>Spring Web MVC:</strong> Endpoints RESTful tipados con Jakarta Bean Validation.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">▸</span>
+                  <span><strong>Spring Data JPA:</strong> Consultas transaccionales y bloqueo pesimista <code>@Lock</code>.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">▸</span>
+                  <span><strong>Spring Security + JWT:</strong> Filtro perimetral con tokens JJWT firmados (HMAC-SHA256).</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">▸</span>
+                  <span><strong>Swagger / OpenAPI 3:</strong> Documentación interactiva en <code>/swagger-ui.html</code>.</span>
+                </li>
+              </ul>
             </div>
-            <h3 class="text-base font-extrabold text-slate-900 mb-3">Lógica de Dominio, Seguridad y Persistencia</h3>
+            <div class="bg-white p-2 rounded-lg border border-emerald-100 text-[10px] text-slate-600 font-mono">
+              <strong>Carpeta raíz:</strong> <code>backend/</code> (Maven)
+            </div>
+          </div>
 
-            <ul class="space-y-2 text-xs text-slate-700 mb-4">
-              <li class="flex items-start gap-2">
-                <span class="text-emerald-600 font-bold">▸</span>
-                <span><strong>React Server Components (RSC):</strong> Renderizado en servidor sin enviar JavaScript al cliente; consulta directa a la BD.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-emerald-600 font-bold">▸</span>
-                <span><strong>Server Actions ('use server'):</strong> Endpoints de mutación tipados (RPCs) que procesan reservas, pagos, cancelaciones y validaciones.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-emerald-600 font-bold">▸</span>
-                <span><strong>Edge Middleware:</strong> Control perimetral de sesiones con <code>@supabase/ssr</code> y cookies seguras <code>HttpOnly</code>.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-emerald-600 font-bold">▸</span>
-                <span><strong>Motor de Base de Datos ACID:</strong> PostgreSQL 15+ con funciones PL/pgSQL transaccionales y bloqueos <code>FOR UPDATE</code>.</span>
-              </li>
-              <li class="flex items-start gap-2">
-                <span class="text-emerald-600 font-bold">▸</span>
-                <span><strong>Seguridad Nativa RLS:</strong> Políticas de Row Level Security que restringen consultas a nivel de motor de datos.</span>
-              </li>
-            </ul>
+          <!-- Capa 3: DATABASE -->
+          <div class="border-2 border-indigo-200 rounded-2xl p-4 bg-gradient-to-b from-indigo-50/50 to-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">CAPA 3: DATABASE</span>
+                <span class="text-[10px] font-mono text-slate-500">Puerto 5432</span>
+              </div>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">PostgreSQL 15+ Relacional</h3>
 
-            <div class="bg-white p-3 rounded-xl border border-emerald-100 text-[11px] text-slate-600 font-mono">
-              <strong>Archivos clave:</strong> features/*/actions/index.ts, lib/supabase/server.ts, middleware.ts, supabase/migrations/*
+              <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
+                <li class="flex items-start gap-1.5">
+                  <span class="text-indigo-600 font-bold">▸</span>
+                  <span><strong>18 Tablas Relacionales:</strong> Integridad referencial con UUIDs v4 y cascadas seguras.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-indigo-600 font-bold">▸</span>
+                  <span><strong>Dataset Maestro:</strong> 18 localidades georreferenciadas en Carchi e Imbabura.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-indigo-600 font-bold">▸</span>
+                  <span><strong>Garantías ACID:</strong> Transacciones consistentes con bloqueos exclusivos en asientos.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-indigo-600 font-bold">▸</span>
+                  <span><strong>Scripts Versionados:</strong> DDL consolidado en <code>schema.sql</code> y <code>seed.sql</code>.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="bg-white p-2 rounded-lg border border-indigo-100 text-[10px] text-slate-600 font-mono">
+              <strong>Carpeta raíz:</strong> <code>database/</code>
             </div>
           </div>
 
         </div>
 
-        <!-- Diagrama del Puente de Comunicación -->
+        <!-- Diagrama del Puente de Comunicación REST -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center">
           <div class="mermaid">
 flowchart LR
-    subgraph Frontend ["FRONTEND (Navegador)"]
-        UI["Interfaz Web (RSC + Client Components)"]
-        Form["Formulario de Compra / Lector QR"]
+    subgraph FrontendApp ["FRONTEND (Cliente Web :3000)"]
+        UI["Next.js / React (UI + Leaflet + Formularios)"]
+        Client["apiClient.ts (Fetch HTTP)"]
     end
 
-    subgraph Puente ["PUENTE RPC (HTTPS)"]
-        SA["Server Action ('use server')\nPOST RPC con CSRF nativo + Zod Validation"]
+    subgraph RestApi ["PUENTE REST (HTTPS / JSON)"]
+        Http["Peticiones RESTful con JWT Bearer\n(POST, GET, DELETE con CORS)"]
     end
 
-    subgraph Backend ["BACKEND (Next.js Server + PostgreSQL)"]
-        ServerCore["Next.js Server Runtime (Node.js/Edge)"]
-        DB["Supabase PostgreSQL 15+\nRLS + Transacciones FOR UPDATE + Triggers"]
+    subgraph BackendApp ["BACKEND (Spring Boot :8080)"]
+        Ctrl["@RestController (Auth, Trips, Bookings, Payments)"]
+        Serv["@Service (Lógica de Negocio + Expiración 10 min)"]
+        Repo["@Repository Spring Data JPA (@Lock Pesimista)"]
     end
 
-    UI --> Form
-    Form -->|Invocación tipada| SA
-    SA --> ServerCore
-    ServerCore -->|SQL con Service / Auth Token| DB
-    DB -->|Respuesta atómica| ServerCore
-    ServerCore -->|ActionResult&lt;T&gt; + revalidatePath| UI
+    subgraph DBApp ["DATABASE (PostgreSQL :5432)"]
+        Postgres[("PostgreSQL 15+\n18 Tablas Relacionales")]
+    end
+
+    UI --> Client
+    Client -->|HTTP JSON + JWT| Http
+    Http --> Ctrl
+    Ctrl --> Serv
+    Serv --> Repo
+    Repo -->|JDBC / Hibernate SQL| Postgres
+    Postgres -->|Resultados ACID| Repo
+    Repo --> Serv
+    Serv --> Ctrl
+    Ctrl -->|ApiResponse&lt;T&gt;| Client
+    Client --> UI
           </div>
         </div>
       </section>
@@ -471,160 +508,149 @@ flowchart LR
       </section>
 
       <!-- ========================================== -->
-      <!-- 6. ESTRUCTURA DE CARPETAS: FRONTEND & BACKEND -->
+      <!-- 6. ESTRUCTURA: FRONTEND / BACKEND / DATABASE -->
       <!-- ========================================== -->
       <section id="estructura" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">06</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Estructura del Proyecto: División Frontend vs Backend</h2>
-            <p class="text-xs text-slate-500">Mapeo riguroso de cada carpeta del repositorio clasificada por su capa de ejecución y propósito</p>
+            <h2 class="text-xl font-bold text-slate-900">Estructura Física del Repositorio: 3 Carpetas Raíz</h2>
+            <p class="text-xs text-slate-500">Separación física estándar: 'frontend/', 'backend/' y 'database/'</p>
           </div>
         </div>
 
-        <!-- Grid de 2 Columnas: Frontend a la Izquierda, Backend a la Derecha -->
-        <div class="grid lg:grid-cols-2 gap-6 mb-5">
+        <!-- Grid de 3 Columnas: frontend/, backend/, database/ -->
+        <div class="grid lg:grid-cols-3 gap-4 mb-5 text-xs">
 
-          <!-- COLUMNA FRONTEND -->
-          <div class="border-2 border-sky-200 rounded-2xl p-5 bg-gradient-to-b from-sky-50/40 to-white flex flex-col justify-between">
+          <!-- COLUMNA 1: FRONTEND -->
+          <div class="border-2 border-sky-200 rounded-2xl p-4 bg-gradient-to-b from-sky-50/40 to-white flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between mb-3 border-b border-sky-100 pb-2.5">
+              <div class="flex items-center justify-between mb-3 border-b border-sky-100 pb-2">
                 <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-sky-500"></span>
-                  <span class="text-xs font-bold uppercase tracking-wider text-sky-900">CARPETAS DE FRONTEND</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+                  <span class="font-bold text-sky-950 font-mono text-[13px]">📁 frontend/</span>
                 </div>
-                <span class="text-[11px] font-mono text-sky-700 bg-sky-100 px-2 py-0.5 rounded">Capa Cliente & UI</span>
+                <span class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold">Cliente Web</span>
               </div>
-              
-              <div class="space-y-3 text-xs">
-                <!-- Carpeta 1 -->
-                <div class="bg-white p-3 rounded-xl border border-sky-100 shadow-2xs">
-                  <div class="font-mono font-bold text-sky-900 text-[13px] mb-1">📁 src/app/ (Vistas & Rutas por Rol)</div>
-                  <p class="text-slate-600 mb-2 leading-relaxed">Páginas interactivas, layouts navegables y plantillas organizadas en Route Groups:</p>
-                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-sky-200">
-                    <li>• <strong class="text-slate-800">(public)/:</strong> Buscador de viajes, checkout, visor de boleto QR.</li>
-                    <li>• <strong class="text-slate-800">(auth)/:</strong> Formularios de login, registro y recuperación.</li>
-                    <li>• <strong class="text-slate-800">(passenger)/:</strong> Portal del pasajero e historial de boletos.</li>
-                    <li>• <strong class="text-slate-800">(seller)/:</strong> Taquilla física para emisión rápida de pasajes.</li>
-                    <li>• <strong class="text-slate-800">(inspector)/:</strong> Visor de validación y lector de cámara QR.</li>
-                    <li>• <strong class="text-slate-800">(operator)/:</strong> Control de despachos, buses e incidencias.</li>
-                    <li>• <strong class="text-slate-800">(admin)/:</strong> Gestión de flota, tarifas, rutas y reportes.</li>
-                  </ul>
-                </div>
 
-                <!-- Carpeta 2 -->
-                <div class="bg-white p-3 rounded-xl border border-sky-100 shadow-2xs">
-                  <div class="font-mono font-bold text-sky-900 text-[13px] mb-1">📁 src/components/ (Librería de Componentes)</div>
-                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-sky-200">
-                    <li>• <strong class="text-slate-800">ui/:</strong> Primitivos de shadcn/ui sobre Radix accesibles (Button, Dialog, Select, Tabs, etc.).</li>
-                    <li>• <strong class="text-slate-800">shared/:</strong> Barras de navegación, Sidebar, SeatMap, TicketBadge y modales.</li>
-                    <li>• <strong class="text-slate-800">maps/:</strong> Visor Leaflet interactivo (<code class="text-sky-800">InteractiveMap.tsx</code>) con marcadores y polilíneas.</li>
-                  </ul>
+              <div class="space-y-2 font-mono text-[11px] text-slate-600">
+                <div class="bg-white p-2.5 rounded-xl border border-sky-100">
+                  <strong class="text-slate-800 block mb-1">src/app/ (Vistas por Rol)</strong>
+                  • (public)/: Buscador y checkout<br>
+                  • (auth)/: Login y registro<br>
+                  • (passenger)/: Mis boletos<br>
+                  • (seller)/: Taquilla de venta<br>
+                  • (inspector)/: Escáner QR de andén<br>
+                  • (operator)/: Despachos y flota<br>
+                  • (admin)/: Rutas y reportes
                 </div>
-
-                <!-- Carpeta 3 -->
-                <div class="bg-white p-3 rounded-xl border border-sky-100 shadow-2xs">
-                  <div class="font-mono font-bold text-sky-900 text-[13px] mb-1">📁 src/features/*/components/ (UI de Dominio)</div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed">Componentes interactivos de cliente (<code class="text-sky-800">'use client'</code>): selector gráfico de asientos con temporizador de 10 min, escáner de cámara QR y gráficos dinámicos con <strong>Recharts</strong>.</p>
+                <div class="bg-white p-2.5 rounded-xl border border-sky-100">
+                  <strong class="text-slate-800 block mb-1">src/components/ (UI & Mapas)</strong>
+                  • ui/: Primitivos shadcn/ui<br>
+                  • shared/: Navbar, Sidebar, SeatMap<br>
+                  • maps/: InteractiveMap.tsx (Leaflet)
                 </div>
-
-                <!-- Carpeta 4 -->
-                <div class="bg-white p-2.5 rounded-xl border border-sky-100 text-[11px] text-slate-600 font-mono">
-                  <strong>🎨 Estilos Globales:</strong> <code>src/app/globals.css</code> (Tokens Tailwind, CSS variables de color institucional y capas Leaflet).
+                <div class="bg-white p-2.5 rounded-xl border border-sky-100">
+                  <strong class="text-slate-800 block mb-1">src/services/apiClient.ts</strong>
+                  Cliente HTTP tipado que consume la API Spring Boot (puerto 8080) con JWT Bearer.
                 </div>
               </div>
             </div>
+            <div class="mt-3 bg-sky-50 p-2 rounded-lg text-[10px] text-sky-900 font-mono">
+              <strong>Ejecución:</strong> <code>cd frontend &amp;&amp; npm run dev</code> (:3000)
+            </div>
           </div>
 
-          <!-- COLUMNA BACKEND -->
-          <div class="border-2 border-emerald-200 rounded-2xl p-5 bg-gradient-to-b from-emerald-50/40 to-white flex flex-col justify-between">
+          <!-- COLUMNA 2: BACKEND -->
+          <div class="border-2 border-emerald-200 rounded-2xl p-4 bg-gradient-to-b from-emerald-50/40 to-white flex flex-col justify-between">
             <div>
-              <div class="flex items-center justify-between mb-3 border-b border-emerald-100 pb-2.5">
+              <div class="flex items-center justify-between mb-3 border-b border-emerald-100 pb-2">
                 <div class="flex items-center gap-2">
-                  <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
-                  <span class="text-xs font-bold uppercase tracking-wider text-emerald-900">CARPETAS DE BACKEND</span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                  <span class="font-bold text-emerald-950 font-mono text-[13px]">📁 backend/</span>
                 </div>
-                <span class="text-[11px] font-mono text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded">Capa Servidor, RPC & BD</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">Spring Boot 3</span>
               </div>
-              
-              <div class="space-y-3 text-xs">
-                <!-- Carpeta 1 -->
-                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
-                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 src/features/*/actions/ (Server Actions RPC)</div>
-                  <p class="text-slate-600 mb-2 leading-relaxed">Endpoints de mutación tipados en el servidor (<code class="text-emerald-800">'use server'</code>) con protección CSRF nativa y Zod:</p>
-                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-emerald-200">
-                    <li>• <strong class="text-slate-800">bookings/actions/:</strong> Bloqueo pesimista <code class="text-emerald-800">FOR UPDATE</code> y expiración.</li>
-                    <li>• <strong class="text-slate-800">payments/actions/:</strong> Procesamiento transaccional de cobro simulado.</li>
-                    <li>• <strong class="text-slate-800">tickets/actions/:</strong> Emisión y generación de token criptográfico opaco.</li>
-                    <li>• <strong class="text-slate-800">inspector/actions/:</strong> Validación de embarque y prevención de doble uso.</li>
-                    <li>• <strong class="text-slate-800">trips/actions/:</strong> Motor de búsqueda y cálculo de tarifas por tramos.</li>
-                  </ul>
-                </div>
 
-                <!-- Carpeta 2 -->
-                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
-                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 src/app/api/ (Route Handlers HTTP)</div>
-                  <p class="text-[11px] text-slate-600 leading-relaxed font-mono">
-                    Endpoints REST estándar para servicios externos o dispositivos de andén (ej. <code>api/tickets/validate/route.ts</code>).
-                  </p>
+              <div class="space-y-2 font-mono text-[11px] text-slate-600">
+                <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                  <strong class="text-slate-800 block mb-1">controller/ (@RestController)</strong>
+                  • AuthController (/api/auth)<br>
+                  • TripController (/api/trips)<br>
+                  • BookingController (/api/bookings)<br>
+                  • PaymentController (/api/payments)<br>
+                  • InspectorController (/api/inspector)
                 </div>
-
-                <!-- Carpeta 3 -->
-                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
-                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 src/lib/ & src/middleware.ts (Infraestructura Servidor)</div>
-                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-emerald-200">
-                    <li>• <strong class="text-slate-800">middleware.ts:</strong> Guardia Edge perimetral con sesión JWT y RBAC.</li>
-                    <li>• <strong class="text-slate-800">lib/supabase/:</strong> Clientes seguros (<code class="text-emerald-800">server.ts</code>, cookies <code class="text-emerald-800">HttpOnly</code>, Service Role).</li>
-                    <li>• <strong class="text-slate-800">lib/auth/:</strong> Helpers de autorización (<code class="text-emerald-800">requireRole</code>, <code class="text-emerald-800">checkRole</code>).</li>
-                    <li>• <strong class="text-slate-800">lib/maps/:</strong> Cliente OSRM para cálculo vial de distancias y tiempos.</li>
-                  </ul>
+                <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                  <strong class="text-slate-800 block mb-1">service/ &amp; repository/</strong>
+                  • BookingService (bloqueo a 10 min)<br>
+                  • TicketService (token QR criptográfico)<br>
+                  • BusSeatRepository (@Lock pesimista)
                 </div>
-
-                <!-- Carpeta 4 -->
-                <div class="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
-                  <div class="font-mono font-bold text-emerald-900 text-[13px] mb-1">📁 supabase/ (Base de Datos & Seguridad RLS)</div>
-                  <ul class="text-[11px] text-slate-600 space-y-1 font-mono pl-2 border-l-2 border-emerald-200">
-                    <li>• <strong class="text-slate-800">migrations/:</strong> 18 tablas, políticas RLS, funciones PL/pgSQL y triggers.</li>
-                    <li>• <strong class="text-slate-800">seed.sql/:</strong> Dataset maestro poblado (18 localidades, rutas, flota y demo).</li>
-                  </ul>
+                <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                  <strong class="text-slate-800 block mb-1">config/ (Seguridad &amp; JWT)</strong>
+                  • SecurityConfig (CORS + RBAC)<br>
+                  • JwtService &amp; JwtAuthFilter
                 </div>
               </div>
+            </div>
+            <div class="mt-3 bg-emerald-50 p-2 rounded-lg text-[10px] text-emerald-900 font-mono">
+              <strong>Ejecución:</strong> <code>cd backend &amp;&amp; mvn spring-boot:run</code> (:8080)
+            </div>
+          </div>
+
+          <!-- COLUMNA 3: DATABASE -->
+          <div class="border-2 border-indigo-200 rounded-2xl p-4 bg-gradient-to-b from-indigo-50/40 to-white flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between mb-3 border-b border-indigo-100 pb-2">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
+                  <span class="font-bold text-indigo-950 font-mono text-[13px]">📁 database/</span>
+                </div>
+                <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">PostgreSQL 15+</span>
+              </div>
+
+              <div class="space-y-2 font-mono text-[11px] text-slate-600">
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
+                  <strong class="text-slate-800 block mb-1">schema.sql (DDL Consolidado)</strong>
+                  18 tablas completas: perfiles, roles, cooperativas, localidades, paradas, rutas, buses, asientos, viajes, reservas, pagos, boletos e incidencias.
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
+                  <strong class="text-slate-800 block mb-1">seed.sql (Dataset Maestro)</strong>
+                  18 localidades georreferenciadas (Tulcán a Otavalo), paradas, rutas E35, flota y usuarios de demostración.
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
+                  <strong class="text-slate-800 block mb-1">migrations/ (Historial SQL)</strong>
+                  Scripts versionados 000001 a 000004 para control de cambios formal.
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 bg-indigo-50 p-2 rounded-lg text-[10px] text-indigo-900 font-mono">
+              <strong>Importación:</strong> <code>psql -d rutanorte -f database/schema.sql</code> (:5432)
             </div>
           </div>
 
         </div>
 
-        <!-- Barra Inferior: Contratos Compartidos y Calidad -->
-        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl border border-slate-800 text-xs">
-          <div class="flex items-center gap-2 text-amber-400 font-bold mb-2">
-            <span>🔄</span> CONTRATOS COMPARTIDOS ENTRE FRONTEND Y BACKEND (Tipado Estricto de Punta a Punta)
+        <!-- Barra Inferior: Swagger y Documentación Interactiva -->
+        <div class="bg-slate-900 text-slate-200 p-4 rounded-xl border border-slate-800 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="flex items-center gap-2">
+            <span class="text-emerald-400 font-bold font-mono">⚡ SWAGGER OPENAPI 3:</span>
+            <span class="text-slate-300">Documentación y ejecución de endpoints REST interactiva disponible en <code>http://localhost:8080/swagger-ui.html</code></span>
           </div>
-          <div class="grid sm:grid-cols-3 gap-3 font-mono text-[11px] text-slate-300">
-            <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
-              <span class="text-emerald-400 font-bold block mb-1">📁 src/types/</span>
-              Interfaces compartidas: <code class="text-slate-200">database.types.ts</code>, <code class="text-slate-200">ActionResult&lt;T&gt;</code> y catálogo de roles.
-            </div>
-            <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
-              <span class="text-emerald-400 font-bold block mb-1">📁 src/lib/validations/</span>
-              Esquemas Zod compartidos: validan formularios de UI y Server Actions con <code class="text-slate-200">z.infer&lt;typeof schema&gt;</code>.
-            </div>
-            <div class="bg-slate-800/80 p-2.5 rounded-lg border border-slate-700">
-              <span class="text-emerald-400 font-bold block mb-1">📁 tests/</span>
-              103 pruebas unitarias en Vitest (<code class="text-slate-200">tests/unit/</code>) y pruebas E2E en Playwright (<code class="text-slate-200">tests/e2e/</code>).
-            </div>
-          </div>
+          <span class="bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded font-mono text-[11px] border border-emerald-500/30">CORS Habilitado (:3000 &lt;-&gt; :8080)</span>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 7. ENDPOINTS, SERVER ACTIONS Y RUTAS       -->
+      <!-- 7. ENDPOINTS REST: SPRING BOOT CONTROLLERS -->
       <!-- ========================================== -->
       <section id="endpoints" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">07</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Catálogo de Endpoints y Server Actions</h2>
-            <p class="text-xs text-slate-500">Mapeo de acciones de backend y rutas protegidas del sistema</p>
+            <h2 class="text-xl font-bold text-slate-900">Catálogo de Endpoints RESTful (Spring Boot 3)</h2>
+            <p class="text-xs text-slate-500">Mapeo de controladores @RestController, verbos HTTP y seguridad</p>
           </div>
         </div>
 
@@ -632,62 +658,62 @@ flowchart LR
           <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
             <thead class="bg-[#173B57] text-white uppercase tracking-wider">
               <tr>
-                <th class="py-2.5 px-3">Server Action (Endpoint RPC)</th>
-                <th class="py-2.5 px-3">Módulo</th>
-                <th class="py-2.5 px-3">Parámetros (Zod)</th>
-                <th class="py-2.5 px-3">Rol Mínimo</th>
-                <th class="py-2.5 px-3">Operación en Persistencia</th>
+                <th class="py-2.5 px-3">Método &amp; Endpoint</th>
+                <th class="py-2.5 px-3">Controlador (@RestController)</th>
+                <th class="py-2.5 px-3">Request Body / Parámetros</th>
+                <th class="py-2.5 px-3">Seguridad</th>
+                <th class="py-2.5 px-3">Operación en Backend &amp; BD</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 bg-white">
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-900">createReservationAction</td>
-                <td class="py-2 px-3">bookings</td>
-                <td class="py-2 px-3 font-mono">CreateBookingInput</td>
-                <td class="py-2 px-3 text-emerald-700 font-semibold">Autenticado</td>
-                <td class="py-2 px-3">Invoca RPC <code>reserve_seats</code> con bloqueo <code>FOR UPDATE</code> y expiración a 10 min.</td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-900">cancelReservationAction</td>
-                <td class="py-2 px-3">bookings</td>
-                <td class="py-2 px-3 font-mono">{ bookingId }</td>
-                <td class="py-2 px-3 text-emerald-700 font-semibold">Propietario / Admin</td>
-                <td class="py-2 px-3">Cancela reserva, libera <code>booking_seats</code> y suma asientos disponibles.</td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-900">processPaymentAction</td>
-                <td class="py-2 px-3">payments</td>
-                <td class="py-2 px-3 font-mono">PaymentInput</td>
-                <td class="py-2 px-3 text-emerald-700 font-semibold">Autenticado / Venta</td>
-                <td class="py-2 px-3">Registra pago simulado, confirma reserva y emite boletos con token <code>RN-HEX16</code>.</td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-emerald-900">validateBoardingAction</td>
-                <td class="py-2 px-3">inspector</td>
-                <td class="py-2 px-3 font-mono">{ qrPayload }</td>
-                <td class="py-2 px-3 text-emerald-700 font-bold">Inspector / Admin</td>
-                <td class="py-2 px-3">Invoca <code>validate_ticket_boarding</code>, valida token, marca <code>used</code> y audita.</td>
-              </tr>
-              <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-900">searchTripsAction</td>
-                <td class="py-2 px-3">trips</td>
-                <td class="py-2 px-3 font-mono">{ origin, dest, date }</td>
+                <td class="py-2 px-3 font-mono font-bold text-emerald-800">POST /api/auth/login</td>
+                <td class="py-2 px-3 font-mono">AuthController</td>
+                <td class="py-2 px-3 font-mono">AuthRequest { email, password }</td>
                 <td class="py-2 px-3 text-slate-600">Público</td>
-                <td class="py-2 px-3">Consulta viajes disponibles y calcula tarifas por tramo con disponibilidad.</td>
+                <td class="py-2 px-3">Autentica credenciales y emite token JWT firmado con HMAC-SHA256 (24h vigencia).</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-900">dispatchTripAction</td>
-                <td class="py-2 px-3">trips</td>
-                <td class="py-2 px-3 font-mono">{ tripId, newStatus }</td>
-                <td class="py-2 px-3 text-blue-700 font-bold">Operador / Admin</td>
-                <td class="py-2 px-3">Transiciona estado (scheduled → boarding → in_progress → completed) y revalida vistas.</td>
+                <td class="py-2 px-3 font-mono font-bold text-blue-800">GET /api/trips</td>
+                <td class="py-2 px-3 font-mono">TripController</td>
+                <td class="py-2 px-3 font-mono">?routeId={uuid} (opcional)</td>
+                <td class="py-2 px-3 text-slate-600">Público</td>
+                <td class="py-2 px-3">Consulta viajes programados, itinerarios y cupos disponibles en andenes.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-red-900">createRouteAction</td>
-                <td class="py-2 px-3">routes</td>
-                <td class="py-2 px-3 font-mono">CreateRouteInput</td>
-                <td class="py-2 px-3 text-red-700 font-bold">Admin</td>
-                <td class="py-2 px-3">Inserta ruta maestra y secuencia de paradas con distancias en <code>route_stops</code>.</td>
+                <td class="py-2 px-3 font-mono font-bold text-blue-800">GET /api/trips/{id}/seats</td>
+                <td class="py-2 px-3 font-mono">TripController</td>
+                <td class="py-2 px-3 font-mono">@PathVariable UUID id</td>
+                <td class="py-2 px-3 text-slate-600">Público</td>
+                <td class="py-2 px-3">Retorna matriz gráfica de asientos indicando si están libres, reservados o vendidos.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2 px-3 font-mono font-bold text-purple-800">POST /api/bookings</td>
+                <td class="py-2 px-3 font-mono">BookingController</td>
+                <td class="py-2 px-3 font-mono">BookingRequest { tripId, seatIds }</td>
+                <td class="py-2 px-3 text-emerald-700 font-semibold">JWT Bearer</td>
+                <td class="py-2 px-3">Ejecuta <code>@Lock(PESSIMISTIC_WRITE)</code> en JPA y crea reserva temporal a 10 min.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2 px-3 font-mono font-bold text-purple-800">DELETE /api/bookings/{id}</td>
+                <td class="py-2 px-3 font-mono">BookingController</td>
+                <td class="py-2 px-3 font-mono">@PathVariable UUID id</td>
+                <td class="py-2 px-3 text-emerald-700 font-semibold">JWT Bearer</td>
+                <td class="py-2 px-3">Cancela reserva voluntaria, libera asientos en <code>booking_seats</code> y restaura cupo.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2 px-3 font-mono font-bold text-emerald-800">POST /api/payments</td>
+                <td class="py-2 px-3 font-mono">PaymentController</td>
+                <td class="py-2 px-3 font-mono">PaymentRequest { bookingId, method }</td>
+                <td class="py-2 px-3 text-emerald-700 font-semibold">JWT Bearer</td>
+                <td class="py-2 px-3">Registra pago simulado, confirma reserva y emite boletos con token QR criptográfico.</td>
+              </tr>
+              <tr class="hover:bg-slate-50">
+                <td class="py-2 px-3 font-mono font-bold text-amber-800">POST /api/inspector/validate-ticket</td>
+                <td class="py-2 px-3 font-mono">InspectorController</td>
+                <td class="py-2 px-3 font-mono">ValidateBoardingRequest { qrPayload }</td>
+                <td class="py-2 px-3 text-amber-800 font-bold">INSPECTOR / ADMIN</td>
+                <td class="py-2 px-3">Resuelve token QR, valida viaje, marca estado <code>used</code> y previene doble abordaje.</td>
               </tr>
             </tbody>
           </table>
