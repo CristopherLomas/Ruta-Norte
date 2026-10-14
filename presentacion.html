@@ -109,20 +109,20 @@
           <a href="#contexto" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">2</span> Problema vs Solución
           </a>
-          <a href="#monolito-modular" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition bg-blue-50 text-blue-900 font-semibold">
-            <span class="w-5 text-center text-[#173B57] font-bold">3</span> Monolito Modular
+          <a href="#arquitectura-modular" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition bg-emerald-50 text-emerald-900 font-semibold">
+            <span class="w-5 text-center text-[#20A878] font-bold">3</span> Frontend &amp; Backend Modular
           </a>
           <a href="#arquitectura" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">4</span> Arquitectura & Flujos
+            <span class="w-5 text-center text-[#173B57] font-bold">4</span> Arquitectura &amp; Flujos
           </a>
           <a href="#stack" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">5</span> Stack Tecnológico
           </a>
           <a href="#estructura" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">6</span> Estructura Monolítica Modular
+            <span class="w-5 text-center text-[#173B57] font-bold">6</span> frontend / backend / database
           </a>
           <a href="#endpoints" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
-            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Operaciones & Endpoints
+            <span class="w-5 text-center text-[#173B57] font-bold">7</span> Endpoints REST (Spring Boot)
           </a>
           <a href="#modelo-datos" class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-slate-700 hover:bg-slate-100 transition">
             <span class="w-5 text-center text-[#173B57] font-bold">8</span> Modelo de Datos (18 T)
@@ -199,8 +199,8 @@
             </div>
             <div>
               <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold mb-1">Arquitectura</span>
-              <span class="font-bold text-white text-sm block">Monolítica Modular</span>
-              <span class="text-slate-400 text-[11px]">Next.js 14 + Supabase</span>
+              <span class="font-bold text-white text-sm block">Modular Desacoplada</span>
+              <span class="text-slate-400 text-[11px]">Next.js 14 + Spring Boot 3</span>
             </div>
             <div>
               <span class="block text-slate-400 uppercase tracking-wider text-[10px] font-semibold mb-1">Base de Datos</span>
@@ -256,193 +256,184 @@
       </section>
 
       <!-- ========================================== -->
-      <!-- 3. ARQUITECTURA MONOLÍTICA MODULAR        -->
+      <!-- 3. ARQUITECTURA MODULAR FRONTEND & BACKEND -->
       <!-- ========================================== -->
-      <section id="monolito-modular" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
+      <section id="arquitectura-modular" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
-          <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">03</div>
+          <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#20A878] flex items-center justify-center font-bold text-sm">03</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Arquitectura del Sistema: Monolítica Modular</h2>
-            <p class="text-xs text-slate-500">Monolito Modular de Alto Rendimiento — Next.js 14 App Router · 12 Módulos Bounded Context · Supabase PostgreSQL ACID</p>
+            <h2 class="text-xl font-bold text-slate-900">Arquitectura Modular Dividida en Frontend y Backend</h2>
+            <p class="text-xs text-slate-500">Separación física empresarial en 3 carpetas independientes: 'frontend/', 'backend/' y 'database/'</p>
           </div>
         </div>
 
-        <!-- Tarjetas de las 3 Capas del Monolito Modular -->
+        <!-- Tarjetas Comparativas Frontend vs Backend vs Database -->
         <div class="grid md:grid-cols-3 gap-4 mb-6">
           
-          <!-- Capa 1: PRESENTACIÓN & ENRUTAMIENTO -->
+          <!-- Capa 1: FRONTEND -->
           <div class="border-2 border-sky-200 rounded-2xl p-4 bg-gradient-to-b from-sky-50/50 to-white flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">CAPA 1: PRESENTACIÓN</span>
-                <span class="text-[10px] font-mono text-slate-500">Next.js App Router</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">CAPA 1: FRONTEND</span>
+                <span class="text-[10px] font-mono text-slate-500">Puerto 3000</span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Rutas por Rol &amp; React Server Components</h3>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Cliente Web React / Next.js</h3>
               
               <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Route Groups por Rol:</strong> Segmentación estricta en <code>(admin)</code>, <code>(operator)</code>, <code>(seller)</code>, <code>(inspector)</code>, <code>(passenger)</code> y <code>(public)</code>.</span>
+                  <span><strong>12 Módulos Funcionales:</strong> Encapsulados en <code>src/features/</code> (auth, trips, bookings, tickets, etc.).</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>85% Server Components:</strong> Renderizado en servidor con cero JS enviado al cliente en vistas maestras y TTFB instantáneo.</span>
+                  <span><strong>Componentes UI:</strong> Catálogo shadcn/ui sobre Radix accesible WCAG 2.1 AA.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Catálogo UI shadcn/ui:</strong> Primitivas de interfaz accesibles WCAG 2.1 AA montadas sobre Radix UI y Tailwind CSS.</span>
+                  <span><strong>Cartografía Leaflet:</strong> Renderizado de trazado vial real de la Panamericana E35.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Cartografía Leaflet:</strong> Visualización de trazado vial real de la Panamericana E35 y andenes de abordaje.</span>
+                  <span><strong>Selector Gráfico:</strong> Matriz interactiva de asientos con cuenta regresiva.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-sky-600 font-bold">▸</span>
+                  <span><strong>Escáner QR:</strong> Stream de cámara en navegador para inspectores de andén.</span>
                 </li>
               </ul>
             </div>
             <div class="bg-white p-2 rounded-lg border border-sky-100 text-[10px] text-slate-600 font-mono">
-              <strong>Ubicación:</strong> <code>src/app/</code> &amp; <code>src/components/</code>
+              <strong>Carpeta raíz:</strong> <code>frontend/</code>
             </div>
           </div>
 
-          <!-- Capa 2: MÓDULOS DE DOMINIO -->
+          <!-- Capa 2: BACKEND -->
           <div class="border-2 border-emerald-200 rounded-2xl p-4 bg-gradient-to-b from-emerald-50/50 to-white flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">CAPA 2: DOMINIO</span>
-                <span class="text-[10px] font-mono text-slate-500">12 Módulos Bounded Context</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">CAPA 2: BACKEND</span>
+                <span class="text-[10px] font-mono text-slate-500">Puerto 8080</span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Lógica Modular &amp; Server Actions</h3>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Spring Boot 3 (Java 17+)</h3>
 
               <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Server Actions Atómicas:</strong> Mutaciones de negocio sin latencia de red interna ejecutadas directamente en el servidor.</span>
+                  <span><strong>Spring Web MVC:</strong> Endpoints RESTful tipados con Jakarta Bean Validation.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Alta Cohesión Modular:</strong> 12 módulos autónomos (auth, trips, bookings, tickets, inspector, reports, etc.) con límites claros.</span>
+                  <span><strong>Spring Data JPA:</strong> Consultas transaccionales y bloqueo pesimista <code>@Lock</code>.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Validación Zod en el Límite:</strong> Reglas estrictas de cédula ecuatoriana, placas vehiculares y datos de entrada antes de persistir.</span>
+                  <span><strong>Spring Security + JWT:</strong> Filtro perimetral con tokens JJWT firmados (HMAC-SHA256).</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Cero Sobrecarga HTTP:</strong> Las Server Actions actúan como RPC en proceso eliminando serialización JSON redundante.</span>
+                  <span><strong>Módulos por Capas:</strong> controller, service, repository, entity, dto y config.</span>
+                </li>
+                <li class="flex items-start gap-1.5">
+                  <span class="text-emerald-600 font-bold">▸</span>
+                  <span><strong>Swagger / OpenAPI 3:</strong> Documentación interactiva en <code>/swagger-ui.html</code>.</span>
                 </li>
               </ul>
             </div>
             <div class="bg-white p-2 rounded-lg border border-emerald-100 text-[10px] text-slate-600 font-mono">
-              <strong>Ubicación:</strong> <code>src/features/</code>
+              <strong>Carpeta raíz:</strong> <code>backend/</code> (Maven)
             </div>
           </div>
 
-          <!-- Capa 3: PERSISTENCIA ACID -->
+          <!-- Capa 3: DATABASE -->
           <div class="border-2 border-indigo-200 rounded-2xl p-4 bg-gradient-to-b from-indigo-50/50 to-white flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-2">
-                <span class="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">CAPA 3: PERSISTENCIA</span>
-                <span class="text-[10px] font-mono text-slate-500">PostgreSQL 15+ ACID</span>
+                <span class="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">CAPA 3: DATABASE</span>
+                <span class="text-[10px] font-mono text-slate-500">Puerto 5432</span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Base Relacional &amp; RLS Perimetral</h3>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">PostgreSQL 15+ Relacional</h3>
 
               <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>18 Tablas Relacionales:</strong> Integridad en 3NF con claves UUID v4 y cascadas de eliminación protegidas.</span>
+                  <span><strong>18 Tablas Relacionales:</strong> Integridad referencial con UUIDs v4 y cascadas seguras.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>Row Level Security (RLS):</strong> Políticas activas en cada tabla verificando el rol del usuario mediante <code>auth.uid()</code>.</span>
+                  <span><strong>Dataset Maestro:</strong> 18 localidades georreferenciadas en Carchi e Imbabura.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>Triggers de Expiración (10 min):</strong> Liberación automática de asientos reservados si no se confirma el pago simulado.</span>
+                  <span><strong>Garantías ACID:</strong> Transacciones consistentes con bloqueos exclusivos en asientos.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>Migraciones Versionadas:</strong> Scripts SQL estructurados (001 a 008) y dataset maestro determinista en <code>seed.sql</code>.</span>
+                  <span><strong>Scripts Versionados:</strong> DDL consolidado en <code>schema.sql</code> y <code>seed.sql</code>.</span>
                 </li>
               </ul>
             </div>
             <div class="bg-white p-2 rounded-lg border border-indigo-100 text-[10px] text-slate-600 font-mono">
-              <strong>Ubicación:</strong> <code>supabase/migrations/</code> &amp; <code>supabase/seed.sql</code>
+              <strong>Carpeta raíz:</strong> <code>database/</code>
             </div>
           </div>
 
         </div>
 
-        <!-- Diagrama Mermaid del Monolito Modular -->
+        <!-- Diagrama del Puente de Comunicación REST -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-center mb-5">
           <div class="mermaid">
-flowchart TD
-    subgraph Clientes ["🌐 Capa de Interacción (Clientes Web & Móvil)"]
-        Browser["🖥️ Navegador Web (Pasajeros, Taquilla, Operadores, Administradores)"]
-        Scanner["📱 Terminal Móvil de Andén (Inspector con Cámara Web QR)"]
+flowchart LR
+    subgraph FrontendApp ["FRONTEND (Cliente Web :3000 — frontend/)"]
+        UI["Next.js / React (UI + Leaflet + Formularios)"]
+        Client["apiClient.ts (Fetch HTTP)"]
     end
 
-    subgraph Monolito ["🏛️ MONOLITO MODULAR (Ruta Norte — Next.js 14 Full-Stack)"]
-        MW["🛡️ Middleware Perimetral (RBAC + JWT + Cookies HttpOnly)"]
-
-        subgraph CapaPresentacion ["1. Presentación & Rutas (src/app/)"]
-            RSC["React Server Components (RSC - Renderizado en Servidor)"]
-            CC["Client Components ('use client' - Formularios y Mapas)"]
-        end
-
-        subgraph CapaModulos ["2. Módulos de Dominio Bounded Context (src/features/)"]
-            F_Auth["🔐 auth (Sesión & Roles)"]
-            F_Trips["🚌 trips (Itinerarios & Manifiesto)"]
-            F_Bookings["💺 bookings (Bloqueo 10 min)"]
-            F_Payments["💳 payments (Pasarela Simulada)"]
-            F_Tickets["🎫 tickets (Tokens QR Opacos)"]
-            F_Insp["🔍 inspector (Validación de Abordaje)"]
-            F_Routes["🗺️ routes (Trazado Vial E35)"]
-            F_Reports["📊 reports (Analítica de Flota)"]
-        end
-
-        subgraph CapaTransversal ["3. Servicios Transversales (src/lib/ & src/components/)"]
-            SupabaseSSR["Cliente Supabase SSR"]
-            ZodValidations["Validadores Zod (SRI / ANT)"]
-            MapEngine["Motor Cartográfico Leaflet"]
-            UIPrimitives["Catálogo shadcn/ui"]
-        end
+    subgraph RestApi ["PUENTE REST (HTTPS / JSON)"]
+        Http["Peticiones RESTful con JWT Bearer\n(POST, GET, DELETE con CORS)"]
     end
 
-    subgraph Persistencia ["💾 CAPA DE PERSISTENCIA ACID (PostgreSQL 15+)"]
-        Tables[("18 Tablas Relacionales (3NF)")]
-        RLSPolicies["Políticas Row Level Security (RLS)"]
-        Triggers["Triggers de Expiración & Auditoría"]
+    subgraph BackendApp ["BACKEND (Spring Boot :8080 — backend/)"]
+        Ctrl["@RestController (Auth, Trips, Bookings, Payments)"]
+        Serv["@Service (Lógica de Negocio + Expiración 10 min)"]
+        Repo["@Repository Spring Data JPA (@Lock Pesimista)"]
     end
 
-    Browser & Scanner -->|Petición HTTPS| MW
-    MW --> CapaPresentacion
-    RSC --> CapaModulos
-    CC -->|Server Action Directa (RPC sin latencia)| CapaModulos
-    Scanner -->|POST /api/inspector/validate-ticket| CapaModulos
-    CapaModulos --> CapaTransversal
-    CapaTransversal -->|Pool de Conexiones PostgreSQL| Persistencia
-    Persistencia --> RLSPolicies
-    RLSPolicies --> Tables
+    subgraph DBApp ["DATABASE (PostgreSQL :5432 — database/)"]
+        Postgres[("PostgreSQL 15+\n18 Tablas Relacionales")]
+    end
+
+    UI --> Client
+    Client -->|HTTP JSON + JWT| Http
+    Http --> Ctrl
+    Ctrl --> Serv
+    Serv --> Repo
+    Repo -->|JDBC / Hibernate SQL| Postgres
+    Postgres -->|Resultados ACID| Repo
+    Repo --> Serv
+    Serv --> Ctrl
+    Ctrl -->|ApiResponse&lt;T&gt;| Client
+    Client --> UI
           </div>
         </div>
 
-        <!-- 3 Ventajas Clave del Monolito Modular -->
+        <!-- 3 Ventajas de la Separación Física -->
         <div class="grid md:grid-cols-3 gap-3 text-xs">
           <div class="p-3.5 rounded-xl bg-blue-50/60 border border-blue-200">
-            <span class="font-bold text-[#173B57] text-xs block mb-1">⚡ Cero Latencia de Red Interna</span>
+            <span class="font-bold text-[#173B57] text-xs block mb-1">👥 Separación Clara de Responsabilidades</span>
             <p class="text-slate-600 text-[11px] leading-relaxed">
-              Las operaciones de negocio entre el frontend y el backend se ejecutan en proceso mediante Server Actions, sin saltos de red HTTP adicionales ni serialización JSON repetitiva.
+              Equipos de frontend y backend pueden desarrollar, compilar y desplegar de forma autónoma sin colisiones de código ni conflictos de dependencias.
             </p>
           </div>
           <div class="p-3.5 rounded-xl bg-emerald-50/60 border border-emerald-200">
-            <span class="font-bold text-emerald-900 text-xs block mb-1">🔒 Type Safety de Extremo a Extremo</span>
+            <span class="font-bold text-emerald-900 text-xs block mb-1">📱 Interoperabilidad y Escalabilidad</span>
             <p class="text-slate-600 text-[11px] leading-relaxed">
-              TypeScript estricto unifica el modelo relacional, las Server Actions y las vistas de usuario, eliminando errores de desincronización de contratos DTO entre capas.
+              La API REST de Spring Boot es agnóstica al cliente, permitiendo que tanto el frontend web como futuras aplicaciones móviles nativas consuman los mismos endpoints.
             </p>
           </div>
           <div class="p-3.5 rounded-xl bg-indigo-50/60 border border-indigo-200">
-            <span class="font-bold text-indigo-900 text-xs block mb-1">🚀 Despliegue Atómico y Mantenible</span>
+            <span class="font-bold text-indigo-900 text-xs block mb-1">📖 Legibilidad Inmediata</span>
             <p class="text-slate-600 text-[11px] leading-relaxed">
-              Una sola unidad de despliegue en Vercel garantiza compatibilidad absoluta de versiones en cada release, simplificando CI/CD y reduciendo costos operativos.
+              Cualquier programador nuevo en el equipo ubica al instante dónde residen las vistas (<code>frontend/</code>), los servicios de negocio (<code>backend/</code>) y los scripts de base de datos (<code>database/</code>).
             </p>
           </div>
         </div>
@@ -547,34 +538,34 @@ flowchart TD
       </section>
 
       <!-- ========================================== -->
-      <!-- 6. ESTRUCTURA: MONOLITO MODULAR           -->
+      <!-- 6. ESTRUCTURA: FRONTEND / BACKEND / DATABASE -->
       <!-- ========================================== -->
       <section id="estructura" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">06</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Estructura de Directorios del Proyecto: Monolítica Modular</h2>
-            <p class="text-xs text-slate-500">Organización modular por capacidades de negocio, enrutamiento por roles y capas transversales</p>
+            <h2 class="text-xl font-bold text-slate-900">Estructura Física del Repositorio: Carpetas frontend/, backend/ y database/</h2>
+            <p class="text-xs text-slate-500">Organización modular de primer nivel estructurada para que cualquier programador la entienda de inmediato</p>
           </div>
         </div>
 
-        <!-- Grid de 3 Columnas: Presentación, Módulos de Dominio, Infraestructura -->
+        <!-- Grid de 3 Columnas: frontend/, backend/, database/ -->
         <div class="grid lg:grid-cols-3 gap-4 mb-5 text-xs">
 
-          <!-- COLUMNA 1: PRESENTACIÓN & ENRUTAMIENTO -->
+          <!-- COLUMNA 1: FRONTEND -->
           <div class="border-2 border-sky-200 rounded-2xl p-4 bg-gradient-to-b from-sky-50/40 to-white flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3 border-b border-sky-100 pb-2">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-                  <span class="font-bold text-sky-950 font-mono text-[13px]">📁 src/app/ &amp; components/</span>
+                  <span class="font-bold text-sky-950 font-mono text-[13px]">📁 frontend/</span>
                 </div>
-                <span class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold">Presentación</span>
+                <span class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold">Cliente Web</span>
               </div>
 
               <div class="space-y-2 font-mono text-[11px] text-slate-600">
                 <div class="bg-white p-2.5 rounded-xl border border-sky-100">
-                  <strong class="text-slate-800 block mb-1">src/app/ (Route Groups por Rol)</strong>
+                  <strong class="text-slate-800 block mb-1">src/app/ (Vistas por Rol)</strong>
                   • <code>(public)/</code>: Buscador, asientos y checkout<br>
                   • <code>(auth)/</code>: Login, registro y reseteo<br>
                   • <code>(passenger)/</code>: Mis boletos digitales<br>
@@ -584,111 +575,110 @@ flowchart TD
                   • <code>(admin)/</code>: Rutas, flota y reportes
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-sky-100">
-                  <strong class="text-slate-800 block mb-1">src/components/ (Design System)</strong>
-                  • <code>ui/</code>: Primitivas shadcn/ui accesibles<br>
-                  • <code>shared/</code>: SeatMap, TicketCard, Timer<br>
-                  • <code>maps/</code>: InteractiveMap.tsx (Leaflet)
+                  <strong class="text-slate-800 block mb-1">src/features/ (12 Módulos)</strong>
+                  Módulos de negocio (auth, routes, trips, bookings, tickets, etc.) con sus componentes y lógica.
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-sky-100">
+                  <strong class="text-slate-800 block mb-1">src/services/apiClient.ts</strong>
+                  Cliente HTTP tipado que consume la API Spring Boot (puerto 8080) con JWT Bearer.
                 </div>
               </div>
             </div>
             <div class="mt-3 bg-sky-50 p-2 rounded-lg text-[10px] text-sky-900 font-mono">
-              <strong>Desarrollo:</strong> <code>npm run dev</code> (Puerto 3000)
+              <strong>Ejecución:</strong> <code>cd frontend &amp;&amp; npm run dev</code> (:3000)
             </div>
           </div>
 
-          <!-- COLUMNA 2: MÓDULOS DE DOMINIO -->
+          <!-- COLUMNA 2: BACKEND -->
           <div class="border-2 border-emerald-200 rounded-2xl p-4 bg-gradient-to-b from-emerald-50/40 to-white flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3 border-b border-emerald-100 pb-2">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                  <span class="font-bold text-emerald-950 font-mono text-[13px]">📁 src/features/</span>
+                  <span class="font-bold text-emerald-950 font-mono text-[13px]">📁 backend/</span>
                 </div>
-                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">12 Módulos Bounded Context</span>
+                <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">Spring Boot 3</span>
               </div>
 
               <div class="space-y-2 font-mono text-[11px] text-slate-600">
                 <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
-                  <strong class="text-slate-800 block mb-1">Módulos Operativos Principales</strong>
-                  • <code>auth/</code>: RBAC, sesiones y passwords<br>
-                  • <code>routes/</code>: Trazado E35 y secuencias<br>
-                  • <code>trips/</code>: Salidas, itinerarios y manifiestos<br>
-                  • <code>buses/</code>: Flota y matrices (30/40/44)<br>
-                  • <code>drivers/</code>: Ficha chofer y licencias<br>
-                  • <code>bookings/</code>: Bloqueo a 10 min y cupos<br>
-                  • <code>payments/</code>: Pasarela simulada académica<br>
-                  • <code>tickets/</code>: Boletos y token QR criptográfico<br>
-                  • <code>inspector/</code>: Validación de abordaje en vivo<br>
-                  • <code>reports/</code>: Analítica y recaudación
+                  <strong class="text-slate-800 block mb-1">controller/ (@RestController)</strong>
+                  • <code>AuthController</code> (/api/auth)<br>
+                  • <code>TripController</code> (/api/trips)<br>
+                  • <code>BookingController</code> (/api/bookings)<br>
+                  • <code>PaymentController</code> (/api/payments)<br>
+                  • <code>InspectorController</code> (/api/inspector)
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
-                  <strong class="text-slate-800 block mb-1">Estructura Interna de Módulo</strong>
-                  Cada módulo incluye <code>actions/</code> (Server Actions con Zod), <code>components/</code> y <code>utils.ts</code>.
+                  <strong class="text-slate-800 block mb-1">service/ &amp; repository/</strong>
+                  • <code>BookingService</code> (bloqueo a 10 min)<br>
+                  • <code>TicketService</code> (token QR criptográfico)<br>
+                  • <code>BusSeatRepository</code> (@Lock pesimista)
+                </div>
+                <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
+                  <strong class="text-slate-800 block mb-1">config/ (Seguridad &amp; JWT)</strong>
+                  • <code>SecurityConfig</code> (CORS + RBAC)<br>
+                  • <code>JwtService</code> &amp; <code>JwtAuthFilter</code>
                 </div>
               </div>
             </div>
             <div class="mt-3 bg-emerald-50 p-2 rounded-lg text-[10px] text-emerald-900 font-mono">
-              <strong>Server Actions:</strong> RPC en proceso (sin latencia HTTP)
+              <strong>Ejecución:</strong> <code>cd backend &amp;&amp; mvn spring-boot:run</code> (:8080)
             </div>
           </div>
 
-          <!-- COLUMNA 3: INFRAESTRUCTURA & PERSISTENCIA -->
+          <!-- COLUMNA 3: DATABASE -->
           <div class="border-2 border-indigo-200 rounded-2xl p-4 bg-gradient-to-b from-indigo-50/40 to-white flex flex-col justify-between">
             <div>
               <div class="flex items-center justify-between mb-3 border-b border-indigo-100 pb-2">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
-                  <span class="font-bold text-indigo-950 font-mono text-[13px]">📁 lib/, supabase/, tests/</span>
+                  <span class="font-bold text-indigo-950 font-mono text-[13px]">📁 database/</span>
                 </div>
-                <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">Infra &amp; Datos</span>
+                <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">PostgreSQL 15+</span>
               </div>
 
               <div class="space-y-2 font-mono text-[11px] text-slate-600">
                 <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                  <strong class="text-slate-800 block mb-1">src/lib/ (Servicios Transversales)</strong>
-                  • <code>supabase/</code>: Clientes SSR, Admin y Middleware<br>
-                  • <code>auth/</code>: Guards de sesión y roles<br>
-                  • <code>maps/</code>: Motor cartográfico Leaflet<br>
-                  • <code>validations/</code>: SRI / ANT (cédula y placa)
+                  <strong class="text-slate-800 block mb-1">schema.sql (DDL Consolidado)</strong>
+                  18 tablas completas: perfiles, roles, cooperativas, localidades, paradas, rutas, buses, asientos, viajes, reservas, pagos, boletos e incidencias.
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                  <strong class="text-slate-800 block mb-1">supabase/ (Base de Datos Relacional)</strong>
-                  • <code>migrations/</code>: 001 a 008 (DDL y RLS)<br>
-                  • <code>seed.sql</code>: 18 localidades maestro
+                  <strong class="text-slate-800 block mb-1">seed.sql (Dataset Maestro)</strong>
+                  18 localidades georreferenciadas (Tulcán a Otavalo), paradas, rutas E35, flota y usuarios de demostración.
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                  <strong class="text-slate-800 block mb-1">tests/ (Calidad Automatizada)</strong>
-                  • <code>tests/unit/</code>: 103 pruebas unitarias (Vitest)<br>
-                  • <code>tests/e2e/</code>: Flujos completos (Playwright)
+                  <strong class="text-slate-800 block mb-1">migrations/ (Historial SQL)</strong>
+                  Scripts versionados 000001 a 000004 para control de cambios formal.
                 </div>
               </div>
             </div>
             <div class="mt-3 bg-indigo-50 p-2 rounded-lg text-[10px] text-indigo-900 font-mono">
-              <strong>Testing:</strong> <code>npm test</code> (103/103 tests passing)
+              <strong>Importación:</strong> <code>psql -d rutanorte -f database/schema.sql</code> (:5432)
             </div>
           </div>
 
         </div>
 
-        <!-- Barra Inferior: Principios Arquitectónicos -->
+        <!-- Barra Inferior: Swagger y Documentación Interactiva -->
         <div class="bg-slate-900 text-slate-200 p-4 rounded-xl border border-slate-800 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
           <div class="flex items-center gap-2">
-            <span class="text-emerald-400 font-bold font-mono">🏛️ MONOLITO MODULAR:</span>
-            <span class="text-slate-300">Un único repositorio cohesivo · Alta cohesión por feature · Cero desincronización de contratos · Despliegue atómico en Vercel</span>
+            <span class="text-emerald-400 font-bold font-mono">⚡ SWAGGER OPENAPI 3:</span>
+            <span class="text-slate-300">Documentación y ejecución de endpoints REST interactiva disponible en <code>http://localhost:8080/swagger-ui.html</code></span>
           </div>
-          <span class="bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded font-mono text-[11px] border border-emerald-500/30">100% TypeScript Strict</span>
+          <span class="bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded font-mono text-[11px] border border-emerald-500/30">CORS Habilitado (:3000 &lt;-&gt; :8080)</span>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 7. OPERACIONES & ENDPOINTS: MONOLITO MODULAR -->
+      <!-- 7. ENDPOINTS REST: SPRING BOOT CONTROLLERS -->
       <!-- ========================================== -->
       <section id="endpoints" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">07</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Catálogo de Operaciones y Endpoints del Monolito Modular</h2>
-            <p class="text-xs text-slate-500">Mapeo de Server Actions (RPC de alta velocidad en proceso) y Route Handlers RESTful por módulo</p>
+            <h2 class="text-xl font-bold text-slate-900">Catálogo de Endpoints RESTful (Spring Boot 3)</h2>
+            <p class="text-xs text-slate-500">Mapeo de controladores @RestController en 'backend/' consumidos por 'frontend/src/services/apiClient.ts'</p>
           </div>
         </div>
 
@@ -696,62 +686,62 @@ flowchart TD
           <table class="w-full text-left text-xs text-slate-600 border border-slate-200 rounded-xl overflow-hidden">
             <thead class="bg-[#173B57] text-white uppercase tracking-wider">
               <tr>
-                <th class="py-2.5 px-3">Módulo &amp; Operación</th>
-                <th class="py-2.5 px-3">Mecanismo / Ruta</th>
-                <th class="py-2.5 px-3">Contrato de Entrada (Zod)</th>
-                <th class="py-2.5 px-3">Seguridad / RBAC</th>
-                <th class="py-2.5 px-3">Efecto en Dominio &amp; PostgreSQL</th>
+                <th class="py-2.5 px-3">Método &amp; Endpoint</th>
+                <th class="py-2.5 px-3">Controlador (@RestController)</th>
+                <th class="py-2.5 px-3">Request Body / Parámetros</th>
+                <th class="py-2.5 px-3">Seguridad</th>
+                <th class="py-2.5 px-3">Operación en Backend &amp; BD</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200 bg-white">
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-emerald-800">auth / loginAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action / POST</td>
-                <td class="py-2 px-3 font-mono">loginSchema { email, password }</td>
+                <td class="py-2 px-3 font-mono font-bold text-emerald-800">POST /api/auth/login</td>
+                <td class="py-2 px-3 font-mono">AuthController</td>
+                <td class="py-2 px-3 font-mono">AuthRequest { email, password }</td>
                 <td class="py-2 px-3 text-slate-600">Público</td>
-                <td class="py-2 px-3">Valida credenciales en Supabase Auth, emite JWT y establece cookies HttpOnly protegidas.</td>
+                <td class="py-2 px-3">Autentica credenciales y emite token JWT firmado con HMAC-SHA256 (24h vigencia).</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-800">trips / searchTripsAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action / GET</td>
-                <td class="py-2 px-3 font-mono">{ originId, destId, date }</td>
+                <td class="py-2 px-3 font-mono font-bold text-blue-800">GET /api/trips</td>
+                <td class="py-2 px-3 font-mono">TripController</td>
+                <td class="py-2 px-3 font-mono">?routeId={uuid} (opcional)</td>
                 <td class="py-2 px-3 text-slate-600">Público</td>
-                <td class="py-2 px-3">Consulta viajes programados, calcula tramos intermedios de la ruta E35 y cupos disponibles.</td>
+                <td class="py-2 px-3">Consulta viajes programados, itinerarios y cupos disponibles en andenes.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-blue-800">trips / getTripSeatsAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action / RPC</td>
-                <td class="py-2 px-3 font-mono">{ tripId: UUID }</td>
+                <td class="py-2 px-3 font-mono font-bold text-blue-800">GET /api/trips/{id}/seats</td>
+                <td class="py-2 px-3 font-mono">TripController</td>
+                <td class="py-2 px-3 font-mono">@PathVariable UUID id</td>
                 <td class="py-2 px-3 text-slate-600">Público</td>
-                <td class="py-2 px-3">Genera matriz gráfica de asientos (30/40/44) marcando estados libre, reservado temporal o vendido.</td>
+                <td class="py-2 px-3">Retorna matriz gráfica de asientos indicando si están libres, reservados o vendidos.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-purple-800">bookings / createBookingAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action Atómica</td>
-                <td class="py-2 px-3 font-mono">createBookingSchema { tripId, seatIds }</td>
-                <td class="py-2 px-3 text-emerald-700 font-semibold">Autenticado / Taquilla</td>
-                <td class="py-2 px-3">Aplica transacción con bloqueo exclusivo en <code>booking_seats</code> y crea reserva temporal a 10 min.</td>
+                <td class="py-2 px-3 font-mono font-bold text-purple-800">POST /api/bookings</td>
+                <td class="py-2 px-3 font-mono">BookingController</td>
+                <td class="py-2 px-3 font-mono">BookingRequest { tripId, seatIds }</td>
+                <td class="py-2 px-3 text-emerald-700 font-semibold">JWT Bearer</td>
+                <td class="py-2 px-3">Ejecuta <code>@Lock(PESSIMISTIC_WRITE)</code> en JPA y crea reserva temporal a 10 min.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-purple-800">bookings / cancelBookingAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action Atómica</td>
-                <td class="py-2 px-3 font-mono">{ bookingId: UUID }</td>
-                <td class="py-2 px-3 text-emerald-700 font-semibold">Usuario / Operador</td>
-                <td class="py-2 px-3">Cancela reserva activa, libera asientos en <code>booking_seats</code> e incrementa <code>available_seats</code>.</td>
+                <td class="py-2 px-3 font-mono font-bold text-purple-800">DELETE /api/bookings/{id}</td>
+                <td class="py-2 px-3 font-mono">BookingController</td>
+                <td class="py-2 px-3 font-mono">@PathVariable UUID id</td>
+                <td class="py-2 px-3 text-emerald-700 font-semibold">JWT Bearer</td>
+                <td class="py-2 px-3">Cancela reserva voluntaria, libera asientos en <code>booking_seats</code> y restaura cupo.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-emerald-800">payments / processPaymentAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action Transaccional</td>
-                <td class="py-2 px-3 font-mono">paymentSchema { bookingId, method }</td>
-                <td class="py-2 px-3 text-emerald-700 font-semibold">Pasajero / Vendedor</td>
-                <td class="py-2 px-3">Registra pago simulado, confirma reserva, emite boletos y genera tokens QR criptográficos.</td>
+                <td class="py-2 px-3 font-mono font-bold text-emerald-800">POST /api/payments</td>
+                <td class="py-2 px-3 font-mono">PaymentController</td>
+                <td class="py-2 px-3 font-mono">PaymentRequest { bookingId, method }</td>
+                <td class="py-2 px-3 text-emerald-700 font-semibold">JWT Bearer</td>
+                <td class="py-2 px-3">Registra pago simulado, confirma reserva y emite boletos con token QR criptográfico.</td>
               </tr>
               <tr class="hover:bg-slate-50">
-                <td class="py-2 px-3 font-mono font-bold text-amber-800">inspector / validateTicketAction</td>
-                <td class="py-2 px-3 font-mono text-slate-700">Server Action &amp; REST Route</td>
-                <td class="py-2 px-3 font-mono">validateSchema { qrPayload }</td>
+                <td class="py-2 px-3 font-mono font-bold text-amber-800">POST /api/inspector/validate-ticket</td>
+                <td class="py-2 px-3 font-mono">InspectorController</td>
+                <td class="py-2 px-3 font-mono">ValidateBoardingRequest { qrPayload }</td>
                 <td class="py-2 px-3 text-amber-800 font-bold">INSPECTOR / ADMIN</td>
-                <td class="py-2 px-3">Descifra token opaco, valida viaje y fecha, actualiza estado a <code>used</code> y previene doble abordaje.</td>
+                <td class="py-2 px-3">Resuelve token QR, valida viaje, marca estado <code>used</code> y previene doble abordaje.</td>
               </tr>
             </tbody>
           </table>
