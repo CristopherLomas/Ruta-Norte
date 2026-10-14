@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import jsQR from "jsqr";
 import {
   QrCode,
   Camera,
@@ -10,10 +11,10 @@ import {
   AlertTriangle,
   XCircle,
   Keyboard,
-  User,
-  MapPin,
   Clock,
   Loader2,
+  RefreshCw,
+  ScanLine,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -30,79 +31,101 @@ export function QrScannerClient() {
   const [isValidating, setIsValidating] = React.useState(false);
   const [lastResult, setLastResult] = React.useState<BoardingValidationResult | null>(null);
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
+  const [lastScannedCode, setLastScannedCode] = React.useState<string | null>(null);
+  const [isStartingCamera, setIsStartingCamera] = React.useState(false);
 
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const streamRef = React.useRef<MediaStream | null>(null);
+  const canvasRef = React.useRef<HTMLCanvasElement | null>(null);
+  const scanAnimFrameRef = React.useRef<number | null>(null);
+  const lastScannedTimeRef = React.useRef<{ code: string; timestamp: number } | null>(null);
+  const isValidatingRef = React.useRef(isValidating);
 
-  // Cargar lista de cámaras disponibles
+  // Mantener referencia sincronizada para el bucle de escaneo
   React.useEffect(() => {
-    async function getMediaDevices() {
-      if (typeof navigator !== "undefined" && navigator.mediaDevices?.enumerateDevices) {
-        try {
-          const devices = await navigator.mediaDevices.enumerateDevices();
-          const videoDevices = devices.filter((d) => d.kind === "videoinput");
-          setCameras(videoDevices);
-          if (videoDevices.length > 0) {
-            // Priorizar cámara trasera si existe
-            const backCamera = videoDevices.find((d) =>
-              d.label.toLowerCase().includes("back") || d.label.toLowerCase().includes("trasera")
+    isValidatingRef.current = isValidating;
+  }, [isValidating]);
+
+  // Obtener lista de cámaras del sistema
+  const refreshCameras = React.useCallback(async () => {
+    if (typeof navigator !== "undefined" && navigator.mediaDevices?.enumerateDevices) {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter((d) => d.kind === "videoinput");
+        setCameras(videoDevices);
+        if (videoDevices.length > 0) {
+          // Priorizar cámara trasera si se detecta en la etiqueta
+          const backCamera = videoDevices.find((d) => {
+            const label = d.label.toLowerCase();
+            return (
+              label.includes("back") ||
+              label.includes("trasera") ||
+              label.includes("posterior") ||
+              label.includes("environment")
             );
-            setSelectedCameraId(backCamera ? backCamera.deviceId : videoDevices[0].deviceId);
+          });
+          if (backCamera) {
+            setSelectedCameraId(backCamera.deviceId);
+          } else if (!selectedCameraId && videoDevices[0].deviceId) {
+            setSelectedCameraId(videoDevices[0].deviceId);
           }
-        } catch {
-          // Permisos aún no otorgados o navegador sin soporte
         }
+      } catch (err) {
+        console.warn("No se pudo enumerar dispositivos de video:", err);
       }
     }
-    getMediaDevices();
-  }, []);
+  }, [selectedCameraId]);
 
-  // Iniciar / Detener cámara
-  const toggleCamera = async () => {
-    if (isCameraActive) {
-      stopCamera();
-    } else {
-      await startCamera(selectedCameraId);
-    }
-  };
+  // Carga inicial pasiva de cámaras
+  React.useEffect(() => {
+    refreshCameras();
+  }, [refreshCameras]);
 
-  const startCamera = async (deviceId?: string) => {
-    setErrorMessage(null);
+  // Emitir señal de audio con Web Audio API (agudo para éxito, grave para error)
+  const playAudioFeedback = (success: boolean) => {
     try {
-      if (!navigator.mediaDevices?.getUserMedia) {
-        throw new Error("El navegador no soporta acceso a la cámara.");
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+
+      if (success) {
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+      } else {
+        osc.frequency.setValueAtTime(300, ctx.currentTime);
+        gain.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.25);
       }
-
-      const constraints: MediaStreamConstraints = {
-        video: deviceId
-          ? { deviceId: { exact: deviceId } }
-          : { facingMode: { ideal: "environment" } },
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      streamRef.current = stream;
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.play();
-      }
-
-      setIsCameraActive(true);
-
-      // Comprobar si soporta linterna (torch)
-      const track = stream.getVideoTracks()[0];
-      const capabilities = (track.getCapabilities?.() || {}) as any;
-      if (capabilities.torch) {
-        setHasTorch(true);
-      }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "No se pudo acceder a la cámara.";
-      setErrorMessage(msg);
-      setIsCameraActive(false);
+    } catch {
+      // Silencioso si el navegador bloquea audio
     }
   };
 
-  const stopCamera = () => {
+  const triggerHaptic = (success: boolean) => {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      if (success) {
+        navigator.vibrate([100, 50, 100]);
+      } else {
+        navigator.vibrate([300, 100, 300]);
+      }
+    }
+  };
+
+  // Detener cámara de forma segura
+  const stopCamera = React.useCallback(() => {
+    if (scanAnimFrameRef.current) {
+      cancelAnimationFrame(scanAnimFrameRef.current);
+      scanAnimFrameRef.current = null;
+    }
     if (streamRef.current) {
       streamRef.current.getTracks().forEach((t) => t.stop());
       streamRef.current = null;
@@ -112,13 +135,125 @@ export function QrScannerClient() {
     }
     setIsCameraActive(false);
     setIsTorchOn(false);
+    setHasTorch(false);
+    setIsStartingCamera(false);
+  }, []);
+
+  // Iniciar cámara con fallback tolerante a fallos
+  const startCamera = React.useCallback(async (targetDeviceId?: string) => {
+    setErrorMessage(null);
+    setIsStartingCamera(true);
+
+    try {
+      // 1. Validar compatibilidad del navegador y entorno seguro (HTTPS / localhost)
+      if (typeof window !== "undefined" && !window.isSecureContext && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+        throw new Error(
+          "El acceso a la cámara requiere conexión segura (HTTPS o localhost). Si usa un teléfono en red local, use HTTPS."
+        );
+      }
+
+      if (!navigator.mediaDevices?.getUserMedia) {
+        throw new Error("Su navegador o dispositivo no soporta la API de cámara.");
+      }
+
+      // Detener cualquier stream previo
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      }
+
+      // 2. Definir restricciones flexibles (ideal en vez de exact para prevenir OverconstrainedError)
+      const constraints: MediaStreamConstraints = {
+        video: targetDeviceId && targetDeviceId.trim() !== ""
+          ? {
+              deviceId: { ideal: targetDeviceId },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            }
+          : {
+              facingMode: { ideal: "environment" },
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+            },
+        audio: false,
+      };
+
+      let stream: MediaStream;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia(constraints);
+      } catch (firstErr: unknown) {
+        console.warn("Fallo al solicitar cámara con restricciones ideales, intentando fallback simple...", firstErr);
+        // Fallback genérico si el dispositivo rechaza resolución o id específico
+        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+      }
+
+      streamRef.current = stream;
+
+      // 3. Conectar el stream al elemento de video siempre montado
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.muted = true;
+        try {
+          await videoRef.current.play();
+        } catch (playErr) {
+          console.warn("Aviso al reproducir video:", playErr);
+        }
+      }
+
+      setIsCameraActive(true);
+
+      // 4. Comprobar soporte de linterna (torch)
+      const track = stream.getVideoTracks()[0];
+      if (track) {
+        const capabilities = (track.getCapabilities?.() || {}) as { torch?: boolean };
+        if (capabilities.torch) {
+          setHasTorch(true);
+        }
+      }
+
+      // 5. Tras otorgar permisos, actualizar lista de cámaras para obtener nombres reales
+      await refreshCameras();
+    } catch (err: unknown) {
+      console.error("Error al acceder a la cámara:", err);
+      let friendlyMsg = "No se pudo acceder a la cámara.";
+
+      if (err instanceof Error) {
+        if (err.name === "NotAllowedError" || err.name === "PermissionDeniedError") {
+          friendlyMsg = "Permiso de cámara denegado. Por favor, habilite el permiso en la barra de navegación del navegador.";
+        } else if (err.name === "NotFoundError" || err.name === "DevicesNotFoundError") {
+          friendlyMsg = "No se encontró ninguna cámara conectada en este equipo.";
+        } else if (err.name === "NotReadableError" || err.name === "TrackStartError") {
+          friendlyMsg = "La cámara está siendo ocupada por otra aplicación o pestaña. Ciérrela e intente de nuevo.";
+        } else if (err.name === "OverconstrainedError") {
+          friendlyMsg = "La cámara seleccionada no cumple con la resolución requerida. Pruebe otra cámara.";
+        } else {
+          friendlyMsg = err.message;
+        }
+      }
+
+      setErrorMessage(friendlyMsg);
+      setIsCameraActive(false);
+    } finally {
+      setIsStartingCamera(false);
+    }
+  }, [refreshCameras]);
+
+  // Toggle cámara
+  const toggleCamera = async () => {
+    if (isCameraActive) {
+      stopCamera();
+    } else {
+      await startCamera(selectedCameraId);
+    }
   };
 
+  // Alternar linterna
   const toggleTorch = async () => {
     if (!streamRef.current) return;
     const track = streamRef.current.getVideoTracks()[0];
+    if (!track) return;
     try {
-      await (track as any).applyConstraints({
+      await (track as unknown as { applyConstraints: (c: { advanced: Array<{ torch: boolean }> }) => Promise<void> }).applyConstraints({
         advanced: [{ torch: !isTorchOn }],
       });
       setIsTorchOn(!isTorchOn);
@@ -127,15 +262,25 @@ export function QrScannerClient() {
     }
   };
 
-  // Limpiar stream al desmontar
+  // Asegurar que si el elemento video se monta o cambia, el stream siga asignado
+  React.useEffect(() => {
+    if (isCameraActive && videoRef.current && streamRef.current) {
+      if (videoRef.current.srcObject !== streamRef.current) {
+        videoRef.current.srcObject = streamRef.current;
+        videoRef.current.play().catch(() => {});
+      }
+    }
+  }, [isCameraActive]);
+
+  // Limpiar stream al desmontar el componente
   React.useEffect(() => {
     return () => {
       stopCamera();
     };
-  }, []);
+  }, [stopCamera]);
 
   // Procesar validación con retroalimentación háptica y sonora
-  const handleValidate = async (tokenToVerify: string) => {
+  const handleValidate = React.useCallback(async (tokenToVerify: string) => {
     const clean = tokenToVerify.trim();
     if (!clean) return;
 
@@ -148,27 +293,130 @@ export function QrScannerClient() {
         setErrorMessage(res.error || "Error al procesar la validación.");
         setLastResult(null);
         triggerHaptic(false);
+        playAudioFeedback(false);
       } else if (res.data) {
         setLastResult(res.data);
         triggerHaptic(res.data.valid);
+        playAudioFeedback(res.data.valid);
       }
     } catch {
       setErrorMessage("Error de comunicación con el servidor.");
       triggerHaptic(false);
+      playAudioFeedback(false);
     } finally {
       setIsValidating(false);
     }
-  };
+  }, []);
 
-  const triggerHaptic = (success: boolean) => {
-    if (typeof navigator !== "undefined" && navigator.vibrate) {
-      if (success) {
-        navigator.vibrate([100, 50, 100]); // Patrón de éxito
-      } else {
-        navigator.vibrate([300, 100, 300]); // Patrón de error
+  // Bucle de detección y escaneo de códigos QR en tiempo real
+  React.useEffect(() => {
+    if (!isCameraActive) {
+      if (scanAnimFrameRef.current) {
+        cancelAnimationFrame(scanAnimFrameRef.current);
+        scanAnimFrameRef.current = null;
+      }
+      return;
+    }
+
+    let isScanningLoopActive = true;
+    type BarcodeDetectorType = { detect: (source: HTMLVideoElement) => Promise<Array<{ rawValue?: string }>> };
+    let nativeDetector: BarcodeDetectorType | null = null;
+
+    if (typeof window !== "undefined" && "BarcodeDetector" in window) {
+      try {
+        const DetectorClass = (window as unknown as { BarcodeDetector: new (opts: { formats: string[] }) => BarcodeDetectorType }).BarcodeDetector;
+        nativeDetector = new DetectorClass({ formats: ["qr_code"] });
+      } catch {
+        nativeDetector = null;
       }
     }
-  };
+
+    if (!canvasRef.current) {
+      canvasRef.current = document.createElement("canvas");
+    }
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext("2d", { willReadFrequently: true });
+
+    const scanFrame = async () => {
+      if (!isScanningLoopActive) return;
+
+      const video = videoRef.current;
+      if (
+        video &&
+        video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA &&
+        video.videoWidth > 0 &&
+        video.videoHeight > 0
+      ) {
+        let detectedCode: string | null = null;
+
+        // 1. Intentar BarcodeDetector nativo (rápido y con aceleración GPU)
+        if (nativeDetector) {
+          try {
+            const results = await nativeDetector.detect(video);
+            if (results && results.length > 0 && results[0].rawValue) {
+              detectedCode = results[0].rawValue;
+            }
+          } catch {
+            // Continuar con jsQR
+          }
+        }
+
+        // 2. Si no detectó con API nativa, usar jsQR con canvas
+        if (!detectedCode && ctx) {
+          try {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const qrResult = jsQR(imageData.data, imageData.width, imageData.height, {
+              inversionAttempts: "dontInvert",
+            });
+            if (qrResult && qrResult.data) {
+              detectedCode = qrResult.data;
+            }
+          } catch {
+            // Ignorar errores puntuales en la captura del frame
+          }
+        }
+
+        // 3. Procesar código detectado si no está en cooldown
+        if (detectedCode) {
+          const trimmed = detectedCode.trim();
+          const now = Date.now();
+          const last = lastScannedTimeRef.current;
+          const isSameCodeRecent = last && last.code === trimmed && now - last.timestamp < 3500;
+
+          if (!isSameCodeRecent && !isValidatingRef.current) {
+            lastScannedTimeRef.current = { code: trimmed, timestamp: now };
+            setLastScannedCode(trimmed);
+            setTimeout(() => setLastScannedCode(null), 1500);
+
+            // Disparar validación automática del boleto
+            handleValidate(trimmed);
+          }
+        }
+      }
+
+      // Intervalo adaptativo de ~130ms para equilibrio perfecto entre detección rápida y bajo consumo de CPU
+      if (isScanningLoopActive) {
+        setTimeout(() => {
+          if (isScanningLoopActive) {
+            scanAnimFrameRef.current = requestAnimationFrame(scanFrame);
+          }
+        }, 130);
+      }
+    };
+
+    scanAnimFrameRef.current = requestAnimationFrame(scanFrame);
+
+    return () => {
+      isScanningLoopActive = false;
+      if (scanAnimFrameRef.current) {
+        cancelAnimationFrame(scanAnimFrameRef.current);
+        scanAnimFrameRef.current = null;
+      }
+    };
+  }, [isCameraActive, handleValidate]);
 
   const handleManualSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,28 +443,52 @@ export function QrScannerClient() {
         <CardContent className="p-5 space-y-4">
           {/* Viewport de Cámara */}
           <div className="relative w-full aspect-video bg-slate-900 rounded-xl overflow-hidden flex items-center justify-center border-2 border-slate-700">
-            {isCameraActive ? (
-              <>
-                <video
-                  ref={videoRef}
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
-                {/* Cuadro visual de enfoque para código QR */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div className="w-52 h-52 border-2 border-brand-secondary/80 rounded-2xl relative shadow-lg">
-                    <div className="absolute -top-1 -left-1 w-5 h-5 border-t-4 border-l-4 border-brand-secondary rounded-tl-lg" />
-                    <div className="absolute -top-1 -right-1 w-5 h-5 border-t-4 border-r-4 border-brand-secondary rounded-tr-lg" />
-                    <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-4 border-l-4 border-brand-secondary rounded-bl-lg" />
-                    <div className="absolute -bottom-1 -right-1 w-5 h-5 border-b-4 border-r-4 border-brand-secondary rounded-br-lg" />
-                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-brand-secondary/40 animate-pulse" />
+            {/* Elemento de video SIEMPRE presente en el DOM para evitar que ref sea nulo */}
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className={`w-full h-full object-cover transition-opacity duration-300 ${
+                isCameraActive ? "opacity-100 block" : "opacity-0 hidden"
+              }`}
+            />
+
+            {/* Marcador visual de enfoque para código QR */}
+            {isCameraActive && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div
+                  className={`w-52 h-52 border-2 rounded-2xl relative shadow-lg transition-all duration-300 ${
+                    lastScannedCode
+                      ? "border-emerald-400 bg-emerald-500/10 scale-105"
+                      : "border-brand-secondary/80"
+                  }`}
+                >
+                  <div className="absolute -top-1 -left-1 w-5 h-5 border-t-4 border-l-4 border-brand-secondary rounded-tl-lg" />
+                  <div className="absolute -top-1 -right-1 w-5 h-5 border-t-4 border-r-4 border-brand-secondary rounded-tr-lg" />
+                  <div className="absolute -bottom-1 -left-1 w-5 h-5 border-b-4 border-l-4 border-brand-secondary rounded-bl-lg" />
+                  <div className="absolute -bottom-1 -right-1 w-5 h-5 border-b-4 border-r-4 border-brand-secondary rounded-br-lg" />
+                  <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-brand-secondary/40 animate-pulse" />
+
+                  {/* Indicador flotante de lectura activa */}
+                  <div className="absolute -bottom-8 left-0 right-0 flex justify-center">
+                    <span className="bg-black/70 backdrop-blur-sm text-emerald-400 text-[10px] font-mono px-2 py-0.5 rounded-full flex items-center gap-1">
+                      <ScanLine className="h-3 w-3 animate-pulse" />
+                      Lector activo en vivo
+                    </span>
                   </div>
                 </div>
-              </>
-            ) : (
+              </div>
+            )}
+
+            {/* Estado inactivo */}
+            {!isCameraActive && (
               <div className="text-center p-6 text-slate-400 space-y-2">
                 <CameraOff className="h-12 w-12 mx-auto text-slate-500 opacity-60" />
-                <p className="text-xs">Cámara en espera o desactivada</p>
+                <p className="text-xs font-medium">Cámara en espera o desactivada</p>
+                <p className="text-[10px] text-slate-500">
+                  Presiona &quot;Activar Cámara&quot; para escanear boletos
+                </p>
               </div>
             )}
           </div>
@@ -227,11 +499,17 @@ export function QrScannerClient() {
               <Button
                 type="button"
                 onClick={toggleCamera}
+                disabled={isStartingCamera}
                 variant={isCameraActive ? "destructive" : "default"}
                 size="sm"
                 className="gap-1.5 text-xs rounded-xl"
               >
-                {isCameraActive ? (
+                {isStartingCamera ? (
+                  <>
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    Iniciando...
+                  </>
+                ) : isCameraActive ? (
                   <>
                     <CameraOff className="h-3.5 w-3.5" />
                     Detener Cámara
@@ -250,7 +528,9 @@ export function QrScannerClient() {
                   variant="outline"
                   size="sm"
                   onClick={toggleTorch}
-                  className={`text-xs gap-1.5 rounded-xl ${isTorchOn ? "bg-amber-100 text-amber-900 border-amber-300" : ""}`}
+                  className={`text-xs gap-1.5 rounded-xl ${
+                    isTorchOn ? "bg-amber-100 text-amber-900 border-amber-300" : ""
+                  }`}
                 >
                   <Flashlight className="h-3.5 w-3.5" />
                   {isTorchOn ? "Apagar Linterna" : "Linterna"}
@@ -258,24 +538,38 @@ export function QrScannerClient() {
               )}
             </div>
 
+            {/* Selector de cámara si hay más de 1 dispositivo */}
             {cameras.length > 1 && (
-              <select
-                className="h-8 px-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700"
-                value={selectedCameraId}
-                onChange={(e) => {
-                  setSelectedCameraId(e.target.value);
-                  if (isCameraActive) {
-                    stopCamera();
-                    startCamera(e.target.value);
-                  }
-                }}
-              >
-                {cameras.map((c, i) => (
-                  <option key={c.deviceId} value={c.deviceId}>
-                    {c.label || `Cámara ${i + 1}`}
-                  </option>
-                ))}
-              </select>
+              <div className="flex items-center gap-1.5">
+                <select
+                  className="h-8 px-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700 max-w-[200px] truncate"
+                  value={selectedCameraId}
+                  onChange={(e) => {
+                    const newId = e.target.value;
+                    setSelectedCameraId(newId);
+                    if (isCameraActive) {
+                      stopCamera();
+                      startCamera(newId);
+                    }
+                  }}
+                >
+                  {cameras.map((c, i) => (
+                    <option key={c.deviceId || i} value={c.deviceId}>
+                      {c.label || `Cámara ${i + 1}`}
+                    </option>
+                  ))}
+                </select>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-slate-500"
+                  onClick={refreshCameras}
+                  title="Actualizar lista de cámaras"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                </Button>
+              </div>
             )}
           </div>
 
