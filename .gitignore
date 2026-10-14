@@ -1,5 +1,6 @@
 # dependencies
-/node_modules
+node_modules/
+frontend/node_modules/
 /.pnp
 .pnp.js
 .yarn/cache
@@ -8,8 +9,10 @@
 /coverage
 
 # next.js
-/.next/
-/out/
+.next/
+frontend/.next/
+out/
+frontend/out/
 
 # production
 /build

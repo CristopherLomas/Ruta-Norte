@@ -3,15 +3,15 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "test:unit": "vitest run",
-    "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "dev": "next dev frontend",
+    "build": "next build frontend",
+    "start": "next start frontend",
+    "lint": "next lint frontend",
+    "typecheck": "tsc --project frontend/tsconfig.json --noEmit",
+    "test": "vitest run -c frontend/vitest.config.ts",
+    "test:unit": "vitest run -c frontend/vitest.config.ts",
+    "test:watch": "vitest -c frontend/vitest.config.ts",
+    "test:e2e": "playwright test -c frontend/playwright.config.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",

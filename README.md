@@ -46,8 +46,7 @@ Ruta-Norte/
 │   ├── data-model.md         # Modelo entidad-relación y diccionario de datos
 │   └── security-model.md     # Políticas de seguridad, RBAC y control de acceso
 │
-├── presentacion.html         # Diapositivas interactivas para la defensa del proyecto
-└── README.md                 # Esta guía principal de navegación
+└── README.md                 # Guía principal de arquitectura y ejecución
 ```
 
 ---
