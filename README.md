@@ -26,13 +26,17 @@ Ruta-Norte/
 │   ├── src/services/         # Cliente HTTP tipado (apiClient.ts) para conectar con el backend
 │   └── public/               # Activos estáticos y diapositivas de presentación web
 │
-├── 📁 backend/               # API RESTful empresarial (Java 17+ / Spring Boot 3 / JPA / Spring Security)
-│   ├── controller/           # Controladores @RestController (/api/auth, /api/trips, /api/bookings, etc.)
-│   ├── service/              # Lógica de negocio (bloqueo a 10 min, emisión de boletos, cálculo de cupos)
-│   ├── repository/           # Repositorios Spring Data JPA con bloqueo pesimista @Lock
-│   ├── entity/               # Entidades JPA correspondientes a las 18 tablas relacionales
-│   ├── dto/                  # Clases de transferencia de datos tipadas (Request/Response)
-│   ├── config/               # Configuración de seguridad, filtros JWT y CORS
+├── 📁 backend/               # API RESTful modular (Java 17+ / Spring Boot 3 / Package by Feature)
+│   ├── src/main/java/.../    # Paquetes organizados por dominio:
+│   │   ├── auth/             # controller, service, repository, entity, dto
+│   │   ├── booking/          # controller, service, repository, entity, dto
+│   │   ├── trip/             # controller, service, repository, entity, dto
+│   │   ├── payment/          # controller, service, repository, entity, dto
+│   │   ├── ticket/           # controller, service, repository, entity, dto
+│   │   ├── inspector/        # controller, service, dto
+│   │   ├── route/            # controller, service, repository, entity, dto
+│   │   ├── fleet/            # controller, service, repository, entity, dto
+│   │   └── shared/           # config (JWT/CORS), exception (GlobalHandler), dto
 │   └── pom.xml               # Dependencias Maven y configuración del proyecto
 │
 ├── 📁 database/              # Persistencia relacional (PostgreSQL 15+)
