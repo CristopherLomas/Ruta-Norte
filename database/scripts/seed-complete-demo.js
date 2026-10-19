@@ -322,7 +322,7 @@ async function runBulkSeeding() {
   let tripCounter = 1;
   const activeBuses = buses.filter((b) => b.status === "active");
 
-  for (let dayOffset = -7; dayOffset <= 25; dayOffset++) {
+  for (let dayOffset = -7; dayOffset <= 30; dayOffset++) {
     for (let hIdx = 0; hIdx < hoursSchedule.length; hIdx++) {
       const hour = hoursSchedule[hIdx];
       const routeIdx = (Math.abs(dayOffset) + hIdx) % routes.length;
