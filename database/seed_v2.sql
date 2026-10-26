@@ -14,16 +14,16 @@ ON CONFLICT (email) DO NOTHING;
 -- 2. 9 CIUDADES CON TERMINALES (CORREDOR NORTE E35)
 INSERT INTO public.cities (id, name, province, terminal_name, image_url) VALUES
   -- CARCHI
-  (1, 'Tulcán', 'Carchi', 'Terminal Terrestre de Tulcán', '/cities/tulcan.jpg'),
-  (2, 'Julio Andrade', 'Carchi', 'Terminal Parroquial Julio Andrade', '/cities/julio-andrade.jpg'),
-  (3, 'San Gabriel', 'Carchi', 'Terminal Terrestre San Gabriel', '/cities/san-gabriel.jpg'),
-  (4, 'Bolívar', 'Carchi', 'Terminal Cantonal Bolívar', '/cities/bolivar.jpg'),
-  (5, 'El Ángel', 'Carchi', 'Terminal Terrestre El Ángel', '/cities/el-angel.jpg'),
+  (1, 'Tulcán', 'Carchi', 'Terminal Terrestre de Tulcán', '/images/cities/tulcan.jpg'),
+  (2, 'Julio Andrade', 'Carchi', 'Terminal Parroquial Julio Andrade', '/images/cities/julio-andrade.jpg'),
+  (3, 'San Gabriel', 'Carchi', 'Terminal Terrestre San Gabriel', '/images/cities/san-gabriel.jpg'),
+  (4, 'Bolívar', 'Carchi', 'Terminal Cantonal Bolívar', '/images/cities/bolivar.jpg'),
+  (5, 'El Ángel', 'Carchi', 'Terminal Terrestre El Ángel', '/images/cities/el-angel.jpg'),
   -- IMBABURA
-  (6, 'Ibarra', 'Imbabura', 'Terminal Terrestre de Ibarra', '/cities/ibarra.jpg'),
-  (7, 'Atuntaqui', 'Imbabura', 'Terminal Intercantonal Atuntaqui', '/cities/atuntaqui.jpg'),
-  (8, 'Otavalo', 'Imbabura', 'Terminal Terrestre de Otavalo', '/cities/otavalo.jpg'),
-  (9, 'Cotacachi', 'Imbabura', 'Terminal Terrestre Cotacachi', '/cities/cotacachi.jpg')
+  (6, 'Ibarra', 'Imbabura', 'Terminal Terrestre de Ibarra', '/images/cities/ibarra.jpg'),
+  (7, 'Atuntaqui', 'Imbabura', 'Terminal Intercantonal Atuntaqui', '/images/cities/atuntaqui.jpg'),
+  (8, 'Otavalo', 'Imbabura', 'Terminal Terrestre de Otavalo', '/images/cities/otavalo.jpg'),
+  (9, 'Cotacachi', 'Imbabura', 'Terminal Terrestre Cotacachi', '/images/cities/cotacachi.jpg')
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   province = EXCLUDED.province,

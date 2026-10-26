@@ -68,79 +68,79 @@ interface TicketPurchased {
   price: number;
 }
 
-// 9 Ciudades con Fotos Locales en /cities/... y Backup CDN Verificado (100% Carga Exitosa)
+// 9 Ciudades con Fotos 100% Reales de Wikipedia Commons en /images/cities/...
 const FALLBACK_CITIES: City[] = [
   {
     id: 1,
     name: "Tulcán",
     province: "Carchi",
     terminalName: "Terminal Terrestre de Tulcán",
-    imageUrl: "/cities/tulcan.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/tulcan.jpg",
+    backupUrl: "/cities/tulcan.jpg",
   },
   {
     id: 2,
     name: "Julio Andrade",
     province: "Carchi",
     terminalName: "Terminal Parroquial Julio Andrade",
-    imageUrl: "/cities/julio-andrade.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/julio-andrade.jpg",
+    backupUrl: "/cities/julio-andrade.jpg",
   },
   {
     id: 3,
     name: "San Gabriel",
     province: "Carchi",
     terminalName: "Terminal Terrestre San Gabriel",
-    imageUrl: "/cities/san-gabriel.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/san-gabriel.jpg",
+    backupUrl: "/cities/san-gabriel.jpg",
   },
   {
     id: 4,
     name: "Bolívar",
     province: "Carchi",
     terminalName: "Terminal Cantonal Bolívar",
-    imageUrl: "/cities/bolivar.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/bolivar.jpg",
+    backupUrl: "/cities/bolivar.jpg",
   },
   {
     id: 5,
     name: "El Ángel",
     province: "Carchi",
     terminalName: "Terminal Terrestre El Ángel",
-    imageUrl: "/cities/el-angel.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/el-angel.jpg",
+    backupUrl: "/cities/el-angel.jpg",
   },
   {
     id: 6,
     name: "Ibarra",
     province: "Imbabura",
     terminalName: "Terminal Terrestre de Ibarra",
-    imageUrl: "/cities/ibarra.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/ibarra.jpg",
+    backupUrl: "/cities/ibarra.jpg",
   },
   {
     id: 7,
     name: "Atuntaqui",
     province: "Imbabura",
     terminalName: "Terminal Intercantonal Atuntaqui",
-    imageUrl: "/cities/atuntaqui.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/atuntaqui.jpg",
+    backupUrl: "/cities/atuntaqui.jpg",
   },
   {
     id: 8,
     name: "Otavalo",
     province: "Imbabura",
     terminalName: "Terminal Terrestre de Otavalo",
-    imageUrl: "/cities/otavalo.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/otavalo.jpg",
+    backupUrl: "/cities/otavalo.jpg",
   },
   {
     id: 9,
     name: "Cotacachi",
     province: "Imbabura",
     terminalName: "Terminal Terrestre Cotacachi",
-    imageUrl: "/cities/cotacachi.jpg",
-    backupUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80",
+    imageUrl: "/images/cities/cotacachi.jpg",
+    backupUrl: "/cities/cotacachi.jpg",
   },
 ];
 
@@ -169,7 +169,7 @@ export default function PasajeroPage() {
   // Estados de Boleto QR (Paso 5)
   const [purchasedTickets, setPurchasedTickets] = useState<TicketPurchased[]>([]);
 
-  // Cargar ciudades con Axios (manteniendo fotos confiables)
+  // Cargar ciudades con Axios (garantizando fotos reales de Wikipedia)
   useEffect(() => {
     axiosClient
       .get<City[]>("/cities")
@@ -179,15 +179,10 @@ export default function PasajeroPage() {
             const found = FALLBACK_CITIES.find(
               (f) => f.id === c.id || f.name.toLowerCase() === c.name.toLowerCase()
             );
-            // Usar foto local o confiable
-            const img =
-              c.imageUrl && !c.imageUrl.includes("wikimedia.org")
-                ? c.imageUrl
-                : found?.imageUrl || "/cities/tulcan.jpg";
             return {
               ...c,
-              imageUrl: img,
-              backupUrl: found?.backupUrl,
+              imageUrl: found?.imageUrl || `/images/cities/${c.name.toLowerCase().replace(/ /g, '-')}.jpg`,
+              backupUrl: found?.backupUrl || `/cities/${c.name.toLowerCase().replace(/ /g, '-')}.jpg`,
             };
           });
           setCities(merged);
