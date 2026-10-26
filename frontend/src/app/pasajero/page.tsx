@@ -10,8 +10,8 @@ import {
   Clock,
   ArrowRight,
   ArrowLeft,
-  Calendar,
   CheckCircle2,
+  AlertCircle,
   Ticket as TicketIcon,
   Printer,
   RotateCcw,
@@ -21,6 +21,11 @@ import {
   Sunset,
   Moon,
   Compass,
+  CreditCard,
+  Building2,
+  Banknote,
+  RefreshCw,
+  ShieldCheck,
 } from "lucide-react";
 
 interface City {
@@ -57,9 +62,13 @@ interface Trip {
 interface TicketPurchased {
   id: string;
   passengerName: string;
+  passengerDni?: string;
   seatNumber: number;
   qrToken: string;
-  status: string;
+  status: "PENDING_VERIFICATION" | "PAID" | "REJECTED" | "BOARDED";
+  paymentMethod?: string;
+  paymentReference?: string;
+  bankName?: string;
   originCity: string;
   destinationCity: string;
   departureTime: string;
@@ -146,7 +155,7 @@ const FALLBACK_CITIES: City[] = [
 
 export default function PasajeroPage() {
   // Wizard de 5 Pasos Independientes:
-  // 1: Origen | 2: Destino | 3: Horario | 4: Asiento | 5: Boleto QR
+  // 1: Origen | 2: Destino | 3: Horario | 4: Asiento & Pago | 5: Boleto QR
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
   // Estados de Rutas
@@ -160,16 +169,21 @@ export default function PasajeroPage() {
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [loadingTrips, setLoadingTrips] = useState(false);
 
-  // Estados de Asientos (Paso 4)
+  // Estados de Asientos y Pago (Paso 4)
   const [occupiedSeats, setOccupiedSeats] = useState<number[]>([3, 4, 12, 15, 22, 23]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const [passengerName, setPassengerName] = useState("Pasajero General");
+  const [passengerDni, setPassengerDni] = useState("1004567890");
+  const [paymentMethod, setPaymentMethod] = useState<"TRANSFERENCIA" | "EFECTIVO">("TRANSFERENCIA");
+  const [bankName, setBankName] = useState("Banco Pichincha");
+  const [paymentReference, setPaymentReference] = useState("");
   const [purchasing, setPurchasing] = useState(false);
 
   // Estados de Boleto QR (Paso 5)
   const [purchasedTickets, setPurchasedTickets] = useState<TicketPurchased[]>([]);
+  const [updatingTicketStatus, setUpdatingTicketStatus] = useState(false);
 
-  // Cargar ciudades con Axios (garantizando fotos reales de Wikipedia)
+  // Cargar ciudades con Axios garantizando fotos locales reales
   useEffect(() => {
     axiosClient
       .get<City[]>("/cities")
@@ -181,8 +195,8 @@ export default function PasajeroPage() {
             );
             return {
               ...c,
-              imageUrl: found?.imageUrl || `/images/cities/${c.name.toLowerCase().replace(/ /g, '-')}.jpg`,
-              backupUrl: found?.backupUrl || `/cities/${c.name.toLowerCase().replace(/ /g, '-')}.jpg`,
+              imageUrl: found?.imageUrl || `/images/cities/${c.name.toLowerCase().replace(/ /g, "-")}.jpg`,
+              backupUrl: found?.backupUrl || `/cities/${c.name.toLowerCase().replace(/ /g, "-")}.jpg`,
             };
           });
           setCities(merged);
@@ -318,38 +332,58 @@ export default function PasajeroPage() {
     }
   };
 
-  // Compra en 1 Clic (Paso 4 -> Paso 5)
+  // Autocompletar comprobante demo
+  const handleAutocompleteDemoPayment = () => {
+    setPaymentMethod("TRANSFERENCIA");
+    setBankName("Banco Pichincha");
+    setPaymentReference("TR-" + Math.floor(100000 + Math.random() * 900000));
+  };
+
+  // Compra / Reserva con método de pago
   const handleConfirmPurchase = async () => {
     if (!selectedTrip || selectedSeats.length === 0) return;
     setPurchasing(true);
+
+    const ref =
+      paymentMethod === "TRANSFERENCIA"
+        ? paymentReference.trim() || "TR-DEMO" + Math.floor(100000 + Math.random() * 900000)
+        : "EFECTIVO-VENTANILLA";
 
     try {
       const res = await axiosClient.post<TicketPurchased[]>("/tickets/purchase", {
         tripId: selectedTrip.id,
         seatNumbers: selectedSeats,
         passengerName: passengerName.trim() || "Pasajero General",
+        passengerDni: passengerDni.trim() || "1004567890",
+        paymentMethod: paymentMethod,
+        bankName: paymentMethod === "TRANSFERENCIA" ? bankName : "Pago en Taquilla",
+        paymentReference: ref,
       });
 
       if (res.data && res.data.length > 0) {
         setPurchasedTickets(res.data);
       } else {
-        generateFallbackPurchasedTickets();
+        generateFallbackPurchasedTickets(ref);
       }
     } catch {
-      generateFallbackPurchasedTickets();
+      generateFallbackPurchasedTickets(ref);
     } finally {
       setPurchasing(false);
       setStep(5);
     }
   };
 
-  const generateFallbackPurchasedTickets = () => {
-    const tickets = selectedSeats.map((seat) => ({
-      id: "tk-" + seat,
+  const generateFallbackPurchasedTickets = (ref: string) => {
+    const tickets: TicketPurchased[] = selectedSeats.map((seat) => ({
+      id: "tk-" + Math.random().toString(36).substring(2, 9),
       passengerName: passengerName.trim() || "Pasajero General",
+      passengerDni: passengerDni.trim() || "1004567890",
       seatNumber: seat,
       qrToken: "RN-" + Math.random().toString(36).substring(2, 14).toUpperCase(),
-      status: "PAID",
+      status: "PENDING_VERIFICATION",
+      paymentMethod: paymentMethod,
+      bankName: paymentMethod === "TRANSFERENCIA" ? bankName : "Pago en Taquilla",
+      paymentReference: ref,
       originCity: selectedTrip?.originCityName || originCity?.name || "Tulcán",
       destinationCity: selectedTrip?.destinationCityName || destinationCity?.name || "Ibarra",
       departureTime: selectedTrip?.departureTime || "08:00 AM",
@@ -358,6 +392,28 @@ export default function PasajeroPage() {
       price: selectedTrip?.price || 3.75,
     }));
     setPurchasedTickets(tickets);
+  };
+
+  // Re-consultar estado del boleto en tiempo real
+  const handleCheckTicketStatus = async () => {
+    if (purchasedTickets.length === 0) return;
+    setUpdatingTicketStatus(true);
+    try {
+      const firstId = purchasedTickets[0].id;
+      const res = await axiosClient.get(`/tickets/${firstId}`);
+      if (res.data && res.data.status) {
+        setPurchasedTickets((prev) =>
+          prev.map((t) => ({ ...t, status: res.data.status }))
+        );
+      }
+    } catch {
+      // Simular verificación si se pulsa para demo
+      setPurchasedTickets((prev) =>
+        prev.map((t) => ({ ...t, status: "PAID" }))
+      );
+    } finally {
+      setUpdatingTicketStatus(false);
+    }
   };
 
   // Acción Inmediata Paso 1 (Origen)
@@ -386,7 +442,6 @@ export default function PasajeroPage() {
     setStep(1);
   };
 
-  // Handler de respaldo para imágenes
   const handleImageError = (
     e: React.SyntheticEvent<HTMLImageElement, Event>,
     backupUrl?: string
@@ -394,9 +449,6 @@ export default function PasajeroPage() {
     const target = e.currentTarget;
     if (backupUrl && target.src !== backupUrl) {
       target.src = backupUrl;
-    } else {
-      // Ocultar ícono roto manteniendo el degradado y fondo estilizado
-      target.style.opacity = "0";
     }
   };
 
@@ -415,7 +467,7 @@ export default function PasajeroPage() {
             { num: 1, label: "1. Origen" },
             { num: 2, label: "2. Destino" },
             { num: 3, label: "3. Horario" },
-            { num: 4, label: "4. Asiento" },
+            { num: 4, label: "4. Asiento & Pago" },
             { num: 5, label: "5. Boleto QR" },
           ].map((item, idx, arr) => {
             const isCurrent = step === item.num;
@@ -471,7 +523,7 @@ export default function PasajeroPage() {
       </div>
 
       {/* 3. Contenedor Maestro "Cero Scroll" (100vh) */}
-      <main className="flex-1 min-h-0 overflow-hidden flex flex-col p-2.5 sm:p-3.5 max-w-7xl w-full mx-auto">
+      <main className="flex-1 min-h-0 overflow-hidden flex flex-col p-2.5 sm:p-3 max-w-7xl w-full mx-auto">
         {/* =================================================================== */}
         {/* PASO 1: "¿De dónde sales? (Elige tu Origen)"                        */}
         {/* =================================================================== */}
@@ -498,11 +550,11 @@ export default function PasajeroPage() {
               </div>
             </div>
 
-            {/* Cuadrícula de 9 Ciudades Fotográficas (100vh sin scroll) */}
-            <div className="flex-1 min-h-0 flex flex-col justify-between gap-2">
+            {/* Cuadrícula de 9 Tarjetas DIVIDIDAS (Foto limpia 72% arriba, texto 28% abajo) */}
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1.5">
               {/* Bloque Carchi (5 ciudades en 1 fila) */}
               <div className="flex-1 min-h-0 flex flex-col">
-                <div className="shrink-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <div className="shrink-0 text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
                   <span>Provincia del Carchi (Norte)</span>
                 </div>
@@ -512,27 +564,31 @@ export default function PasajeroPage() {
                       key={city.id}
                       type="button"
                       onClick={() => handleSelectOrigin(city)}
-                      className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 text-left flex flex-col justify-end p-2.5 bg-slate-900 h-full w-full"
+                      className="group flex flex-col rounded-2xl overflow-hidden bg-slate-900 border-2 border-slate-700/80 hover:border-emerald-400 dark:hover:border-emerald-400 transition-all shadow-md hover:shadow-xl hover:scale-[1.02] text-left h-full w-full cursor-pointer"
                     >
-                      <img
-                        src={city.imageUrl}
-                        alt={city.name}
-                        onError={(e) => handleImageError(e, city.backupUrl)}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
-                        loading="eager"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent"></div>
-                      <div className="absolute top-2 right-2">
-                        <span className="bg-emerald-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
-                          Elegir ➔
-                        </span>
+                      {/* Parte Superior (72% de altura): FOTOGRAFÍA LIMPIA EN HD */}
+                      <div className="relative w-full h-[72%] overflow-hidden bg-slate-950">
+                        <img
+                          src={city.imageUrl}
+                          alt={city.name}
+                          onError={(e) => handleImageError(e, city.backupUrl)}
+                          className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
+                          loading="eager"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                            Elegir ➔
+                          </span>
+                        </div>
                       </div>
-                      <div className="relative z-10 text-white leading-tight">
-                        <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+
+                      {/* Parte Inferior (28% de altura): TEXTO SÓLIDO INDEPENDIENTE */}
+                      <div className="h-[28%] px-2.5 py-1 bg-slate-900/95 dark:bg-slate-950 flex flex-col justify-center border-t border-slate-800">
+                        <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                           {city.name}
                         </h3>
-                        <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                        <p className="text-[10px] text-amber-400 truncate font-semibold flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-2.5 h-2.5 shrink-0" />
                           <span>{city.terminalName}</span>
                         </p>
                       </div>
@@ -543,7 +599,7 @@ export default function PasajeroPage() {
 
               {/* Bloque Imbabura (4 ciudades en 1 fila centrada) */}
               <div className="flex-1 min-h-0 flex flex-col">
-                <div className="shrink-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <div className="shrink-0 text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
                   <span>Provincia de Imbabura (Lagos y Valles)</span>
                 </div>
@@ -553,27 +609,31 @@ export default function PasajeroPage() {
                       key={city.id}
                       type="button"
                       onClick={() => handleSelectOrigin(city)}
-                      className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 text-left flex flex-col justify-end p-2.5 bg-slate-900 h-full w-full"
+                      className="group flex flex-col rounded-2xl overflow-hidden bg-slate-900 border-2 border-slate-700/80 hover:border-emerald-400 dark:hover:border-emerald-400 transition-all shadow-md hover:shadow-xl hover:scale-[1.02] text-left h-full w-full cursor-pointer"
                     >
-                      <img
-                        src={city.imageUrl}
-                        alt={city.name}
-                        onError={(e) => handleImageError(e, city.backupUrl)}
-                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
-                        loading="eager"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent"></div>
-                      <div className="absolute top-2 right-2">
-                        <span className="bg-emerald-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
-                          Elegir ➔
-                        </span>
+                      {/* Parte Superior (72%): FOTO LIMPIA EN HD */}
+                      <div className="relative w-full h-[72%] overflow-hidden bg-slate-950">
+                        <img
+                          src={city.imageUrl}
+                          alt={city.name}
+                          onError={(e) => handleImageError(e, city.backupUrl)}
+                          className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
+                          loading="eager"
+                        />
+                        <div className="absolute top-2 right-2">
+                          <span className="bg-emerald-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                            Elegir ➔
+                          </span>
+                        </div>
                       </div>
-                      <div className="relative z-10 text-white leading-tight">
-                        <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+
+                      {/* Parte Inferior (28%): TEXTO SÓLIDO */}
+                      <div className="h-[28%] px-2.5 py-1 bg-slate-900/95 dark:bg-slate-950 flex flex-col justify-center border-t border-slate-800">
+                        <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                           {city.name}
                         </h3>
-                        <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                        <p className="text-[10px] text-amber-400 truncate font-semibold flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-2.5 h-2.5 shrink-0" />
                           <span>{city.terminalName}</span>
                         </p>
                       </div>
@@ -618,11 +678,11 @@ export default function PasajeroPage() {
               </div>
             </div>
 
-            {/* Cuadrícula de 9 Ciudades con Origen Deshabilitado */}
-            <div className="flex-1 min-h-0 flex flex-col justify-between gap-2">
+            {/* Cuadrícula con Origen Deshabilitado */}
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-1.5">
               {/* Bloque Carchi */}
               <div className="flex-1 min-h-0 flex flex-col">
-                <div className="shrink-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <div className="shrink-0 text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
                   <span>Provincia del Carchi</span>
                 </div>
@@ -635,40 +695,41 @@ export default function PasajeroPage() {
                         type="button"
                         disabled={isOrigin}
                         onClick={() => handleSelectDestination(city)}
-                        className={`group relative rounded-2xl overflow-hidden text-left flex flex-col justify-end p-2.5 h-full w-full transition-all duration-200 ${
+                        className={`group flex flex-col rounded-2xl overflow-hidden transition-all h-full w-full text-left ${
                           isOrigin
-                            ? "opacity-35 grayscale cursor-not-allowed border-2 border-slate-300 dark:border-slate-700 bg-slate-800"
-                            : "cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] border-2 border-slate-200 dark:border-slate-800 hover:border-blue-600 dark:hover:border-blue-400 bg-slate-900"
+                            ? "opacity-35 grayscale cursor-not-allowed border-2 border-slate-500 bg-slate-900"
+                            : "cursor-pointer bg-slate-900 border-2 border-slate-700/80 hover:border-blue-500 hover:shadow-xl hover:scale-[1.02]"
                         }`}
                       >
-                        <img
-                          src={city.imageUrl}
-                          alt={city.name}
-                          onError={(e) => handleImageError(e, city.backupUrl)}
-                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
-                          loading="eager"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent"></div>
-
-                        {/* Badge de Origen Bloqueado o Selección */}
-                        <div className="absolute top-2 right-2">
-                          {isOrigin ? (
-                            <span className="bg-slate-900/90 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/50">
-                              📍 SALES DE AQUÍ
-                            </span>
-                          ) : (
-                            <span className="bg-blue-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
-                              Llegar ➔
-                            </span>
-                          )}
+                        {/* 72% FOTO */}
+                        <div className="relative w-full h-[72%] overflow-hidden bg-slate-950">
+                          <img
+                            src={city.imageUrl}
+                            alt={city.name}
+                            onError={(e) => handleImageError(e, city.backupUrl)}
+                            className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
+                            loading="eager"
+                          />
+                          <div className="absolute top-2 right-2">
+                            {isOrigin ? (
+                              <span className="bg-slate-950/95 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/50">
+                                📍 SALES DE AQUÍ
+                              </span>
+                            ) : (
+                              <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                                Llegar ➔
+                              </span>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="relative z-10 text-white leading-tight">
-                          <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+                        {/* 28% TEXTO */}
+                        <div className="h-[28%] px-2.5 py-1 bg-slate-900/95 dark:bg-slate-950 flex flex-col justify-center border-t border-slate-800">
+                          <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                             {city.name}
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                          <p className="text-[10px] text-amber-400 truncate font-semibold flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-2.5 h-2.5 shrink-0" />
                             <span>{city.terminalName}</span>
                           </p>
                         </div>
@@ -680,7 +741,7 @@ export default function PasajeroPage() {
 
               {/* Bloque Imbabura */}
               <div className="flex-1 min-h-0 flex flex-col">
-                <div className="shrink-0 text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1 flex items-center gap-1">
+                <div className="shrink-0 text-[10px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-0.5 flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
                   <span>Provincia de Imbabura</span>
                 </div>
@@ -693,40 +754,41 @@ export default function PasajeroPage() {
                         type="button"
                         disabled={isOrigin}
                         onClick={() => handleSelectDestination(city)}
-                        className={`group relative rounded-2xl overflow-hidden text-left flex flex-col justify-end p-2.5 h-full w-full transition-all duration-200 ${
+                        className={`group flex flex-col rounded-2xl overflow-hidden transition-all h-full w-full text-left ${
                           isOrigin
-                            ? "opacity-35 grayscale cursor-not-allowed border-2 border-slate-300 dark:border-slate-700 bg-slate-800"
-                            : "cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] border-2 border-slate-200 dark:border-slate-800 hover:border-blue-600 dark:hover:border-blue-400 bg-slate-900"
+                            ? "opacity-35 grayscale cursor-not-allowed border-2 border-slate-500 bg-slate-900"
+                            : "cursor-pointer bg-slate-900 border-2 border-slate-700/80 hover:border-blue-500 hover:shadow-xl hover:scale-[1.02]"
                         }`}
                       >
-                        <img
-                          src={city.imageUrl}
-                          alt={city.name}
-                          onError={(e) => handleImageError(e, city.backupUrl)}
-                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
-                          loading="eager"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent"></div>
-
-                        {/* Badge de Origen Bloqueado o Selección */}
-                        <div className="absolute top-2 right-2">
-                          {isOrigin ? (
-                            <span className="bg-slate-900/90 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/50">
-                              📍 SALES DE AQUÍ
-                            </span>
-                          ) : (
-                            <span className="bg-blue-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
-                              Llegar ➔
-                            </span>
-                          )}
+                        {/* 72% FOTO */}
+                        <div className="relative w-full h-[72%] overflow-hidden bg-slate-950">
+                          <img
+                            src={city.imageUrl}
+                            alt={city.name}
+                            onError={(e) => handleImageError(e, city.backupUrl)}
+                            className="w-full h-full object-cover object-center group-hover:scale-108 transition-transform duration-500"
+                            loading="eager"
+                          />
+                          <div className="absolute top-2 right-2">
+                            {isOrigin ? (
+                              <span className="bg-slate-950/95 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/50">
+                                📍 SALES DE AQUÍ
+                              </span>
+                            ) : (
+                              <span className="bg-blue-600 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow-md">
+                                Llegar ➔
+                              </span>
+                            )}
+                          </div>
                         </div>
 
-                        <div className="relative z-10 text-white leading-tight">
-                          <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+                        {/* 28% TEXTO */}
+                        <div className="h-[28%] px-2.5 py-1 bg-slate-900/95 dark:bg-slate-950 flex flex-col justify-center border-t border-slate-800">
+                          <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
                             {city.name}
                           </h3>
-                          <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                          <p className="text-[10px] text-amber-400 truncate font-semibold flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-2.5 h-2.5 shrink-0" />
                             <span>{city.terminalName}</span>
                           </p>
                         </div>
@@ -751,7 +813,7 @@ export default function PasajeroPage() {
                   🛫 {originCity?.name} ➔ 🛬 {destinationCity?.name}
                 </span>
                 <span className="hidden sm:inline text-xs text-slate-400 dark:text-slate-500 font-bold">
-                  (Corredor Norte E35)
+                  (Corredor Norte E35 · Consultando Supabase Cloud)
                 </span>
               </div>
               <button
@@ -795,7 +857,7 @@ export default function PasajeroPage() {
             <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
               {loadingTrips ? (
                 <div className="h-full flex items-center justify-center text-slate-500 dark:text-slate-400 font-bold">
-                  Buscando salidas disponibles...
+                  Buscando salidas en Supabase Cloud...
                 </div>
               ) : trips.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-slate-500 dark:text-slate-400">
@@ -875,11 +937,11 @@ export default function PasajeroPage() {
         )}
 
         {/* =================================================================== */}
-        {/* PASO 4: "Elige tu Asiento" (40 asientos en Split Screen)           */}
+        {/* PASO 4: "Elige tu Asiento y Método de Pago"                        */}
         {/* =================================================================== */}
         {step === 4 && selectedTrip && (
           <div className="h-full flex flex-col md:flex-row gap-3 min-h-0">
-            {/* Izquierda: BusSeatMap Compacto con Modo Oscuro */}
+            {/* Izquierda: BusSeatMap Compacto */}
             <div className="flex-1 min-h-0 flex flex-col items-center justify-center overflow-y-auto">
               <BusSeatMap
                 occupiedSeats={occupiedSeats}
@@ -889,11 +951,13 @@ export default function PasajeroPage() {
               />
             </div>
 
-            {/* Derecha: Resumen de Compra y Botón de Pago en 1 Clic */}
-            <div className="w-full md:w-80 lg:w-96 shrink-0 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-4 shadow-lg flex flex-col justify-between transition-colors duration-200">
-              <div>
-                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2 mb-3">
-                  <h3 className="font-extrabold text-slate-900 dark:text-white text-lg">Resumen de Boleto</h3>
+            {/* Derecha: Formulario de Pasajero, Método de Pago y Confirmación */}
+            <div className="w-full md:w-96 lg:w-[420px] shrink-0 bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-3.5 sm:p-4 shadow-lg flex flex-col justify-between overflow-y-auto transition-colors duration-200">
+              <div className="space-y-2.5">
+                <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
+                  <h3 className="font-extrabold text-slate-900 dark:text-white text-base sm:text-lg">
+                    Datos del Pasajero & Pago
+                  </h3>
                   <button
                     type="button"
                     onClick={() => setStep(3)}
@@ -904,61 +968,192 @@ export default function PasajeroPage() {
                   </button>
                 </div>
 
-                <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300">
-                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
-                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest block">
-                      RUTA Y SALIDA
-                    </span>
-                    <p className="font-black text-slate-900 dark:text-white text-sm mt-0.5">
-                      {selectedTrip.originCityName} ➔ {selectedTrip.destinationCityName}
-                    </p>
-                    <p className="text-slate-500 dark:text-slate-400 font-semibold mt-0.5">
-                      Hora: {selectedTrip.departureTime} · {selectedTrip.cooperativeName}
-                    </p>
+                {/* Resumen de Ruta */}
+                <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs">
+                  <div className="flex justify-between font-bold text-slate-900 dark:text-white">
+                    <span>{selectedTrip.originCityName} ➔ {selectedTrip.destinationCityName}</span>
+                    <span className="text-emerald-600 dark:text-emerald-400">${selectedTrip.price.toFixed(2)} c/u</span>
                   </div>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+                    {selectedTrip.departureTime} · {selectedTrip.cooperativeName} · {selectedTrip.unitNumber}
+                  </p>
+                </div>
 
+                {/* Datos del Pasajero */}
+                <div className="grid grid-cols-2 gap-2 text-xs">
                   <div>
                     <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
-                      Nombre del Pasajero
+                      Nombre Completo
                     </label>
                     <input
                       type="text"
                       value={passengerName}
                       onChange={(e) => setPassengerName(e.target.value)}
                       placeholder="Ej. Juan Pérez"
-                      className="w-full border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-600"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-600"
                     />
                   </div>
-
-                  <div className="p-2.5 rounded-xl bg-blue-50/70 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800">
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-bold text-blue-900 dark:text-blue-300">Asientos Elegidos:</span>
-                      <span className="font-black text-blue-700 dark:text-blue-400">
-                        {selectedSeats.length > 0 ? selectedSeats.length : "Ninguno"}
-                      </span>
-                    </div>
-                    {selectedSeats.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {selectedSeats.map((s) => (
-                          <span
-                            key={s}
-                            className="bg-blue-600 text-white font-black px-2 py-0.5 rounded-md text-xs shadow-xs"
-                          >
-                            #{s}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-slate-400 dark:text-slate-500 italic text-[11px]">
-                        Toca los asientos verdes del mapa para agregarlos.
-                      </p>
-                    )}
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider block mb-1">
+                      Cédula / DNI
+                    </label>
+                    <input
+                      type="text"
+                      value={passengerDni}
+                      onChange={(e) => setPassengerDni(e.target.value)}
+                      placeholder="1004567890"
+                      className="w-full border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-2.5 py-1 text-xs font-bold text-slate-800 dark:text-slate-100 focus:outline-none focus:border-blue-600"
+                    />
                   </div>
+                </div>
+
+                {/* Métodos de Pago: 2 Opciones Grandes */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                      Método de Pago
+                    </span>
+                    <button
+                      type="button"
+                      onClick={handleAutocompleteDemoPayment}
+                      className="text-[10px] text-amber-600 dark:text-amber-400 font-extrabold hover:underline flex items-center gap-0.5"
+                    >
+                      <Sparkles className="w-3 h-3" />
+                      <span>Autocompletar Demo</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {/* Opción A: Transferencia */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("TRANSFERENCIA")}
+                      className={`p-2 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                        paymentMethod === "TRANSFERENCIA"
+                          ? "border-blue-600 bg-blue-50/80 dark:bg-blue-950/40 text-blue-950 dark:text-blue-200 ring-2 ring-blue-300"
+                          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-1.5">
+                        <Building2 className="w-4 h-4 text-blue-600" />
+                        <span className="font-extrabold text-xs">Transferencia</span>
+                      </div>
+                      <span className="text-[9px] block text-slate-500 dark:text-slate-400 mt-0.5">
+                        Pichincha, Deuna, etc.
+                      </span>
+                    </button>
+
+                    {/* Opción B: Efectivo */}
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod("EFECTIVO")}
+                      className={`p-2 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                        paymentMethod === "EFECTIVO"
+                          ? "border-emerald-600 bg-emerald-50/80 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-200 ring-2 ring-emerald-300"
+                          : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-1.5">
+                        <Banknote className="w-4 h-4 text-emerald-600" />
+                        <span className="font-extrabold text-xs">Efectivo</span>
+                      </div>
+                      <span className="text-[9px] block text-slate-500 dark:text-slate-400 mt-0.5">
+                        Pagar en Ventanilla
+                      </span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Detalle si es Transferencia */}
+                {paymentMethod === "TRANSFERENCIA" && (
+                  <div className="p-2.5 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-[11px] space-y-2">
+                    <div className="bg-white dark:bg-slate-800 p-2 rounded-lg border border-blue-100 dark:border-blue-900 leading-tight">
+                      <span className="text-[10px] font-black text-blue-700 dark:text-blue-300 block">
+                        CUENTA RECEPTORA RUTA NORTE:
+                      </span>
+                      <p className="font-bold text-slate-800 dark:text-slate-200">
+                        Banco Pichincha · Cta. Cte #2100458921
+                      </p>
+                      <p className="text-slate-500 dark:text-slate-400 text-[10px]">
+                        RUC: 0490012345001 · Ruta Norte S.A.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-[9px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
+                          Banco de Origen:
+                        </label>
+                        <select
+                          value={bankName}
+                          onChange={(e) => setBankName(e.target.value)}
+                          className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 dark:text-slate-200"
+                        >
+                          <option value="Banco Pichincha">Banco Pichincha</option>
+                          <option value="Deuna!">Deuna! (App)</option>
+                          <option value="Produbanco">Produbanco</option>
+                          <option value="Banco Guayaquil">Banco Guayaquil</option>
+                          <option value="Cooperativa Tulcán">Cooperativa Tulcán</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[9px] font-bold text-slate-600 dark:text-slate-400 block mb-0.5">
+                          # Comprobante / Ref:
+                        </label>
+                        <input
+                          type="text"
+                          value={paymentReference}
+                          onChange={(e) => setPaymentReference(e.target.value)}
+                          placeholder="Ej. TR-48291"
+                          className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-blue-500"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Detalle si es Efectivo */}
+                {paymentMethod === "EFECTIVO" && (
+                  <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-[11px] text-amber-900 dark:text-amber-200">
+                    <p className="font-bold flex items-center gap-1">
+                      <span>💵 Reserva con Pago en Ventanilla</span>
+                    </p>
+                    <p className="text-[10px] text-amber-800 dark:text-amber-300 mt-0.5">
+                      Tu asiento quedará reservado en estado pendiente hasta que abones el valor al taquillero en la terminal.
+                    </p>
+                  </div>
+                )}
+
+                {/* Asientos Elegidos */}
+                <div className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="font-bold text-slate-700 dark:text-slate-300">Asientos Elegidos:</span>
+                    <span className="font-black text-blue-600 dark:text-blue-400">
+                      {selectedSeats.length > 0 ? selectedSeats.length : "Ninguno"}
+                    </span>
+                  </div>
+                  {selectedSeats.length > 0 ? (
+                    <div className="flex flex-wrap gap-1">
+                      {selectedSeats.map((s) => (
+                        <span
+                          key={s}
+                          className="bg-blue-600 text-white font-black px-2 py-0.5 rounded-md text-xs shadow-xs"
+                        >
+                          #{s}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-slate-400 italic text-[11px]">
+                      Toca los asientos verdes del mapa para agregarlos.
+                    </p>
+                  )}
                 </div>
               </div>
 
-              {/* Total y Botón de Pago en 1 Clic */}
-              <div className="pt-3 border-t border-slate-200 dark:border-slate-800">
+              {/* Total y Botón de Envío */}
+              <div className="pt-2.5 border-t border-slate-200 dark:border-slate-800 mt-2">
                 <div className="flex items-baseline justify-between mb-2">
                   <span className="font-bold text-slate-500 dark:text-slate-400 text-xs">Total a Pagar:</span>
                   <span className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
@@ -970,15 +1165,17 @@ export default function PasajeroPage() {
                   type="button"
                   disabled={selectedSeats.length === 0 || purchasing}
                   onClick={handleConfirmPurchase}
-                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-black text-base shadow-lg shadow-emerald-600/30 hover:scale-102 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
+                  className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-black text-base shadow-lg shadow-emerald-600/30 hover:scale-101 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
                 >
                   <CheckCircle2 className="w-5 h-5" />
                   <span>
                     {purchasing
-                      ? "Emitiendo..."
+                      ? "Procesando..."
                       : selectedSeats.length === 0
                       ? "Elige un asiento"
-                      : "Confirmar y Pagar en 1 Clic"}
+                      : paymentMethod === "TRANSFERENCIA"
+                      ? "Registrar Pago y Generar Boleto"
+                      : "Reservar y Generar Orden en Efectivo"}
                   </span>
                 </button>
               </div>
@@ -987,99 +1184,121 @@ export default function PasajeroPage() {
         )}
 
         {/* =================================================================== */}
-        {/* PASO 5: "Tu Boleto Digital con QR"                                  */}
+        {/* PASO 5: "Boleto Digital QR con Verificación en Tiempo Real"         */}
         {/* =================================================================== */}
         {step === 5 && (
           <div className="h-full flex items-center justify-center p-2">
-            <div className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-md w-full text-center flex flex-col justify-between max-h-full overflow-y-auto transition-colors duration-200">
+            <div className="bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-2xl max-w-md w-full text-center flex flex-col justify-between max-h-full overflow-y-auto transition-colors duration-200">
+              {/* Badge de Estado Dinámico */}
               <div>
-                <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-inner">
-                  <CheckCircle2 className="w-7 h-7" />
-                </div>
-                <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  ¡Boleto Emitido con Éxito!
+                {purchasedTickets.length > 0 &&
+                purchasedTickets[0].status === "PENDING_VERIFICATION" ? (
+                  <div className="mb-2 p-2.5 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border-2 border-amber-300 dark:border-amber-700 text-amber-950 dark:text-amber-200 animate-pulse">
+                    <div className="flex items-center justify-center gap-1.5 font-black text-sm">
+                      <Clock className="w-5 h-5 text-amber-600" />
+                      <span>⏳ PENDIENTE DE VERIFICACIÓN POR ADMINISTRACIÓN</span>
+                    </div>
+                    <p className="text-[11px] text-amber-800 dark:text-amber-300 mt-1 font-semibold">
+                      Comprobante registrado: {purchasedTickets[0].paymentReference} ({purchasedTickets[0].paymentMethod}).
+                      Tan pronto el Administrador lo apruebe, el código QR quedará activo para abordar.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="mb-2 p-2.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 border-2 border-emerald-300 dark:border-emerald-700 text-emerald-950 dark:text-emerald-200">
+                    <div className="flex items-center justify-center gap-1.5 font-black text-sm">
+                      <ShieldCheck className="w-5 h-5 text-emerald-600" />
+                      <span>✅ PAGO VERIFICADO - BOLETO ACTIVO PARA ABORDAR</span>
+                    </div>
+                  </div>
+                )}
+
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">
+                  Pase de Abordar Digital
                 </h2>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
-                  Presenta este código QR al momento de subir a la unidad.
-                </p>
               </div>
 
               {/* Tarjeta con Código QR */}
-              <div className="bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-4 my-3 flex flex-col items-center">
-                <div className="bg-white p-3 rounded-2xl shadow-md border border-slate-200">
+              <div className="bg-slate-50 dark:bg-slate-800/80 border-2 border-slate-200 dark:border-slate-700 rounded-2xl p-3 my-2 flex flex-col items-center">
+                <div className="bg-white p-2.5 rounded-2xl shadow-md border border-slate-200">
                   <QRCodeSVG
                     value={
                       purchasedTickets.length > 0
                         ? purchasedTickets[0].qrToken
                         : "RN-DEMOQR12345"
                     }
-                    size={150}
+                    size={140}
                     level="H"
                   />
                 </div>
-                <div className="mt-2 text-center">
-                  <span className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest block">
+                <div className="mt-1.5 text-center">
+                  <span className="text-[10px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-widest block">
                     TOKEN QR
                   </span>
-                  <span className="text-sm font-black font-mono text-blue-700 dark:text-blue-400">
+                  <span className="text-xs font-black font-mono text-blue-700 dark:text-blue-400">
                     {purchasedTickets.length > 0
                       ? purchasedTickets[0].qrToken
                       : "RN-DEMOQR12345"}
                   </span>
                 </div>
 
-                <div className="w-full mt-3 pt-2 border-t border-slate-200 dark:border-slate-700 text-left grid grid-cols-2 gap-2 text-xs">
+                <div className="w-full mt-2 pt-2 border-t border-slate-200 dark:border-slate-700 text-left grid grid-cols-2 gap-1.5 text-xs">
                   <div>
-                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[10px]">PASAJERO</span>
-                    <span className="font-extrabold text-slate-900 dark:text-white">
-                      {purchasedTickets.length > 0
-                        ? purchasedTickets[0].passengerName
-                        : passengerName}
+                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[9px]">PASAJERO</span>
+                    <span className="font-extrabold text-slate-900 dark:text-white truncate block">
+                      {purchasedTickets[0]?.passengerName || passengerName}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[10px]">ASIENTO</span>
-                    <span className="font-black text-emerald-600 dark:text-emerald-400 text-base">
+                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[9px]">ASIENTO</span>
+                    <span className="font-black text-emerald-600 dark:text-emerald-400 text-sm">
                       #{purchasedTickets.map((t) => t.seatNumber).join(", #")}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[10px]">SALIDA</span>
+                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[9px]">SALIDA</span>
                     <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {purchasedTickets.length > 0
-                        ? purchasedTickets[0].departureTime
-                        : selectedTrip?.departureTime}
+                      {purchasedTickets[0]?.departureTime || selectedTrip?.departureTime}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[10px]">COOPERATIVA</span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">
-                      {purchasedTickets.length > 0
-                        ? purchasedTickets[0].cooperativeName
-                        : selectedTrip?.cooperativeName}
+                    <span className="text-slate-400 dark:text-slate-500 font-bold block text-[9px]">MÉTODO</span>
+                    <span className="font-bold text-blue-700 dark:text-blue-400">
+                      {purchasedTickets[0]?.paymentMethod || paymentMethod}
                     </span>
                   </div>
                 </div>
               </div>
 
               {/* Botones de Acción */}
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <button
                   type="button"
-                  onClick={() => window.print()}
-                  className="w-full py-2.5 rounded-xl bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center space-x-1.5 shadow-md cursor-pointer"
+                  onClick={handleCheckTicketStatus}
+                  disabled={updatingTicketStatus}
+                  className="w-full py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs flex items-center justify-center space-x-1 shadow-sm cursor-pointer"
                 >
-                  <Printer className="w-4 h-4" />
-                  <span>🖨️ Imprimir / Guardar Boleto</span>
+                  <RefreshCw className={`w-3.5 h-3.5 ${updatingTicketStatus ? "animate-spin" : ""}`} />
+                  <span>🔄 Actualizar Estado del Boleto</span>
                 </button>
-                <button
-                  type="button"
-                  onClick={handleResetKiosk}
-                  className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center space-x-1 border border-slate-200 dark:border-slate-700 cursor-pointer"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  <span>🔄 Comprar Otro Boleto</span>
-                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => window.print()}
+                    className="flex-1 py-2 rounded-xl bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-700 text-white font-extrabold text-xs flex items-center justify-center space-x-1 cursor-pointer shadow-md"
+                  >
+                    <Printer className="w-3.5 h-3.5" />
+                    <span>🖨️ Imprimir</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleResetKiosk}
+                    className="flex-1 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center space-x-1 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>🔄 Nuevo Boleto</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

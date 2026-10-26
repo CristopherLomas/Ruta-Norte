@@ -40,6 +40,20 @@ public class TicketController {
         return ResponseEntity.ok(ticketService.getRecentTickets());
     }
 
+    @GetMapping("/pending-verification")
+    public ResponseEntity<List<TicketResponse>> getPendingVerificationTickets() {
+        return ResponseEntity.ok(ticketService.getPendingVerificationTickets());
+    }
+
+    @PostMapping("/{id}/verify-payment")
+    public ResponseEntity<TicketResponse> verifyPayment(
+            @PathVariable UUID id,
+            @RequestBody(required = false) java.util.Map<String, String> payload) {
+        String action = (payload != null && payload.containsKey("action")) ? payload.get("action") : "APPROVE";
+        TicketResponse response = ticketService.verifyPayment(id, action);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<TicketResponse> getTicketById(@PathVariable UUID id) {
         return ResponseEntity.ok(ticketService.getTicketById(id));

@@ -65,15 +65,19 @@ CREATE TABLE public.trips (
 );
 
 -- ------------------------------------------------------------------------------
--- TABLA 5: TICKETS (Boletos con compra directa en 1 clic y token QR)
+-- TABLA 5: TICKETS (Boletos con compra directa, pagos y token QR)
 -- ------------------------------------------------------------------------------
 CREATE TABLE public.tickets (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   trip_id UUID NOT NULL REFERENCES public.trips(id) ON DELETE CASCADE,
   passenger_name VARCHAR(100) NOT NULL DEFAULT 'Pasajero General',
+  passenger_dni VARCHAR(20) DEFAULT '1004567890',
   seat_number INT NOT NULL CHECK (seat_number BETWEEN 1 AND 40),
   qr_token VARCHAR(30) UNIQUE NOT NULL,
-  status VARCHAR(20) NOT NULL DEFAULT 'PAID' CHECK (status IN ('PAID', 'BOARDED')),
+  payment_method VARCHAR(30) DEFAULT 'TRANSFERENCIA' CHECK (payment_method IN ('TRANSFERENCIA', 'EFECTIVO')),
+  payment_reference VARCHAR(80),
+  bank_name VARCHAR(60),
+  status VARCHAR(25) NOT NULL DEFAULT 'PENDING_VERIFICATION' CHECK (status IN ('PENDING_VERIFICATION', 'PAID', 'REJECTED', 'BOARDED')),
   created_at TIMESTAMP DEFAULT NOW(),
   boarded_at TIMESTAMP NULL,
   CONSTRAINT uk_trip_seat UNIQUE (trip_id, seat_number)

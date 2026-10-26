@@ -44,6 +44,10 @@ public class TicketService {
             ? request.getPassengerName().trim()
             : "Pasajero General";
 
+        String initialStatus = "TRANSFERENCIA".equalsIgnoreCase(request.getPaymentMethod())
+            ? "PENDING_VERIFICATION"
+            : "PAID";
+
         List<TicketResponse> createdTickets = new ArrayList<>();
 
         for (Integer seatNumber : request.getSeatNumbers()) {
@@ -57,7 +61,20 @@ public class TicketService {
             }
 
             String qrToken = generateUniqueQrToken();
-            Ticket ticket = new Ticket(trip, passengerName, seatNumber, qrToken, "PAID");
+            Ticket ticket = new Ticket(trip, passengerName, seatNumber, qrToken, initialStatus);
+            if (request.getPassengerDni() != null && !request.getPassengerDni().isBlank()) {
+                ticket.setPassengerDni(request.getPassengerDni().trim());
+            }
+            if (request.getPaymentMethod() != null && !request.getPaymentMethod().isBlank()) {
+                ticket.setPaymentMethod(request.getPaymentMethod().trim().toUpperCase());
+            }
+            if (request.getPaymentReference() != null && !request.getPaymentReference().isBlank()) {
+                ticket.setPaymentReference(request.getPaymentReference().trim());
+            }
+            if (request.getBankName() != null && !request.getBankName().isBlank()) {
+                ticket.setBankName(request.getBankName().trim());
+            }
+
             Ticket saved = ticketRepository.save(ticket);
             createdTickets.add(mapToResponse(saved));
         }
@@ -124,6 +141,32 @@ public class TicketService {
         return mapToResponse(t);
     }
 
+    public List<TicketResponse> getPendingVerificationTickets() {
+        List<Ticket> list = ticketRepository.findByStatusOrderByCreatedAtDesc("PENDING_VERIFICATION");
+        List<TicketResponse> responses = new ArrayList<>();
+        for (Ticket t : list) {
+            responses.add(mapToResponse(t));
+        }
+        return responses;
+    }
+
+    @Transactional
+    public TicketResponse verifyPayment(UUID ticketId, String action) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+            .orElseThrow(() -> new IllegalArgumentException("Boleto no encontrado con ID: " + ticketId));
+
+        if ("APPROVE".equalsIgnoreCase(action) || "PAID".equalsIgnoreCase(action)) {
+            ticket.setStatus("PAID");
+        } else if ("REJECT".equalsIgnoreCase(action) || "REJECTED".equalsIgnoreCase(action)) {
+            ticket.setStatus("REJECTED");
+        } else {
+            throw new IllegalArgumentException("Acción inválida. Use APPROVE o REJECT");
+        }
+
+        Ticket saved = ticketRepository.save(ticket);
+        return mapToResponse(saved);
+    }
+
     private String generateUniqueQrToken() {
         while (true) {
             StringBuilder sb = new StringBuilder("RN-");
@@ -141,9 +184,13 @@ public class TicketService {
         TicketResponse resp = new TicketResponse();
         resp.setId(ticket.getId());
         resp.setPassengerName(ticket.getPassengerName());
+        resp.setPassengerDni(ticket.getPassengerDni());
         resp.setSeatNumber(ticket.getSeatNumber());
         resp.setQrToken(ticket.getQrToken());
         resp.setStatus(ticket.getStatus());
+        resp.setPaymentMethod(ticket.getPaymentMethod());
+        resp.setPaymentReference(ticket.getPaymentReference());
+        resp.setBankName(ticket.getBankName());
         resp.setCreatedAt(ticket.getCreatedAt());
         resp.setBoardedAt(ticket.getBoardedAt());
 

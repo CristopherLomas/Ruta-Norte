@@ -30,14 +30,26 @@ public class Ticket {
     @Column(name = "passenger_name", nullable = false, length = 100)
     private String passengerName = "Pasajero General";
 
+    @Column(name = "passenger_dni", length = 20)
+    private String passengerDni = "1004567890";
+
     @Column(name = "seat_number", nullable = false)
     private int seatNumber;
 
     @Column(name = "qr_token", nullable = false, unique = true, length = 30)
     private String qrToken;
 
-    @Column(nullable = false, length = 20)
-    private String status = "PAID"; // PAID or BOARDED
+    @Column(name = "payment_method", length = 30)
+    private String paymentMethod = "TRANSFERENCIA";
+
+    @Column(name = "payment_reference", length = 80)
+    private String paymentReference;
+
+    @Column(name = "bank_name", length = 60)
+    private String bankName;
+
+    @Column(nullable = false, length = 25)
+    private String status = "PENDING_VERIFICATION"; // PENDING_VERIFICATION, PAID, REJECTED, BOARDED
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
@@ -80,6 +92,14 @@ public class Ticket {
         this.passengerName = passengerName;
     }
 
+    public String getPassengerDni() {
+        return passengerDni;
+    }
+
+    public void setPassengerDni(String passengerDni) {
+        this.passengerDni = passengerDni;
+    }
+
     public int getSeatNumber() {
         return seatNumber;
     }
@@ -94,6 +114,30 @@ public class Ticket {
 
     public void setQrToken(String qrToken) {
         this.qrToken = qrToken;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public String getPaymentReference() {
+        return paymentReference;
+    }
+
+    public void setPaymentReference(String paymentReference) {
+        this.paymentReference = paymentReference;
+    }
+
+    public String getBankName() {
+        return bankName;
+    }
+
+    public void setBankName(String bankName) {
+        this.bankName = bankName;
     }
 
     public String getStatus() {

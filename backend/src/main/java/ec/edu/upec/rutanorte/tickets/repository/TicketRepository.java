@@ -24,5 +24,9 @@ public interface TicketRepository extends JpaRepository<Ticket, UUID> {
     @Query("SELECT t.seatNumber FROM Ticket t WHERE t.trip.id = :tripId")
     List<Integer> findOccupiedSeatNumbersByTripId(@Param("tripId") UUID tripId);
 
+    List<Ticket> findByStatusOrderByCreatedAtDesc(String status);
+
+    List<Ticket> findByStatus(String status);
+
     List<Ticket> findTop20ByOrderByCreatedAtDesc();
 }
