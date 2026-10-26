@@ -35,13 +35,13 @@ export function BusSeatMap({
 
   return (
     <div
-      className={`w-full max-w-lg mx-auto bg-slate-100/95 rounded-3xl border-3 border-slate-300 shadow-xl ${
+      className={`w-full max-w-lg mx-auto bg-slate-100/95 dark:bg-slate-900/95 rounded-3xl border-3 border-slate-300 dark:border-slate-700 shadow-xl transition-colors duration-200 ${
         compact ? "p-3 sm:p-4 max-h-[calc(100vh-210px)] overflow-y-auto" : "p-6 sm:p-8"
       }`}
     >
       {/* Frente del Autobús / Cabina del Conductor */}
       <div
-        className={`bg-slate-800 text-white rounded-2xl shadow-inner flex items-center justify-between border-2 border-slate-700 ${
+        className={`bg-slate-800 dark:bg-slate-950 text-white rounded-2xl shadow-inner flex items-center justify-between border-2 border-slate-700 dark:border-slate-800 ${
           compact ? "p-2.5 mb-2.5" : "p-4 mb-6"
         }`}
       >
@@ -56,7 +56,7 @@ export function BusSeatMap({
             </span>
           </div>
         </div>
-        <div className="flex items-center space-x-1.5 bg-slate-700/80 px-2.5 py-1 rounded-xl border border-slate-600">
+        <div className="flex items-center space-x-1.5 bg-slate-700/80 dark:bg-slate-900 px-2.5 py-1 rounded-xl border border-slate-600 dark:border-slate-700">
           <span className="text-base">💺</span>
           <span className="text-xs font-bold text-slate-200">Volante</span>
         </div>
@@ -64,21 +64,21 @@ export function BusSeatMap({
 
       {/* Leyenda de Colores */}
       <div
-        className={`grid grid-cols-3 gap-2 bg-white rounded-xl border border-slate-200 shadow-xs text-center ${
+        className={`grid grid-cols-3 gap-2 bg-white dark:bg-slate-800/90 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs text-center ${
           compact ? "p-1.5 mb-2.5 text-xs" : "p-3 mb-4 text-sm"
         }`}
       >
         <div className="flex items-center justify-center space-x-1.5">
           <div className="w-3.5 h-3.5 rounded bg-emerald-500 shadow-xs"></div>
-          <span className="font-bold text-slate-700 text-xs">Libre</span>
+          <span className="font-bold text-slate-700 dark:text-slate-200 text-xs">Libre</span>
         </div>
         <div className="flex items-center justify-center space-x-1.5">
           <div className="w-3.5 h-3.5 rounded bg-blue-600 shadow-xs"></div>
-          <span className="font-bold text-slate-700 text-xs">Elegido</span>
+          <span className="font-bold text-slate-700 dark:text-slate-200 text-xs">Elegido</span>
         </div>
         <div className="flex items-center justify-center space-x-1.5">
-          <div className="w-3.5 h-3.5 rounded bg-slate-300 shadow-xs"></div>
-          <span className="font-bold text-slate-700 text-xs">Ocupado</span>
+          <div className="w-3.5 h-3.5 rounded bg-slate-300 dark:bg-slate-600 shadow-xs"></div>
+          <span className="font-bold text-slate-700 dark:text-slate-200 text-xs">Ocupado</span>
         </div>
       </div>
 
@@ -87,7 +87,7 @@ export function BusSeatMap({
         {rows.map((row) => (
           <div
             key={row.rowNumber}
-            className={`flex items-center justify-between bg-white/80 hover:bg-white rounded-xl transition-colors border border-slate-200/70 ${
+            className={`flex items-center justify-between bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-colors border border-slate-200/70 dark:border-slate-700/70 ${
               compact ? "p-1" : "p-2"
             }`}
           >
@@ -103,15 +103,15 @@ export function BusSeatMap({
                     type="button"
                     disabled={occupied}
                     onClick={() => onToggleSeat(seatNum)}
-                    className={`rounded-xl font-black flex flex-col items-center justify-center transition-all duration-150 shadow-xs ${
+                    className={`rounded-xl font-black flex flex-col items-center justify-center transition-all duration-150 shadow-xs cursor-pointer ${
                       compact
                         ? "w-10 h-10 text-sm"
                         : "w-13 h-13 sm:w-15 sm:h-15 text-lg"
                     } ${
                       occupied
-                        ? "bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300"
+                        ? "bg-slate-200 dark:bg-slate-700/60 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-600"
                         : selected
-                        ? "bg-blue-600 text-white ring-3 ring-blue-300 scale-105 shadow-blue-500/30"
+                        ? "bg-blue-600 text-white ring-3 ring-blue-300 dark:ring-blue-500 scale-105 shadow-blue-500/30"
                         : "bg-emerald-500 text-white hover:bg-emerald-600 hover:scale-102 shadow-emerald-500/20"
                     }`}
                   >
@@ -127,9 +127,9 @@ export function BusSeatMap({
             </div>
 
             {/* Pasillo Central */}
-            <div className="flex flex-col items-center justify-center px-1 text-slate-400 font-bold select-none">
+            <div className="flex flex-col items-center justify-center px-1 text-slate-400 dark:text-slate-500 font-bold select-none">
               <span className="text-xs">🚶</span>
-              <span className="text-[8px] tracking-wider text-slate-400">F{row.rowNumber}</span>
+              <span className="text-[8px] tracking-wider">F{row.rowNumber}</span>
             </div>
 
             {/* Lado Derecho (2 asientos) */}
@@ -144,15 +144,15 @@ export function BusSeatMap({
                     type="button"
                     disabled={occupied}
                     onClick={() => onToggleSeat(seatNum)}
-                    className={`rounded-xl font-black flex flex-col items-center justify-center transition-all duration-150 shadow-xs ${
+                    className={`rounded-xl font-black flex flex-col items-center justify-center transition-all duration-150 shadow-xs cursor-pointer ${
                       compact
                         ? "w-10 h-10 text-sm"
                         : "w-13 h-13 sm:w-15 sm:h-15 text-lg"
                     } ${
                       occupied
-                        ? "bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300"
+                        ? "bg-slate-200 dark:bg-slate-700/60 text-slate-400 dark:text-slate-500 cursor-not-allowed border border-slate-300 dark:border-slate-600"
                         : selected
-                        ? "bg-blue-600 text-white ring-3 ring-blue-300 scale-105 shadow-blue-500/30"
+                        ? "bg-blue-600 text-white ring-3 ring-blue-300 dark:ring-blue-500 scale-105 shadow-blue-500/30"
                         : "bg-emerald-500 text-white hover:bg-emerald-600 hover:scale-102 shadow-emerald-500/20"
                     }`}
                   >
@@ -171,7 +171,7 @@ export function BusSeatMap({
       </div>
 
       {/* Parte Trasera del Bus */}
-      <div className="mt-2.5 text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-200/70 py-1.5 rounded-lg">
+      <div className="mt-2.5 text-center text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest bg-slate-200/70 dark:bg-slate-800/70 py-1.5 rounded-lg">
         Parte Trasera del Autobús
       </div>
     </div>

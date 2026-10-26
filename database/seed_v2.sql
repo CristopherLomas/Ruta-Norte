@@ -14,16 +14,16 @@ ON CONFLICT (email) DO NOTHING;
 -- 2. 9 CIUDADES CON TERMINALES (CORREDOR NORTE E35)
 INSERT INTO public.cities (id, name, province, terminal_name, image_url) VALUES
   -- CARCHI
-  (1, 'Tulcán', 'Carchi', 'Terminal Terrestre de Tulcán', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Tulcan-Cemetery-1.jpg/800px-Tulcan-Cemetery-1.jpg'),
-  (2, 'Julio Andrade', 'Carchi', 'Terminal Parroquial Julio Andrade', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Vista_desde_Julio_Andrade%2C_Provincia_de_Carchi%2C_Ecuador%2C_2015-07-21%2C_DD_41.JPG/800px-Vista_desde_Julio_Andrade%2C_Provincia_de_Carchi%2C_Ecuador%2C_2015-07-21%2C_DD_41.JPG'),
-  (3, 'San Gabriel', 'Carchi', 'Terminal Terrestre San Gabriel', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Parque_de_San_Gabriel%2C_Carchi%2C_Ecuador.jpg/800px-Parque_de_San_Gabriel%2C_Carchi%2C_Ecuador.jpg'),
-  (4, 'Bolívar', 'Carchi', 'Terminal Cantonal Bolívar', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Monumento_a_Sim%C3%B3n_Bol%C3%ADvar_en_parque_de_Bol%C3%ADvar%2C_Carchi-_Ecuador.jpg/800px-Monumento_a_Sim%C3%B3n_Bol%C3%ADvar_en_parque_de_Bol%C3%ADvar%2C_Carchi-_Ecuador.jpg'),
-  (5, 'El Ángel', 'Carchi', 'Terminal Terrestre El Ángel', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Frailejones_Reserva_Ecol%C3%B3gica_El_%C3%81ngel_-_panoramio.jpg/800px-Frailejones_Reserva_Ecol%C3%B3gica_El_%C3%81ngel_-_panoramio.jpg'),
+  (1, 'Tulcán', 'Carchi', 'Terminal Terrestre de Tulcán', '/cities/tulcan.jpg'),
+  (2, 'Julio Andrade', 'Carchi', 'Terminal Parroquial Julio Andrade', '/cities/julio-andrade.jpg'),
+  (3, 'San Gabriel', 'Carchi', 'Terminal Terrestre San Gabriel', '/cities/san-gabriel.jpg'),
+  (4, 'Bolívar', 'Carchi', 'Terminal Cantonal Bolívar', '/cities/bolivar.jpg'),
+  (5, 'El Ángel', 'Carchi', 'Terminal Terrestre El Ángel', '/cities/el-angel.jpg'),
   -- IMBABURA
-  (6, 'Ibarra', 'Imbabura', 'Terminal Terrestre de Ibarra', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Yahuarcocha.jpg/800px-Yahuarcocha.jpg'),
-  (7, 'Atuntaqui', 'Imbabura', 'Terminal Intercantonal Atuntaqui', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/F%C3%A1brica_Imbabura%2C_Atuntaqui.jpg/800px-F%C3%A1brica_Imbabura%2C_Atuntaqui.jpg'),
-  (8, 'Otavalo', 'Imbabura', 'Terminal Terrestre de Otavalo', 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Mercado_de_los_Ponchos.jpg/800px-Mercado_de_los_Ponchos.jpg'),
-  (9, 'Cotacachi', 'Imbabura', 'Terminal Terrestre Cotacachi', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Cuicocha%2C_Ecuador.jpg/800px-Cuicocha%2C_Ecuador.jpg')
+  (6, 'Ibarra', 'Imbabura', 'Terminal Terrestre de Ibarra', '/cities/ibarra.jpg'),
+  (7, 'Atuntaqui', 'Imbabura', 'Terminal Intercantonal Atuntaqui', '/cities/atuntaqui.jpg'),
+  (8, 'Otavalo', 'Imbabura', 'Terminal Terrestre de Otavalo', '/cities/otavalo.jpg'),
+  (9, 'Cotacachi', 'Imbabura', 'Terminal Terrestre Cotacachi', '/cities/cotacachi.jpg')
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   province = EXCLUDED.province,
