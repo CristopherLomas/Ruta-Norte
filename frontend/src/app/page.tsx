@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import NavbarVisual from "@/components/NavbarVisual";
 import BusSeatMap from "@/components/BusSeatMap";
+import LoginModal, { AuthUser } from "@/components/LoginModal";
 import { axiosClient } from "@/lib/axiosClient";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -19,7 +20,8 @@ import {
   RefreshCw,
   Check,
   ShieldCheck,
-  Bus,
+  LogIn,
+  UserCheck,
 } from "lucide-react";
 
 interface City {
@@ -215,6 +217,10 @@ const generateDemoTrips = (origName = "Tulcán", destName = "Ibarra"): Trip[] =>
 export default function HomePage() {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
+  // Estados de Usuario & Ventana Flotante de Login
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+
   // Estados de Rutas
   const [cities, setCities] = useState<City[]>(FALLBACK_CITIES);
   const [originCity, setOriginCity] = useState<City | null>(null);
@@ -238,6 +244,21 @@ export default function HomePage() {
   // Estados de Boleto
   const [purchasedTickets, setPurchasedTickets] = useState<TicketPurchased[]>([]);
   const [updatingTicketStatus, setUpdatingTicketStatus] = useState(false);
+
+  // Carga inicial de sesión de usuario
+  useEffect(() => {
+    const savedUser = localStorage.getItem("rn_user");
+    if (savedUser) {
+      try {
+        const parsed = JSON.parse(savedUser);
+        setCurrentUser(parsed);
+        if (parsed.name) setPassengerName(parsed.name);
+        if (parsed.dni) setPassengerDni(parsed.dni);
+      } catch {
+        // Ignorar error de parsing
+      }
+    }
+  }, []);
 
   // Carga de ciudades
   useEffect(() => {
@@ -317,10 +338,28 @@ export default function HomePage() {
     }
   };
 
-  // Paso 4 -> Confirmar Compra
-  const handleConfirmPurchase = async () => {
+  // Paso 4 -> Validación de Login antes de Confirmar la Compra
+  const handlePreConfirmPurchase = () => {
+    if (!selectedTrip || selectedSeats.length === 0) return;
+
+    // Si el usuario no ha iniciado sesión, abrimos el modal flotante sin perder el flujo
+    if (!currentUser) {
+      setLoginModalOpen(true);
+      return;
+    }
+
+    // Si ya está autenticado, procede directamente con la compra
+    executePurchase(currentUser);
+  };
+
+  // Ejecución de la compra (tras autenticación o si ya estaba conectado)
+  const executePurchase = async (userToUse?: AuthUser | null) => {
     if (!selectedTrip || selectedSeats.length === 0) return;
     setPurchasing(true);
+
+    const user = userToUse || currentUser;
+    const finalName = user?.name || passengerName.trim() || "Pasajero General";
+    const finalDni = user?.dni || passengerDni.trim() || "1004567890";
 
     const ref =
       paymentMethod === "TRANSFERENCIA"
@@ -331,8 +370,8 @@ export default function HomePage() {
       const res = await axiosClient.post<TicketPurchased[]>("/tickets/purchase", {
         tripId: selectedTrip.id,
         seatNumbers: selectedSeats,
-        passengerName: passengerName.trim() || "Pasajero General",
-        passengerDni: passengerDni.trim() || "1004567890",
+        passengerName: finalName,
+        passengerDni: finalDni,
         paymentMethod: paymentMethod,
         bankName: paymentMethod === "TRANSFERENCIA" ? bankName : "Ventanilla",
         paymentReference: ref,
@@ -341,21 +380,33 @@ export default function HomePage() {
       if (res.data && res.data.length > 0) {
         setPurchasedTickets(res.data);
       } else {
-        generateFallbackTickets(ref);
+        generateFallbackTickets(ref, finalName, finalDni);
       }
     } catch {
-      generateFallbackTickets(ref);
+      generateFallbackTickets(ref, finalName, finalDni);
     } finally {
       setPurchasing(false);
       setStep(5);
     }
   };
 
-  const generateFallbackTickets = (ref: string) => {
+  // Callback cuando el usuario se autentica exitosamente en el modal flotante
+  const handleLoginSuccess = (user: AuthUser) => {
+    setCurrentUser(user);
+    setPassengerName(user.name);
+    if (user.dni) setPassengerDni(user.dni);
+
+    // Si ya tenía asientos seleccionados en el Paso 4, completa la compra automáticamente
+    if (step === 4 && selectedSeats.length > 0) {
+      executePurchase(user);
+    }
+  };
+
+  const generateFallbackTickets = (ref: string, pName: string, pDni: string) => {
     const tickets: TicketPurchased[] = selectedSeats.map((seat) => ({
       id: "tk-" + Math.random().toString(36).substring(2, 9),
-      passengerName: passengerName.trim() || "Pasajero General",
-      passengerDni: passengerDni.trim() || "1004567890",
+      passengerName: pName,
+      passengerDni: pDni,
       seatNumber: seat,
       qrToken: "RN-" + Math.random().toString(36).substring(2, 10).toUpperCase(),
       status: "PENDING_VERIFICATION",
@@ -421,17 +472,25 @@ export default function HomePage() {
 
   return (
     <div className="h-screen max-h-screen overflow-hidden flex flex-col justify-between bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* 1. Barra de Navegación Superior */}
-      <NavbarVisual />
+      {/* 1. Barra de Navegación Superior con Detección de Usuario */}
+      <NavbarVisual
+        currentUser={currentUser}
+        onOpenLoginModal={() => setLoginModalOpen(true)}
+        onLogout={() => {
+          setCurrentUser(null);
+          setPassengerName("Pasajero General");
+          setPassengerDni("1004567890");
+        }}
+      />
 
       {/* 2. Barra de Pasos Kiosco Compacta */}
-      <div className="shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-1.5 px-3 sm:px-6 shadow-xs z-40">
+      <div className="shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-1.5 px-3 sm:px-6 shadow-xs z-30">
         <div className="max-w-5xl mx-auto flex items-center justify-between text-xs sm:text-sm font-semibold">
           {[
             { num: 1, label: "1. Origen" },
             { num: 2, label: "2. Destino" },
             { num: 3, label: "3. Horario" },
-            { num: 4, label: "4. Asiento" },
+            { num: 4, label: "4. Asiento & Pago" },
             { num: 5, label: "5. Boleto QR" },
           ].map((item, idx, arr) => {
             const isCurrent = step === item.num;
@@ -445,6 +504,7 @@ export default function HomePage() {
                       if (item.num === 1) setStep(1);
                       if (item.num === 2 && originCity) setStep(2);
                       if (item.num === 3 && originCity && destinationCity) setStep(3);
+                      if (item.num === 4 && selectedTrip) setStep(4);
                     }
                   }}
                   className={`flex items-center space-x-1.5 ${
@@ -920,8 +980,8 @@ export default function HomePage() {
 
               {/* Datos del Pasajero y Pago */}
               <div className="w-full lg:w-96 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                     <h3 className="font-black text-slate-900 dark:text-white text-base">
                       Datos del Pasajero
                     </h3>
@@ -935,6 +995,47 @@ export default function HomePage() {
                     </button>
                   </div>
 
+                  {/* Estado de Autenticación de Pasajero */}
+                  {currentUser ? (
+                    <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-xs flex items-center justify-between">
+                      <div className="flex items-center space-x-2 min-w-0">
+                        <UserCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <div className="truncate">
+                          <span className="font-bold text-emerald-900 dark:text-emerald-200 block truncate">
+                            {currentUser.name}
+                          </span>
+                          <span className="text-[10px] text-emerald-700 dark:text-emerald-400 block truncate">
+                            {currentUser.email}
+                          </span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setLoginModalOpen(true)}
+                        className="text-[11px] font-bold text-blue-600 dark:text-blue-400 hover:underline shrink-0 ml-2 cursor-pointer"
+                      >
+                        Cambiar
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-xs flex items-center justify-between">
+                      <div className="flex items-center space-x-1.5 min-w-0">
+                        <span className="text-amber-500 font-bold">ℹ️</span>
+                        <span className="text-[11px] text-amber-900 dark:text-amber-200 font-bold truncate">
+                          Inicia sesión para emitir el boleto
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setLoginModalOpen(true)}
+                        className="text-xs font-black text-blue-600 dark:text-blue-400 hover:underline shrink-0 ml-2 cursor-pointer flex items-center gap-1"
+                      >
+                        <LogIn className="w-3.5 h-3.5" />
+                        <span>Acceder</span>
+                      </button>
+                    </div>
+                  )}
+
                   <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
                     <div className="flex justify-between font-black text-slate-900 dark:text-white">
                       <span>{selectedTrip.originCityName} → {selectedTrip.destinationCityName}</span>
@@ -945,17 +1046,17 @@ export default function HomePage() {
                     </p>
                   </div>
 
-                  <div className="space-y-2.5 text-xs">
+                  <div className="space-y-2 text-xs">
                     <div>
                       <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
-                        Nombre y Apellido
+                        Nombre del Pasajero
                       </label>
                       <input
                         type="text"
                         value={passengerName}
                         onChange={(e) => setPassengerName(e.target.value)}
                         placeholder="Ej. Cristopher Lomas"
-                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
                       />
                     </div>
                     <div>
@@ -967,7 +1068,7 @@ export default function HomePage() {
                         value={passengerDni}
                         onChange={(e) => setPassengerDni(e.target.value)}
                         placeholder="1004567890"
-                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
                       />
                     </div>
                   </div>
@@ -1040,8 +1141,8 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
-                  <div className="flex items-baseline justify-between mb-2.5">
+                <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 mt-2">
+                  <div className="flex items-baseline justify-between mb-2">
                     <span className="font-bold text-slate-600 dark:text-slate-400 text-xs">
                       Total a pagar:
                     </span>
@@ -1053,7 +1154,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     disabled={selectedSeats.length === 0 || purchasing}
-                    onClick={handleConfirmPurchase}
+                    onClick={handlePreConfirmPurchase}
                     className="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer shadow-md shadow-blue-500/20"
                   >
                     <CheckCircle2 className="w-4 h-4" />
@@ -1062,7 +1163,9 @@ export default function HomePage() {
                         ? "Emitiendo boleto..."
                         : selectedSeats.length === 0
                         ? "Elige asiento en el mapa"
-                        : "Confirmar Boleto"}
+                        : currentUser
+                        ? "Confirmar Boleto"
+                        : "Iniciar Sesión y Confirmar"}
                     </span>
                   </button>
                 </div>
@@ -1178,6 +1281,23 @@ export default function HomePage() {
           </div>
         )}
       </main>
+
+      {/* 4. MODAL FLOTANTE DE INICIO DE SESIÓN ENCIMA DE LA PÁGINA */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onSuccess={handleLoginSuccess}
+        tripSummary={
+          selectedTrip
+            ? {
+                origin: selectedTrip.originCityName,
+                destination: selectedTrip.destinationCityName,
+                seats: selectedSeats,
+                price: selectedSeats.length * selectedTrip.price,
+              }
+            : null
+        }
+      />
     </div>
   );
 }
