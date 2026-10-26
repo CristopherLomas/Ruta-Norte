@@ -324,7 +324,7 @@ export default function AdminPage() {
       plate: newPlate.toUpperCase(),
       photoUrl:
         newPhoto.trim() ||
-        "https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80",
+        "/images/buses/bus-velotax.jpg",
       capacity: 40,
     };
 
@@ -432,7 +432,7 @@ export default function AdminPage() {
         {/* =================================================================== */}
         {/* SELECTOR DE PESTAÑAS ADMINISTRATIVAS                                */}
         {/* =================================================================== */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 gap-2">
+        <div className="flex border-b border-slate-200 dark:border-slate-800 gap-2 overflow-x-auto whitespace-nowrap pb-1">
           <button
             type="button"
             onClick={() => setActiveTab("PAGOS")}

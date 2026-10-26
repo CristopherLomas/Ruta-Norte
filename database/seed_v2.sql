@@ -35,12 +35,12 @@ SELECT setval('cities_id_seq', (SELECT MAX(id) FROM public.cities));
 
 -- 3. 6 BUSES DE COOPERATIVAS REALES DEL NORTE (40 ASIENTOS ESTÁNDAR)
 INSERT INTO public.buses (id, cooperative_name, unit_number, plate, photo_url, capacity) VALUES
-  (1, 'Velotax del Norte', 'Disco 12', 'CAA-1020', 'https://images.unsplash.com/photo-1570125909232-eb263c188f7e?auto=format&fit=crop&w=800&q=80', 40),
-  (2, 'Expreso Tulcán', 'Disco 05', 'CAA-2345', 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80', 40),
-  (3, 'Flota Imbabura', 'Disco 44', 'IAC-3456', 'https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?auto=format&fit=crop&w=800&q=80', 40),
-  (4, 'Cooperativa Espejo', 'Disco 08', 'CAA-4567', 'https://images.unsplash.com/photo-1520105072000-f44fc083e508?auto=format&fit=crop&w=800&q=80', 40),
-  (5, '24 de Septiembre', 'Disco 19', 'CAA-5678', 'https://images.unsplash.com/photo-1557223562-6c77ef16210f?auto=format&fit=crop&w=800&q=80', 40),
-  (6, 'Transportes Otavalo', 'Disco 27', 'IAC-6789', 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=800&q=80', 40)
+  (1, 'Velotax del Norte', 'Disco 12', 'CAA-1020', '/images/buses/bus-velotax.jpg', 40),
+  (2, 'Expreso Tulcán', 'Disco 05', 'CAA-2345', '/images/buses/bus-expreso-tulcan.jpg', 40),
+  (3, 'Flota Imbabura', 'Disco 44', 'IAC-3456', '/images/buses/bus-flota-imbabura.jpg', 40),
+  (4, 'Cooperativa Espejo', 'Disco 08', 'CAA-4567', '/images/buses/bus-cooperativa-espejo.jpg', 40),
+  (5, '24 de Septiembre', 'Disco 19', 'CAA-5678', '/images/buses/bus-24-septiembre.jpg', 40),
+  (6, 'Transportes Otavalo', 'Disco 27', 'IAC-6789', '/images/buses/bus-transportes-otavalo.jpg', 40)
 ON CONFLICT (id) DO UPDATE SET
   cooperative_name = EXCLUDED.cooperative_name,
   unit_number = EXCLUDED.unit_number,

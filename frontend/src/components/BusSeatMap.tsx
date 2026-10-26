@@ -36,7 +36,7 @@ export function BusSeatMap({
   return (
     <div
       className={`w-full max-w-lg mx-auto bg-slate-100/95 dark:bg-slate-900/95 rounded-3xl border-3 border-slate-300 dark:border-slate-700 shadow-xl transition-colors duration-200 ${
-        compact ? "p-3 sm:p-4 max-h-[calc(100vh-210px)] overflow-y-auto" : "p-6 sm:p-8"
+        compact ? "p-3 sm:p-4 max-h-[55vh] md:max-h-[calc(100vh-210px)] overflow-y-auto" : "p-4 sm:p-8"
       }`}
     >
       {/* Frente del Autobús / Cabina del Conductor */}

@@ -52,21 +52,21 @@ export function NavbarVisual({ isInternal, roleTitle }: NavbarVisualProps) {
     <header className="shrink-0 h-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs z-50 transition-colors duration-200">
       <div className="max-w-7xl h-full mx-auto px-4 sm:px-6 flex items-center justify-between">
         {/* Izquierda: Logo y Subtítulo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-            <Bus className="w-6 h-6" />
+        <Link href="/" className="flex items-center space-x-2 sm:space-x-3 group min-w-0">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform shrink-0">
+            <Bus className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+          <div className="min-w-0">
+            <div className="flex items-center space-x-1.5 sm:space-x-2">
+              <span className="text-lg sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white truncate">
                 RUTA NORTE
               </span>
-              <span className="bg-amber-400 text-amber-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                2.0 VISUAL
+              <span className="bg-amber-400 text-amber-950 text-[9px] sm:text-[10px] font-black px-1.5 sm:px-2 py-0.5 rounded-full uppercase tracking-wider shrink-0">
+                2.0
               </span>
             </div>
-            <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block leading-tight">
-              Carchi & Imbabura · Kiosco de Transporte
+            <span className="text-[10px] sm:text-[11px] font-semibold text-slate-500 dark:text-slate-400 block leading-tight truncate">
+              Carchi & Imbabura
             </span>
           </div>
         </Link>

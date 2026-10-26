@@ -75,7 +75,7 @@ export async function GET(req: Request) {
         cooperativeName: t.bus?.cooperative_name || "Cooperativa Norte",
         unitNumber: t.bus?.unit_number || "Unidad",
         plate: t.bus?.plate || "CAA-0000",
-        photoUrl: t.bus?.photo_url || "/images/cities/tulcan.jpg",
+        photoUrl: t.bus?.photo_url || "/images/buses/bus-velotax.jpg",
         departureDate: t.departure_date,
         departureTime: t.departure_time?.slice(0, 5) || "08:00",
         shift: t.shift,

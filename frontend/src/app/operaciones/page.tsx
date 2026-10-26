@@ -318,27 +318,27 @@ export default function OperacionesPage() {
           <button
             type="button"
             onClick={() => setActiveTab("VENTA")}
-            className={`h-16 rounded-2xl font-black text-xl flex items-center justify-center space-x-3 transition-all ${
+            className={`h-13 sm:h-16 rounded-2xl font-black text-xs sm:text-base md:text-xl flex items-center justify-center space-x-1.5 sm:space-x-3 transition-all px-2 ${
               activeTab === "VENTA"
                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-102"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
-            <Zap className="w-6 h-6" />
-            <span>⚡ Venta Rápida Ventanilla</span>
+            <Zap className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+            <span className="truncate">⚡ Venta Ventanilla</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("ESCANER")}
-            className={`h-16 rounded-2xl font-black text-xl flex items-center justify-center space-x-3 transition-all ${
+            className={`h-13 sm:h-16 rounded-2xl font-black text-xs sm:text-base md:text-xl flex items-center justify-center space-x-1.5 sm:space-x-3 transition-all px-2 ${
               activeTab === "ESCANER"
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-102"
                 : "bg-slate-100 text-slate-700 hover:bg-slate-200"
             }`}
           >
-            <Camera className="w-6 h-6" />
-            <span>📷 Escáner QR de Abordaje</span>
+            <Camera className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
+            <span className="truncate">📷 Escáner QR</span>
           </button>
         </div>
       </div>
