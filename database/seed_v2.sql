@@ -14,16 +14,16 @@ ON CONFLICT (email) DO NOTHING;
 -- 2. 9 CIUDADES CON TERMINALES (CORREDOR NORTE E35)
 INSERT INTO public.cities (id, name, province, terminal_name, image_url) VALUES
   -- CARCHI
-  (1, 'Tulcán', 'Carchi', 'Terminal Terrestre de Tulcán', 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80'),
-  (2, 'Julio Andrade', 'Carchi', 'Terminal Parroquial Julio Andrade', 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'),
-  (3, 'San Gabriel', 'Carchi', 'Terminal Terrestre San Gabriel', 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80'),
-  (4, 'Bolívar', 'Carchi', 'Terminal Cantonal Bolívar', 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80'),
-  (5, 'El Ángel', 'Carchi', 'Terminal Terrestre El Ángel', 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80'),
+  (1, 'Tulcán', 'Carchi', 'Terminal Terrestre de Tulcán', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Tulcan-Cemetery-1.jpg/800px-Tulcan-Cemetery-1.jpg'),
+  (2, 'Julio Andrade', 'Carchi', 'Terminal Parroquial Julio Andrade', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Vista_desde_Julio_Andrade%2C_Provincia_de_Carchi%2C_Ecuador%2C_2015-07-21%2C_DD_41.JPG/800px-Vista_desde_Julio_Andrade%2C_Provincia_de_Carchi%2C_Ecuador%2C_2015-07-21%2C_DD_41.JPG'),
+  (3, 'San Gabriel', 'Carchi', 'Terminal Terrestre San Gabriel', 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Parque_de_San_Gabriel%2C_Carchi%2C_Ecuador.jpg/800px-Parque_de_San_Gabriel%2C_Carchi%2C_Ecuador.jpg'),
+  (4, 'Bolívar', 'Carchi', 'Terminal Cantonal Bolívar', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Monumento_a_Sim%C3%B3n_Bol%C3%ADvar_en_parque_de_Bol%C3%ADvar%2C_Carchi-_Ecuador.jpg/800px-Monumento_a_Sim%C3%B3n_Bol%C3%ADvar_en_parque_de_Bol%C3%ADvar%2C_Carchi-_Ecuador.jpg'),
+  (5, 'El Ángel', 'Carchi', 'Terminal Terrestre El Ángel', 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Frailejones_Reserva_Ecol%C3%B3gica_El_%C3%81ngel_-_panoramio.jpg/800px-Frailejones_Reserva_Ecol%C3%B3gica_El_%C3%81ngel_-_panoramio.jpg'),
   -- IMBABURA
-  (6, 'Ibarra', 'Imbabura', 'Terminal Terrestre de Ibarra', 'https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=800&q=80'),
-  (7, 'Atuntaqui', 'Imbabura', 'Terminal Intercantonal Atuntaqui', 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'),
-  (8, 'Otavalo', 'Imbabura', 'Terminal Terrestre de Otavalo', 'https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80'),
-  (9, 'Cotacachi', 'Imbabura', 'Terminal Terrestre Cotacachi', 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80')
+  (6, 'Ibarra', 'Imbabura', 'Terminal Terrestre de Ibarra', 'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Yahuarcocha.jpg/800px-Yahuarcocha.jpg'),
+  (7, 'Atuntaqui', 'Imbabura', 'Terminal Intercantonal Atuntaqui', 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/F%C3%A1brica_Imbabura%2C_Atuntaqui.jpg/800px-F%C3%A1brica_Imbabura%2C_Atuntaqui.jpg'),
+  (8, 'Otavalo', 'Imbabura', 'Terminal Terrestre de Otavalo', 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Mercado_de_los_Ponchos.jpg/800px-Mercado_de_los_Ponchos.jpg'),
+  (9, 'Cotacachi', 'Imbabura', 'Terminal Terrestre Cotacachi', 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Cuicocha%2C_Ecuador.jpg/800px-Cuicocha%2C_Ecuador.jpg')
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   province = EXCLUDED.province,

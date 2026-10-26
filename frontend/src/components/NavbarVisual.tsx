@@ -3,78 +3,75 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bus, User, Ticket, Settings, ArrowRight } from "lucide-react";
+import { Bus, LogIn, LogOut, ShieldCheck, Ticket, UserCircle } from "lucide-react";
 
-export function NavbarVisual() {
+interface NavbarVisualProps {
+  isInternal?: boolean;
+  roleTitle?: string;
+}
+
+export function NavbarVisual({ isInternal, roleTitle }: NavbarVisualProps) {
   const pathname = usePathname();
 
-  const isPassenger = pathname === "/pasajero" || pathname === "/";
-  const isStaff = pathname === "/operaciones";
-  const isAdmin = pathname === "/admin";
+  const isStaffPage = pathname === "/operaciones";
+  const isAdminPage = pathname === "/admin";
+  const internalActive = isInternal || isStaffPage || isAdminPage;
+
+  const currentRole =
+    roleTitle ||
+    (isAdminPage ? "⚙️ Administrador" : isStaffPage ? "🎫 Taquilla / Chofer" : "");
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b-2 border-slate-200 shadow-md">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
-          {/* Logo y Título */}
-          <Link href="/pasajero" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform">
-              <Bus className="w-7 h-7" />
-            </div>
-            <div>
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl font-black tracking-tight text-slate-900">
-                  RUTA NORTE
-                </span>
-                <span className="bg-amber-400 text-amber-950 text-xs font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
-                  2.0 Visual
-                </span>
-              </div>
-              <span className="text-xs font-semibold text-slate-500 block">
-                Carchi & Imbabura · Kiosco de Transporte
+    <header className="shrink-0 h-16 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs z-50">
+      <div className="max-w-7xl h-full mx-auto px-4 sm:px-6 flex items-center justify-between">
+        {/* Izquierda: Logo y Subtítulo */}
+        <Link href="/" className="flex items-center space-x-3 group">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <Bus className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center space-x-2">
+              <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900">
+                RUTA NORTE
+              </span>
+              <span className="bg-amber-400 text-amber-950 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-wider">
+                2.0 VISUAL
               </span>
             </div>
-          </Link>
+            <span className="text-[11px] font-semibold text-slate-500 block leading-tight">
+              Carchi & Imbabura · Kiosco de Transporte
+            </span>
+          </div>
+        </Link>
 
-          {/* Selector Rápido de Rol (Modo Demo en 1 Clic) */}
-          <div className="flex items-center p-1.5 bg-slate-100 rounded-2xl border border-slate-200 shadow-inner">
+        {/* Derecha: Si es vista interna muestra Rol + Cerrar Sesión; si es Kiosco público muestra Iniciar Sesión */}
+        {internalActive ? (
+          <div className="flex items-center space-x-3">
+            {currentRole && (
+              <div className="hidden sm:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-bold">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                <span>{currentRole}</span>
+              </div>
+            )}
             <Link
-              href="/pasajero"
-              className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base transition-all ${
-                isPassenger
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 scale-102"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
-              }`}
+              href="/"
+              className="flex items-center space-x-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-xs"
             >
-              <User className="w-5 h-5" />
-              <span>🧍 Pasajero</span>
-            </Link>
-
-            <Link
-              href="/operaciones"
-              className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base transition-all ${
-                isStaff
-                  ? "bg-emerald-600 text-white shadow-md shadow-emerald-500/30 scale-102"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
-              }`}
-            >
-              <Ticket className="w-5 h-5" />
-              <span>🎫 Taquilla / Chofer</span>
-            </Link>
-
-            <Link
-              href="/admin"
-              className={`flex items-center space-x-2 px-4 py-2.5 rounded-xl font-bold text-sm sm:text-base transition-all ${
-                isAdmin
-                  ? "bg-purple-700 text-white shadow-md shadow-purple-500/30 scale-102"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
-              }`}
-            >
-              <Settings className="w-5 h-5" />
-              <span>⚙️ Admin</span>
+              <LogOut className="w-4 h-4" />
+              <span>🚪 Cerrar Sesión (Volver al Kiosco)</span>
             </Link>
           </div>
-        </div>
+        ) : (
+          <div className="flex items-center space-x-2">
+            <Link
+              href="/login"
+              className="flex items-center space-x-2 bg-slate-900 hover:bg-slate-800 text-white font-extrabold px-4 py-2 rounded-xl text-sm transition-all shadow-md shadow-slate-900/10 hover:shadow-lg hover:scale-102"
+            >
+              <LogIn className="w-4 h-4 text-amber-400" />
+              <span>🔑 Iniciar Sesión</span>
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );

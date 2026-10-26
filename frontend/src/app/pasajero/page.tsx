@@ -17,6 +17,10 @@ import {
   RotateCcw,
   Sparkles,
   Users,
+  Sun,
+  Sunset,
+  Moon,
+  Compass,
 } from "lucide-react";
 
 interface City {
@@ -63,59 +67,127 @@ interface TicketPurchased {
   price: number;
 }
 
-// Fallback de las 9 ciudades por si la API está arrancando
+// 9 Ciudades con Fotos Reales Verificadas de Wikimedia Commons
 const FALLBACK_CITIES: City[] = [
-  { id: 1, name: "Tulcán", province: "Carchi", terminalName: "Terminal Terrestre de Tulcán", imageUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80" },
-  { id: 2, name: "Julio Andrade", province: "Carchi", terminalName: "Terminal Parroquial Julio Andrade", imageUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" },
-  { id: 3, name: "San Gabriel", province: "Carchi", terminalName: "Terminal Terrestre San Gabriel", imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80" },
-  { id: 4, name: "Bolívar", province: "Carchi", terminalName: "Terminal Cantonal Bolívar", imageUrl: "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=800&q=80" },
-  { id: 5, name: "El Ángel", province: "Carchi", terminalName: "Terminal Terrestre El Ángel", imageUrl: "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=800&q=80" },
-  { id: 6, name: "Ibarra", province: "Imbabura", terminalName: "Terminal Terrestre de Ibarra", imageUrl: "https://images.unsplash.com/photo-1477959858617-67f30bc75b82?auto=format&fit=crop&w=800&q=80" },
-  { id: 7, name: "Atuntaqui", province: "Imbabura", terminalName: "Terminal Intercantonal Atuntaqui", imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80" },
-  { id: 8, name: "Otavalo", province: "Imbabura", terminalName: "Terminal Terrestre de Otavalo", imageUrl: "https://images.unsplash.com/photo-1519501025264-65ba15a82390?auto=format&fit=crop&w=800&q=80" },
-  { id: 9, name: "Cotacachi", province: "Imbabura", terminalName: "Terminal Terrestre Cotacachi", imageUrl: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80" },
+  {
+    id: 1,
+    name: "Tulcán",
+    province: "Carchi",
+    terminalName: "Terminal Terrestre de Tulcán",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Tulcan-Cemetery-1.jpg/800px-Tulcan-Cemetery-1.jpg",
+  },
+  {
+    id: 2,
+    name: "Julio Andrade",
+    province: "Carchi",
+    terminalName: "Terminal Parroquial Julio Andrade",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Vista_desde_Julio_Andrade%2C_Provincia_de_Carchi%2C_Ecuador%2C_2015-07-21%2C_DD_41.JPG/800px-Vista_desde_Julio_Andrade%2C_Provincia_de_Carchi%2C_Ecuador%2C_2015-07-21%2C_DD_41.JPG",
+  },
+  {
+    id: 3,
+    name: "San Gabriel",
+    province: "Carchi",
+    terminalName: "Terminal Terrestre San Gabriel",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Parque_de_San_Gabriel%2C_Carchi%2C_Ecuador.jpg/800px-Parque_de_San_Gabriel%2C_Carchi%2C_Ecuador.jpg",
+  },
+  {
+    id: 4,
+    name: "Bolívar",
+    province: "Carchi",
+    terminalName: "Terminal Cantonal Bolívar",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Monumento_a_Sim%C3%B3n_Bol%C3%ADvar_en_parque_de_Bol%C3%ADvar%2C_Carchi-_Ecuador.jpg/800px-Monumento_a_Sim%C3%B3n_Bol%C3%ADvar_en_parque_de_Bol%C3%ADvar%2C_Carchi-_Ecuador.jpg",
+  },
+  {
+    id: 5,
+    name: "El Ángel",
+    province: "Carchi",
+    terminalName: "Terminal Terrestre El Ángel",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Frailejones_Reserva_Ecol%C3%B3gica_El_%C3%81ngel_-_panoramio.jpg/800px-Frailejones_Reserva_Ecol%C3%B3gica_El_%C3%81ngel_-_panoramio.jpg",
+  },
+  {
+    id: 6,
+    name: "Ibarra",
+    province: "Imbabura",
+    terminalName: "Terminal Terrestre de Ibarra",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Yahuarcocha.jpg/800px-Yahuarcocha.jpg",
+  },
+  {
+    id: 7,
+    name: "Atuntaqui",
+    province: "Imbabura",
+    terminalName: "Terminal Intercantonal Atuntaqui",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/F%C3%A1brica_Imbabura%2C_Atuntaqui.jpg/800px-F%C3%A1brica_Imbabura%2C_Atuntaqui.jpg",
+  },
+  {
+    id: 8,
+    name: "Otavalo",
+    province: "Imbabura",
+    terminalName: "Terminal Terrestre de Otavalo",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b3/Mercado_de_los_Ponchos.jpg/800px-Mercado_de_los_Ponchos.jpg",
+  },
+  {
+    id: 9,
+    name: "Cotacachi",
+    province: "Imbabura",
+    terminalName: "Terminal Terrestre Cotacachi",
+    imageUrl:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Cuicocha%2C_Ecuador.jpg/800px-Cuicocha%2C_Ecuador.jpg",
+  },
 ];
 
 export default function PasajeroPage() {
-  const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
+  // Wizard de 5 Pasos Independientes:
+  // 1: Origen | 2: Destino | 3: Horario | 4: Asiento | 5: Boleto QR
+  const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
 
-  // Paso 1
+  // Estados de Rutas
   const [cities, setCities] = useState<City[]>(FALLBACK_CITIES);
-  const [originCity, setOriginCity] = useState<City | null>(FALLBACK_CITIES[0]); // Tulcán default
-  const [destinationCity, setDestinationCity] = useState<City | null>(FALLBACK_CITIES[5]); // Ibarra default
+  const [originCity, setOriginCity] = useState<City | null>(null);
+  const [destinationCity, setDestinationCity] = useState<City | null>(null);
 
-  // Paso 2
+  // Estados de Horarios (Paso 3)
   const [selectedShift, setSelectedShift] = useState<"ALL" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
   const [trips, setTrips] = useState<Trip[]>([]);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
   const [loadingTrips, setLoadingTrips] = useState(false);
 
-  // Paso 3
-  const [occupiedSeats, setOccupiedSeats] = useState<number[]>([3, 4, 12, 15]);
+  // Estados de Asientos (Paso 4)
+  const [occupiedSeats, setOccupiedSeats] = useState<number[]>([3, 4, 12, 15, 22, 23]);
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const [passengerName, setPassengerName] = useState("Pasajero General");
   const [purchasing, setPurchasing] = useState(false);
 
-  // Paso 4
+  // Estados de Boleto QR (Paso 5)
   const [purchasedTickets, setPurchasedTickets] = useState<TicketPurchased[]>([]);
 
-  // Cargar ciudades con Axios
+  // Cargar ciudades con Axios (si la API falla se mantiene FALLBACK_CITIES)
   useEffect(() => {
     axiosClient
       .get<City[]>("/cities")
       .then((res) => {
         if (res.data && res.data.length > 0) {
-          setCities(res.data);
-          if (!originCity) setOriginCity(res.data[0]);
-          if (!destinationCity) setDestinationCity(res.data[Math.min(5, res.data.length - 1)]);
+          // Fusionar con URLs verificadas para asegurar imágenes óptimas
+          const merged = res.data.map((c) => {
+            const found = FALLBACK_CITIES.find((f) => f.id === c.id || f.name.toLowerCase() === c.name.toLowerCase());
+            return found ? { ...c, imageUrl: c.imageUrl || found.imageUrl } : c;
+          });
+          setCities(merged);
         }
       })
       .catch(() => {
-        // Mantiene fallback
+        setCities(FALLBACK_CITIES);
       });
   }, []);
 
-  // Cargar viajes al avanzar al Paso 2
+  // Cargar viajes al avanzar al Paso 3
   const fetchTrips = async () => {
     if (!originCity || !destinationCity) return;
     setLoadingTrips(true);
@@ -130,7 +202,7 @@ export default function PasajeroPage() {
       } else {
         generateDemoTripsFallback();
       }
-    } catch (err) {
+    } catch {
       generateDemoTripsFallback();
     } finally {
       setLoadingTrips(false);
@@ -176,7 +248,7 @@ export default function PasajeroPage() {
         plate: "CAA-2345",
         photoUrl: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=800&q=80",
         departureDate: "Hoy",
-        departureTime: "14:15 PM",
+        departureTime: "13:30 PM",
         shift: "AFTERNOON",
         price: 3.75,
         totalSeats: 40,
@@ -197,23 +269,23 @@ export default function PasajeroPage() {
         plate: "IAC-3456",
         photoUrl: "https://images.unsplash.com/photo-1494515843206-f3117d3f51b7?auto=format&fit=crop&w=800&q=80",
         departureDate: "Hoy",
-        departureTime: "19:00 PM",
+        departureTime: "18:45 PM",
         shift: "NIGHT",
         price: 4.0,
         totalSeats: 40,
-        occupiedSeats: 4,
-        availableSeats: 36,
+        occupiedSeats: 6,
+        availableSeats: 34,
       },
     ]);
   };
 
   useEffect(() => {
-    if (step === 2) {
+    if (step === 3) {
       fetchTrips();
     }
-  }, [step, selectedShift]);
+  }, [step, selectedShift, originCity, destinationCity]);
 
-  // Cargar asientos del viaje
+  // Selección de Viaje (Paso 3 -> Paso 4)
   const handleSelectTrip = async (trip: Trip) => {
     setSelectedTrip(trip);
     setSelectedSeats([]);
@@ -228,9 +300,10 @@ export default function PasajeroPage() {
     } catch {
       setOccupiedSeats([2, 5, 14, 18]);
     }
-    setStep(3);
+    setStep(4);
   };
 
+  // Toggle de Asiento
   const handleToggleSeat = (seatNum: number) => {
     if (selectedSeats.includes(seatNum)) {
       setSelectedSeats(selectedSeats.filter((s) => s !== seatNum));
@@ -239,7 +312,7 @@ export default function PasajeroPage() {
     }
   };
 
-  // Compra en 1 clic
+  // Compra en 1 Clic (Paso 4 -> Paso 5)
   const handleConfirmPurchase = async () => {
     if (!selectedTrip || selectedSeats.length === 0) return;
     setPurchasing(true);
@@ -256,11 +329,11 @@ export default function PasajeroPage() {
       } else {
         generateFallbackPurchasedTickets();
       }
-    } catch (err) {
+    } catch {
       generateFallbackPurchasedTickets();
     } finally {
       setPurchasing(false);
-      setStep(4);
+      setStep(5);
     }
   };
 
@@ -271,8 +344,8 @@ export default function PasajeroPage() {
       seatNumber: seat,
       qrToken: "RN-" + Math.random().toString(36).substring(2, 14).toUpperCase(),
       status: "PAID",
-      originCity: selectedTrip?.originCityName || "Tulcán",
-      destinationCity: selectedTrip?.destinationCityName || "Ibarra",
+      originCity: selectedTrip?.originCityName || originCity?.name || "Tulcán",
+      destinationCity: selectedTrip?.destinationCityName || destinationCity?.name || "Ibarra",
       departureTime: selectedTrip?.departureTime || "08:00 AM",
       departureDate: selectedTrip?.departureDate || "Hoy",
       cooperativeName: selectedTrip?.cooperativeName || "Velotax del Norte",
@@ -281,554 +354,709 @@ export default function PasajeroPage() {
     setPurchasedTickets(tickets);
   };
 
-  // Manejador de selección de ciudad
-  const handleCityClick = (city: City) => {
-    if (!originCity) {
-      setOriginCity(city);
-    } else if (originCity.id === city.id) {
-      // Deseleccionar si toca la misma
-      setOriginCity(null);
-    } else if (!destinationCity) {
-      setDestinationCity(city);
-    } else {
-      // Reemplazar destino si ya tenía ambos
-      setDestinationCity(city);
+  // Acción Inmediata Paso 1 (Origen)
+  const handleSelectOrigin = (city: City) => {
+    setOriginCity(city);
+    // Si la ciudad de destino previa era la misma, reiniciarla
+    if (destinationCity?.id === city.id) {
+      setDestinationCity(null);
     }
+    setStep(2);
   };
 
+  // Acción Inmediata Paso 2 (Destino)
+  const handleSelectDestination = (city: City) => {
+    if (city.id === originCity?.id) return;
+    setDestinationCity(city);
+    setStep(3);
+  };
+
+  // Reiniciar todo para un nuevo boleto
+  const handleResetKiosk = () => {
+    setOriginCity(null);
+    setDestinationCity(null);
+    setSelectedTrip(null);
+    setSelectedSeats([]);
+    setPurchasedTickets([]);
+    setStep(1);
+  };
+
+  // Ciudades agrupadas por provincia
+  const carchiCities = cities.filter((c) => c.province === "Carchi");
+  const imbaburaCities = cities.filter((c) => c.province === "Imbabura");
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="h-screen max-h-screen overflow-hidden flex flex-col justify-between bg-slate-100 select-none">
+      {/* 1. Navbar Compacto */}
       <NavbarVisual />
 
-      {/* Barra de Progreso del Wizard (Gigante y Accesible) */}
-      <div className="bg-white border-b border-slate-200 py-4 px-4 sticky top-20 z-40 shadow-xs">
+      {/* 2. Barra de Progreso de 5 Pasos Independientes */}
+      <div className="shrink-0 bg-white border-b border-slate-200 py-1.5 px-4 shadow-xs">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           {[
-            { num: 1, label: "1. Ruta" },
-            { num: 2, label: "2. Horario" },
-            { num: 3, label: "3. Asientos" },
-            { num: 4, label: "4. Boleto QR" },
-          ].map((item) => (
-            <div key={item.num} className="flex items-center space-x-2">
-              <div
-                className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center font-black text-lg transition-all ${
-                  step === item.num
-                    ? "bg-blue-600 text-white shadow-lg shadow-blue-500/40 scale-110"
-                    : step > item.num
-                    ? "bg-emerald-500 text-white"
-                    : "bg-slate-200 text-slate-500"
-                }`}
-              >
-                {step > item.num ? "✓" : item.num}
-              </div>
-              <span
-                className={`hidden sm:inline font-black text-sm sm:text-base ${
-                  step === item.num ? "text-blue-700" : "text-slate-600"
-                }`}
-              >
-                {item.label}
-              </span>
-            </div>
-          ))}
+            { num: 1, label: "1. Origen" },
+            { num: 2, label: "2. Destino" },
+            { num: 3, label: "3. Horario" },
+            { num: 4, label: "4. Asiento" },
+            { num: 5, label: "5. Boleto QR" },
+          ].map((item, idx, arr) => {
+            const isCurrent = step === item.num;
+            const isPast = step > item.num;
+            const canClick = isPast;
+
+            return (
+              <React.Fragment key={item.num}>
+                <button
+                  type="button"
+                  disabled={!canClick}
+                  onClick={() => canClick && setStep(item.num as any)}
+                  className={`flex items-center space-x-1.5 transition-all text-left ${
+                    canClick ? "cursor-pointer hover:opacity-80" : "cursor-default"
+                  }`}
+                >
+                  <div
+                    className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center font-black text-xs sm:text-sm transition-all ${
+                      isCurrent
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/40 scale-105 ring-2 ring-blue-300"
+                        : isPast
+                        ? "bg-emerald-600 text-white"
+                        : "bg-slate-200 text-slate-400"
+                    }`}
+                  >
+                    {isPast ? "✓" : item.num}
+                  </div>
+                  <span
+                    className={`hidden sm:inline font-bold text-xs ${
+                      isCurrent
+                        ? "text-blue-700 font-black"
+                        : isPast
+                        ? "text-emerald-700"
+                        : "text-slate-400"
+                    }`}
+                  >
+                    {item.label}
+                  </span>
+                </button>
+                {idx < arr.length - 1 && (
+                  <div
+                    className={`hidden md:block flex-1 h-0.5 mx-2 rounded-full transition-colors ${
+                      step > item.num ? "bg-emerald-500" : "bg-slate-200"
+                    }`}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
         </div>
       </div>
 
-      {/* Contenido Principal por Pasos */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+      {/* 3. Contenedor Maestro "Cero Scroll" (100vh) */}
+      <main className="flex-1 min-h-0 overflow-hidden flex flex-col p-2.5 sm:p-3.5 max-w-7xl w-full mx-auto">
         {/* =================================================================== */}
-        {/* PASO 1: CIUDADES FOTOGRÁFICAS                                       */}
+        {/* PASO 1: "¿De dónde sales? (Elige tu Origen)"                        */}
         {/* =================================================================== */}
         {step === 1 && (
-          <div className="space-y-6">
-            <div className="text-center max-w-2xl mx-auto space-y-2">
-              <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight">
-                ¿De dónde sales y a dónde vas?
+          <div className="h-full flex flex-col justify-between">
+            {/* Cabecera Compacta */}
+            <div className="shrink-0 text-center mb-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+                ¿De dónde sales? <span className="text-emerald-600">(Elige tu Origen)</span>
               </h1>
-              <p className="text-lg sm:text-xl text-slate-600 font-medium">
-                Toca una ciudad para tu <span className="text-emerald-600 font-bold">ORIGEN</span> y otra para tu{" "}
-                <span className="text-blue-600 font-bold">DESTINO</span>.
-              </p>
-            </div>
-
-            {/* Resumen Superior de Selección */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto p-4 bg-white rounded-3xl border-2 border-slate-200 shadow-sm">
-              <div className="flex items-center space-x-4 p-3 rounded-2xl bg-emerald-50 border-2 border-emerald-300">
-                <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-2xl font-black">
-                  🛫
-                </div>
-                <div>
-                  <span className="text-xs font-black text-emerald-800 uppercase tracking-widest block">
-                    ORIGEN (SUBES AQUÍ)
-                  </span>
-                  <span className="text-2xl font-black text-emerald-950">
-                    {originCity ? originCity.name : "Toca una ciudad abajo"}
+              <div className="flex justify-center items-center gap-2 sm:gap-4 my-1">
+                {/* Caja 1 (Activa) */}
+                <div className="border-2 border-dashed border-emerald-500 bg-emerald-50/90 text-emerald-900 font-bold px-3.5 py-1 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 shadow-xs animate-pulse">
+                  <span>🛫 ORIGEN:</span>
+                  <span className="font-extrabold">
+                    {originCity ? originCity.name : "(Toca una ciudad abajo)"}
                   </span>
                 </div>
-              </div>
-
-              <div className="flex items-center space-x-4 p-3 rounded-2xl bg-blue-50 border-2 border-blue-300">
-                <div className="w-12 h-12 rounded-xl bg-blue-600 text-white flex items-center justify-center text-2xl font-black">
-                  🛬
-                </div>
-                <div>
-                  <span className="text-xs font-black text-blue-800 uppercase tracking-widest block">
-                    DESTINO (BAJAS AQUÍ)
-                  </span>
-                  <span className="text-2xl font-black text-blue-950">
-                    {destinationCity ? destinationCity.name : "Toca una ciudad abajo"}
-                  </span>
+                {/* Caja 2 (Inactiva) */}
+                <div className="bg-slate-200/80 text-slate-400 font-semibold px-3.5 py-1 rounded-xl text-xs sm:text-sm flex items-center gap-1.5">
+                  <span>🛬 DESTINO:</span>
+                  <span>(Pendiente)</span>
                 </div>
               </div>
             </div>
 
-            {/* Cuadrícula de 9 Tarjetas Fotográficas de Ciudades */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 pt-4">
-              {cities.map((city) => {
-                const isOrigin = originCity?.id === city.id;
-                const isDestination = destinationCity?.id === city.id;
-
-                return (
-                  <div
-                    key={city.id}
-                    onClick={() => handleCityClick(city)}
-                    className={`relative rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 transform hover:-translate-y-1.5 shadow-md group ${
-                      isOrigin
-                        ? "ring-6 ring-emerald-500 shadow-2xl scale-102"
-                        : isDestination
-                        ? "ring-6 ring-blue-600 shadow-2xl scale-102"
-                        : "border-2 border-slate-200 hover:border-slate-400"
-                    }`}
-                  >
-                    {/* Imagen de Fondo */}
-                    <div className="h-52 w-full overflow-hidden bg-slate-800">
+            {/* Cuadrícula de 9 Ciudades Fotográficas (100vh sin scroll) */}
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-2">
+              {/* Bloque Carchi (5 ciudades en 1 fila) */}
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="shrink-0 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                  <span>Provincia del Carchi (Norte)</span>
+                </div>
+                <div className="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
+                  {carchiCities.map((city) => (
+                    <button
+                      key={city.id}
+                      type="button"
+                      onClick={() => handleSelectOrigin(city)}
+                      className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] border-2 border-slate-200 hover:border-emerald-500 text-left flex flex-col justify-end p-2.5 bg-slate-900 h-full w-full"
+                    >
                       <img
                         src={city.imageUrl}
                         alt={city.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-90"
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
+                        loading="eager"
                       />
-                    </div>
-
-                    {/* Gradiente Oscuro para Legibilidad */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent"></div>
-
-                    {/* Badges de Estado */}
-                    <div className="absolute top-4 left-4 right-4 flex justify-between items-center">
-                      <span className="bg-slate-900/80 backdrop-blur-md text-white text-xs font-black px-3 py-1.5 rounded-full uppercase tracking-wider border border-white/20">
-                        {city.province}
-                      </span>
-                      {isOrigin && (
-                        <span className="bg-emerald-500 text-white text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-lg flex items-center space-x-1 animate-pulse">
-                          <span>🛫 ORIGEN</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/35 to-transparent"></div>
+                      <div className="absolute top-2 right-2">
+                        <span className="bg-emerald-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
+                          Elegir ➔
                         </span>
-                      )}
-                      {isDestination && (
-                        <span className="bg-blue-600 text-white text-xs font-black px-3.5 py-1.5 rounded-full uppercase tracking-wider shadow-lg flex items-center space-x-1 animate-pulse">
-                          <span>🛬 DESTINO</span>
-                        </span>
-                      )}
-                    </div>
+                      </div>
+                      <div className="relative z-10 text-white leading-tight">
+                        <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+                          {city.name}
+                        </h3>
+                        <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                          <span>{city.terminalName}</span>
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                    {/* Información de la Ciudad */}
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h3 className="text-3xl font-black tracking-tight">{city.name}</h3>
-                      <p className="text-xs text-slate-300 font-semibold flex items-center space-x-1 mt-1 truncate">
-                        <MapPin className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-                        <span>{city.terminalName}</span>
-                      </p>
-                    </div>
-                  </div>
+              {/* Bloque Imbabura (4 ciudades en 1 fila centrada) */}
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="shrink-0 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                  <span>Provincia de Imbabura (Lagos y Valles)</span>
+                </div>
+                <div className="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 lg:max-w-[85%] lg:mx-auto w-full">
+                  {imbaburaCities.map((city) => (
+                    <button
+                      key={city.id}
+                      type="button"
+                      onClick={() => handleSelectOrigin(city)}
+                      className="group relative rounded-2xl overflow-hidden cursor-pointer shadow-md hover:shadow-xl transition-all duration-200 transform hover:scale-[1.02] border-2 border-slate-200 hover:border-emerald-500 text-left flex flex-col justify-end p-2.5 bg-slate-900 h-full w-full"
+                    >
+                      <img
+                        src={city.imageUrl}
+                        alt={city.name}
+                        className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
+                        loading="eager"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/35 to-transparent"></div>
+                      <div className="absolute top-2 right-2">
+                        <span className="bg-emerald-500/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
+                          Elegir ➔
+                        </span>
+                      </div>
+                      <div className="relative z-10 text-white leading-tight">
+                        <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+                          {city.name}
+                        </h3>
+                        <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                          <span>{city.terminalName}</span>
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* PASO 2: "¿A dónde vas? (Elige tu Destino)"                          */}
+        {/* =================================================================== */}
+        {step === 2 && (
+          <div className="h-full flex flex-col justify-between">
+            {/* Cabecera Compacta */}
+            <div className="shrink-0 text-center mb-1">
+              <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+                ¿A dónde vas? <span className="text-blue-600">(Elige tu Destino)</span>
+              </h1>
+              <div className="flex justify-center items-center gap-2 sm:gap-4 my-1">
+                {/* Caja 1 (Completada con botón cambiar) */}
+                <div className="bg-emerald-100 text-emerald-950 border border-emerald-300 font-bold px-3 py-1 rounded-xl text-xs sm:text-sm flex items-center gap-2 shadow-xs">
+                  <span>🛫 ORIGEN:</span>
+                  <span className="font-extrabold">{originCity?.name}</span>
+                  <button
+                    type="button"
+                    onClick={() => setStep(1)}
+                    className="ml-1 text-[11px] bg-white text-emerald-800 hover:bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-300 font-extrabold"
+                  >
+                    Cambiar ✏️
+                  </button>
+                </div>
+                {/* Caja 2 (Activa) */}
+                <div className="border-2 border-dashed border-blue-500 bg-blue-50/90 text-blue-900 font-bold px-3.5 py-1 rounded-xl text-xs sm:text-sm flex items-center gap-1.5 shadow-xs animate-pulse">
+                  <span>🛬 DESTINO:</span>
+                  <span className="font-extrabold">
+                    {destinationCity ? destinationCity.name : "(Toca una ciudad abajo)"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Cuadrícula de 9 Ciudades con Origen Deshabilitado */}
+            <div className="flex-1 min-h-0 flex flex-col justify-between gap-2">
+              {/* Bloque Carchi */}
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="shrink-0 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 inline-block"></span>
+                  <span>Provincia del Carchi</span>
+                </div>
+                <div className="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-2.5">
+                  {carchiCities.map((city) => {
+                    const isOrigin = originCity?.id === city.id;
+                    return (
+                      <button
+                        key={city.id}
+                        type="button"
+                        disabled={isOrigin}
+                        onClick={() => handleSelectDestination(city)}
+                        className={`group relative rounded-2xl overflow-hidden text-left flex flex-col justify-end p-2.5 h-full w-full transition-all duration-200 ${
+                          isOrigin
+                            ? "opacity-35 grayscale cursor-not-allowed border-2 border-slate-300 bg-slate-800"
+                            : "cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] border-2 border-slate-200 hover:border-blue-600 bg-slate-900"
+                        }`}
+                      >
+                        <img
+                          src={city.imageUrl}
+                          alt={city.name}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
+                          loading="eager"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/35 to-transparent"></div>
+
+                        {/* Badge de Origen Bloqueado o Selección */}
+                        <div className="absolute top-2 right-2">
+                          {isOrigin ? (
+                            <span className="bg-slate-900/90 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/50">
+                              📍 SALES DE AQUÍ
+                            </span>
+                          ) : (
+                            <span className="bg-blue-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
+                              Llegar ➔
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="relative z-10 text-white leading-tight">
+                          <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+                            {city.name}
+                          </h3>
+                          <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                            <span>{city.terminalName}</span>
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Bloque Imbabura */}
+              <div className="flex-1 min-h-0 flex flex-col">
+                <div className="shrink-0 text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1 flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 inline-block"></span>
+                  <span>Provincia de Imbabura</span>
+                </div>
+                <div className="flex-1 min-h-0 grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 lg:max-w-[85%] lg:mx-auto w-full">
+                  {imbaburaCities.map((city) => {
+                    const isOrigin = originCity?.id === city.id;
+                    return (
+                      <button
+                        key={city.id}
+                        type="button"
+                        disabled={isOrigin}
+                        onClick={() => handleSelectDestination(city)}
+                        className={`group relative rounded-2xl overflow-hidden text-left flex flex-col justify-end p-2.5 h-full w-full transition-all duration-200 ${
+                          isOrigin
+                            ? "opacity-35 grayscale cursor-not-allowed border-2 border-slate-300 bg-slate-800"
+                            : "cursor-pointer shadow-md hover:shadow-xl hover:scale-[1.02] border-2 border-slate-200 hover:border-blue-600 bg-slate-900"
+                        }`}
+                      >
+                        <img
+                          src={city.imageUrl}
+                          alt={city.name}
+                          className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-85"
+                          loading="eager"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/35 to-transparent"></div>
+
+                        {/* Badge de Origen Bloqueado o Selección */}
+                        <div className="absolute top-2 right-2">
+                          {isOrigin ? (
+                            <span className="bg-slate-900/90 text-amber-300 text-[10px] font-black px-2 py-0.5 rounded-full border border-amber-400/50">
+                              📍 SALES DE AQUÍ
+                            </span>
+                          ) : (
+                            <span className="bg-blue-600/90 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">
+                              Llegar ➔
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="relative z-10 text-white leading-tight">
+                          <h3 className="text-base sm:text-lg font-black tracking-tight drop-shadow-md">
+                            {city.name}
+                          </h3>
+                          <p className="text-[10px] sm:text-[11px] text-slate-300 font-semibold truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+                            <span>{city.terminalName}</span>
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* PASO 3: "Selecciona tu Horario y Bus"                               */}
+        {/* =================================================================== */}
+        {step === 3 && (
+          <div className="h-full flex flex-col justify-between">
+            {/* Barra de Resumen Compacta */}
+            <div className="shrink-0 bg-white border border-slate-200 rounded-2xl px-4 py-2 flex items-center justify-between shadow-xs mb-2">
+              <div className="flex items-center space-x-2">
+                <span className="text-sm sm:text-base font-extrabold text-slate-900">
+                  🛫 {originCity?.name} ➔ 🛬 {destinationCity?.name}
+                </span>
+                <span className="hidden sm:inline text-xs text-slate-400 font-bold">
+                  (Corredor Norte E35)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1 rounded-xl font-extrabold border border-slate-300"
+              >
+                Cambiar ruta ✏️
+              </button>
+            </div>
+
+            {/* Pestañas de Turno en 1 sola fila */}
+            <div className="shrink-0 flex items-center justify-center gap-2 mb-2">
+              {[
+                { id: "ALL", label: "🌟 Todos", icon: Compass },
+                { id: "MORNING", label: "☀️ Mañana", icon: Sun },
+                { id: "AFTERNOON", label: "🌤️ Tarde", icon: Sunset },
+                { id: "NIGHT", label: "🌙 Noche", icon: Moon },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const active = selectedShift === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setSelectedShift(tab.id as any)}
+                    className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl font-bold text-xs sm:text-sm transition-all shadow-xs ${
+                      active
+                        ? "bg-blue-600 text-white shadow-blue-500/30 scale-102"
+                        : "bg-white text-slate-700 hover:bg-slate-50 border border-slate-200"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{tab.label}</span>
+                  </button>
                 );
               })}
             </div>
 
-            {/* Botón Gigante Siguiente */}
-            <div className="pt-6 text-center">
-              <button
-                type="button"
-                disabled={!originCity || !destinationCity || originCity.id === destinationCity.id}
-                onClick={() => setStep(2)}
-                className={`w-full max-w-xl mx-auto h-20 rounded-3xl font-black text-2xl flex items-center justify-center space-x-3 transition-all shadow-xl ${
-                  originCity && destinationCity && originCity.id !== destinationCity.id
-                    ? "bg-blue-600 hover:bg-blue-700 text-white shadow-blue-500/40 hover:scale-102"
-                    : "bg-slate-300 text-slate-500 cursor-not-allowed"
-                }`}
-              >
-                <span>Ver Horarios Disponibles</span>
-                <ArrowRight className="w-7 h-7" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* =================================================================== */}
-        {/* PASO 2: HORARIOS Y AUTOBUSES                                        */}
-        {/* =================================================================== */}
-        {step === 2 && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="flex items-center space-x-2 px-5 py-3 rounded-2xl bg-white border-2 border-slate-200 text-slate-700 font-black text-lg hover:bg-slate-100 transition-colors shadow-sm"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Cambiar Ruta</span>
-              </button>
-
-              <div className="text-right">
-                <span className="text-sm font-black text-slate-400 uppercase tracking-widest block">
-                  RUTA SELECCIONADA
-                </span>
-                <span className="text-xl sm:text-2xl font-black text-slate-900">
-                  {originCity?.name} ➔ {destinationCity?.name}
-                </span>
-              </div>
-            </div>
-
-            {/* Pestañas de Turno Gigantes */}
-            <div className="grid grid-cols-3 gap-3 max-w-3xl mx-auto p-2 bg-slate-200/80 rounded-3xl">
-              {[
-                { id: "ALL", label: "✨ Todos", desc: "Ver todo el día" },
-                { id: "MORNING", label: "☀️ Mañana", desc: "05:00 - 11:59" },
-                { id: "AFTERNOON", label: "🌤️ Tarde", desc: "12:00 - 17:59" },
-                { id: "NIGHT", label: "🌙 Noche", desc: "18:00 - 23:00" },
-              ].map((shift) => (
-                <button
-                  key={shift.id}
-                  type="button"
-                  onClick={() => setSelectedShift(shift.id as any)}
-                  className={`py-4 px-3 rounded-2xl font-black text-center transition-all ${
-                    selectedShift === shift.id
-                      ? "bg-white text-blue-700 shadow-lg scale-102 border-2 border-blue-500"
-                      : "text-slate-600 hover:bg-white/60"
-                  }`}
-                >
-                  <span className="text-lg sm:text-xl block">{shift.label}</span>
-                  <span className="text-xs text-slate-400 font-semibold">{shift.desc}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Tarjetas Grandes de Buses Disponibles */}
-            {loadingTrips ? (
-              <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
-                <p className="mt-4 text-xl font-bold text-slate-600">Buscando las mejores salidas...</p>
-              </div>
-            ) : trips.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center max-w-xl mx-auto border-2 border-slate-200">
-                <span className="text-5xl block mb-4">🚌</span>
-                <h3 className="text-2xl font-black text-slate-800">No hay salidas para este horario</h3>
-                <p className="text-slate-500 mt-2">Prueba seleccionando otro turno o vuelve a la mañana.</p>
-                <button
-                  onClick={() => setSelectedShift("ALL")}
-                  className="mt-6 px-6 py-3 rounded-2xl bg-blue-600 text-white font-bold"
-                >
-                  Ver todas las salidas
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-4 max-w-4xl mx-auto">
-                {trips.map((trip) => (
+            {/* Lista de Buses Compacta (Se ajusta sin overflow) */}
+            <div className="flex-1 min-h-0 overflow-y-auto space-y-2 pr-1">
+              {loadingTrips ? (
+                <div className="h-full flex items-center justify-center text-slate-500 font-bold">
+                  Buscando salidas disponibles...
+                </div>
+              ) : trips.length === 0 ? (
+                <div className="h-full flex flex-col items-center justify-center text-slate-500">
+                  <p className="font-bold text-base">No hay salidas disponibles para este turno.</p>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedShift("ALL")}
+                    className="mt-2 text-xs text-blue-600 underline font-bold"
+                  >
+                    Ver todos los turnos
+                  </button>
+                </div>
+              ) : (
+                trips.map((trip) => (
                   <div
                     key={trip.id}
-                    className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-slate-200 hover:border-blue-400 shadow-md hover:shadow-xl transition-all flex flex-col md:flex-row items-center justify-between gap-6 group"
+                    className="bg-white rounded-2xl border-2 border-slate-200 p-3 sm:p-4 shadow-sm hover:border-blue-500 hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
                     {/* Foto y Datos del Bus */}
-                    <div className="flex items-center space-x-5 w-full md:w-auto">
-                      <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl overflow-hidden bg-slate-200 shrink-0 border border-slate-300">
+                    <div className="flex items-center space-x-3.5">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden bg-slate-800 shrink-0 border border-slate-200">
                         <img
                           src={trip.photoUrl}
                           alt={trip.cooperativeName}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          className="w-full h-full object-cover"
                         />
                       </div>
                       <div>
-                        <div className="flex items-center space-x-2">
-                          <span className="bg-blue-100 text-blue-800 text-xs font-black px-2.5 py-0.5 rounded-full uppercase">
-                            {trip.unitNumber}
+                        <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md inline-block mb-0.5">
+                          {trip.cooperativeName} · {trip.unitNumber}
+                        </span>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+                            {trip.departureTime}
                           </span>
-                          <span className="text-xs font-bold text-slate-400">
-                            Placa: {trip.plate}
+                          <span className="text-xs font-bold text-slate-500">
+                            (Hoy)
                           </span>
                         </div>
-                        <h3 className="text-2xl font-black text-slate-900 mt-1">
-                          {trip.cooperativeName}
-                        </h3>
-                        <div className="flex items-center space-x-2 mt-2">
-                          <span className="bg-emerald-100 text-emerald-800 font-extrabold text-xs px-3 py-1 rounded-full flex items-center space-x-1">
+                        <div className="flex items-center space-x-3 text-xs text-slate-500 font-semibold mt-0.5">
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3.5 h-3.5 text-slate-400" />
+                            Turno: {trip.shift}
+                          </span>
+                          <span className="flex items-center gap-1 text-emerald-600 font-bold">
                             <Users className="w-3.5 h-3.5" />
-                            <span>{trip.availableSeats} asientos libres</span>
+                            {trip.availableSeats} disponibles
                           </span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Hora y Precio */}
-                    <div className="flex items-center justify-between w-full md:w-auto md:space-x-8 border-t md:border-t-0 pt-4 md:pt-0">
-                      <div className="text-left md:text-center">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
-                          HORA DE SALIDA
-                        </span>
-                        <div className="flex items-center space-x-1.5 text-slate-900">
-                          <Clock className="w-5 h-5 text-blue-600" />
-                          <span className="text-3xl font-black">{trip.departureTime}</span>
-                        </div>
-                      </div>
-
+                    {/* Precio y Botón de Selección */}
+                    <div className="flex items-center justify-between sm:justify-end space-x-4 border-t sm:border-t-0 pt-2 sm:pt-0">
                       <div className="text-right">
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
-                          PRECIO POR ASIENTO
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                          TARIFA
                         </span>
-                        <span className="text-3xl sm:text-4xl font-black text-emerald-600">
+                        <span className="text-2xl sm:text-3xl font-black text-emerald-600">
                           ${trip.price.toFixed(2)}
                         </span>
                       </div>
+                      <button
+                        type="button"
+                        onClick={() => handleSelectTrip(trip)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-black text-sm sm:text-base px-5 py-2.5 sm:py-3 rounded-xl shadow-md shadow-blue-500/30 hover:scale-102 transition-all flex items-center space-x-1.5"
+                      >
+                        <span>Elegir Asiento</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
                     </div>
-
-                    {/* Botón Elegir */}
-                    <button
-                      type="button"
-                      onClick={() => handleSelectTrip(trip)}
-                      className="w-full md:w-auto px-8 h-16 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xl flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/30 hover:scale-103 transition-all shrink-0"
-                    >
-                      <span>Elegir Asiento</span>
-                      <ArrowRight className="w-6 h-6" />
-                    </button>
                   </div>
-                ))}
-              </div>
-            )}
+                ))
+              )}
+            </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* PASO 3: MAPA GRÁFICO DEL BUS (40 ASIENTOS)                          */}
+        {/* PASO 4: "Elige tu Asiento" (40 asientos en Split Screen)           */}
         {/* =================================================================== */}
-        {step === 3 && selectedTrip && (
-          <div className="space-y-6 pb-28">
-            <div className="flex items-center justify-between max-w-xl mx-auto">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="flex items-center space-x-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold hover:bg-slate-100 transition-colors shadow-sm"
-              >
-                <ArrowLeft className="w-5 h-5" />
-                <span>Volver a Salidas</span>
-              </button>
-
-              <div className="text-right">
-                <span className="text-xs font-bold text-slate-400 uppercase block">BUS SELECCIONADO</span>
-                <span className="text-lg font-black text-slate-800">
-                  {selectedTrip.cooperativeName} ({selectedTrip.unitNumber})
-                </span>
-              </div>
+        {step === 4 && selectedTrip && (
+          <div className="h-full flex flex-col md:flex-row gap-3 min-h-0">
+            {/* Izquierda: BusSeatMap Compacto */}
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-center overflow-y-auto">
+              <BusSeatMap
+                occupiedSeats={occupiedSeats}
+                selectedSeats={selectedSeats}
+                onToggleSeat={handleToggleSeat}
+                compact={true}
+              />
             </div>
 
-            <div className="text-center max-w-xl mx-auto">
-              <h2 className="text-3xl font-black text-slate-900">Toca tus Asientos</h2>
-              <p className="text-slate-600 font-medium mt-1">
-                Los asientos en <span className="text-emerald-600 font-bold">VERDE</span> están libres.
-              </p>
-            </div>
+            {/* Derecha: Resumen de Compra y Botón de Pago en 1 Clic */}
+            <div className="w-full md:w-80 lg:w-96 shrink-0 bg-white border-2 border-slate-200 rounded-3xl p-4 shadow-lg flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+                  <h3 className="font-extrabold text-slate-900 text-lg">Resumen de Boleto</h3>
+                  <button
+                    type="button"
+                    onClick={() => setStep(3)}
+                    className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-0.5"
+                  >
+                    <ArrowLeft className="w-3 h-3" />
+                    <span>Horarios</span>
+                  </button>
+                </div>
 
-            {/* Input Rápido del Nombre del Pasajero */}
-            <div className="max-w-xl mx-auto bg-white p-4 rounded-3xl border-2 border-slate-200 shadow-sm flex items-center space-x-3">
-              <span className="text-2xl">👤</span>
-              <div className="flex-1">
-                <label className="text-xs font-black text-slate-400 uppercase tracking-widest block">
-                  Nombre del Pasajero Principal
-                </label>
-                <input
-                  type="text"
-                  value={passengerName}
-                  onChange={(e) => setPassengerName(e.target.value)}
-                  placeholder="Ej. Juan Pérez"
-                  className="w-full text-lg font-bold text-slate-800 outline-none placeholder:text-slate-300"
-                />
-              </div>
-            </div>
-
-            {/* Componente Gráfico del Bus */}
-            <BusSeatMap
-              occupiedSeats={occupiedSeats}
-              selectedSeats={selectedSeats}
-              onToggleSeat={handleToggleSeat}
-            />
-
-            {/* Barra Flotante Fija Inferior */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t-2 border-slate-200 p-4 z-50 shadow-2xl">
-              <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
-                <div>
-                  <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">
-                    ASIENTOS SELECCIONADOS
-                  </span>
-                  <div className="flex items-center space-x-2">
-                    <span className="text-2xl sm:text-3xl font-black text-blue-700">
-                      {selectedSeats.length > 0 ? selectedSeats.sort((a,b)=>a-b).join(", ") : "Ninguno"}
+                <div className="space-y-2.5 text-xs text-slate-700">
+                  <div className="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                      RUTA Y SALIDA
                     </span>
-                    {selectedSeats.length > 0 && (
-                      <span className="text-sm font-bold text-slate-500">
-                        ({selectedSeats.length} {selectedSeats.length === 1 ? "pasaje" : "pasajes"})
+                    <p className="font-black text-slate-900 text-sm mt-0.5">
+                      {selectedTrip.originCityName} ➔ {selectedTrip.destinationCityName}
+                    </p>
+                    <p className="text-slate-500 font-semibold mt-0.5">
+                      Hora: {selectedTrip.departureTime} · {selectedTrip.cooperativeName}
+                    </p>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
+                      Nombre del Pasajero
+                    </label>
+                    <input
+                      type="text"
+                      value={passengerName}
+                      onChange={(e) => setPassengerName(e.target.value)}
+                      placeholder="Ej. Juan Pérez"
+                      className="w-full border-2 border-slate-200 rounded-xl px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-600"
+                    />
+                  </div>
+
+                  <div className="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200">
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-bold text-blue-900">Asientos Elegidos:</span>
+                      <span className="font-black text-blue-700">
+                        {selectedSeats.length > 0 ? selectedSeats.length : "Ninguno"}
                       </span>
+                    </div>
+                    {selectedSeats.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {selectedSeats.map((s) => (
+                          <span
+                            key={s}
+                            className="bg-blue-600 text-white font-black px-2 py-0.5 rounded-md text-xs shadow-xs"
+                          >
+                            #{s}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-400 italic text-[11px]">
+                        Toca los asientos verdes del mapa para agregarlos.
+                      </p>
                     )}
                   </div>
                 </div>
+              </div>
 
-                <div className="flex items-center space-x-4">
-                  <div className="text-right hidden sm:block">
-                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">
-                      TOTAL A PAGAR
-                    </span>
-                    <span className="text-3xl font-black text-emerald-600">
-                      ${(selectedSeats.length * selectedTrip.price).toFixed(2)}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled={selectedSeats.length === 0 || purchasing}
-                    onClick={handleConfirmPurchase}
-                    className={`h-16 px-8 rounded-2xl font-black text-xl sm:text-2xl flex items-center space-x-3 transition-all shadow-xl ${
-                      selectedSeats.length > 0 && !purchasing
-                        ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/40 hover:scale-103"
-                        : "bg-slate-300 text-slate-500 cursor-not-allowed"
-                    }`}
-                  >
-                    <span>
-                      {purchasing
-                        ? "Emitiendo..."
-                        : `Confirmar y Pagar ($${(selectedSeats.length * selectedTrip.price).toFixed(2)})`}
-                    </span>
-                    <ArrowRight className="w-6 h-6" />
-                  </button>
+              {/* Total y Botón de Pago en 1 Clic */}
+              <div className="pt-3 border-t border-slate-200">
+                <div className="flex items-baseline justify-between mb-2">
+                  <span className="font-bold text-slate-500 text-xs">Total a Pagar:</span>
+                  <span className="text-2xl font-black text-emerald-600">
+                    ${(selectedSeats.length * selectedTrip.price).toFixed(2)}
+                  </span>
                 </div>
+
+                <button
+                  type="button"
+                  disabled={selectedSeats.length === 0 || purchasing}
+                  onClick={handleConfirmPurchase}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-black text-base shadow-lg shadow-emerald-600/30 hover:scale-102 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  <CheckCircle2 className="w-5 h-5" />
+                  <span>
+                    {purchasing
+                      ? "Emitiendo..."
+                      : selectedSeats.length === 0
+                      ? "Elige un asiento"
+                      : "Confirmar y Pagar en 1 Clic"}
+                  </span>
+                </button>
               </div>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* PASO 4: BOLETO DIGITAL CON QR GIGANTE                               */}
+        {/* PASO 5: "Tu Boleto Digital con QR"                                  */}
         {/* =================================================================== */}
-        {step === 4 && (
-          <div className="space-y-8 max-w-2xl mx-auto py-6">
-            <div className="text-center space-y-2">
-              <div className="w-20 h-20 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-4xl shadow-md animate-bounce">
-                ✅
+        {step === 5 && (
+          <div className="h-full flex items-center justify-center p-2">
+            <div className="bg-white border-2 border-slate-200 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-md w-full text-center flex flex-col justify-between max-h-full overflow-y-auto">
+              <div>
+                <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-2 shadow-inner">
+                  <CheckCircle2 className="w-7 h-7" />
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  ¡Boleto Emitido con Éxito!
+                </h2>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">
+                  Presenta este código QR al momento de subir a la unidad.
+                </p>
               </div>
-              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
-                ¡Boleto Emitido con Éxito!
-              </h1>
-              <p className="text-lg text-slate-600 font-medium">
-                Muestra este código QR al chofer o inspector al momento de subir al bus.
-              </p>
-            </div>
 
-            {/* Tarjetas de Boletos Estilo Boarding Pass */}
-            <div className="space-y-6">
-              {purchasedTickets.map((ticket, idx) => (
-                <div
-                  key={ticket.id || idx}
-                  className="bg-white rounded-3xl overflow-hidden border-4 border-slate-900 shadow-2xl"
-                >
-                  {/* Encabezado del Boarding Pass */}
-                  <div className="bg-slate-900 text-white p-6 flex items-center justify-between">
-                    <div>
-                      <span className="text-xs font-black tracking-widest uppercase text-amber-400 block">
-                        BOARDING PASS DIGITAL · RUTA NORTE
-                      </span>
-                      <h3 className="text-2xl font-black tracking-tight">{ticket.cooperativeName}</h3>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-xs font-bold text-slate-400 block">ESTADO</span>
-                      <span className="bg-emerald-500 text-white text-xs font-black px-3 py-1 rounded-full uppercase">
-                        {ticket.status}
-                      </span>
-                    </div>
+              {/* Tarjeta con Código QR */}
+              <div className="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 my-3 flex flex-col items-center">
+                <div className="bg-white p-3 rounded-2xl shadow-md border border-slate-200">
+                  <QRCodeSVG
+                    value={
+                      purchasedTickets.length > 0
+                        ? purchasedTickets[0].qrToken
+                        : "RN-DEMOQR12345"
+                    }
+                    size={150}
+                    level="H"
+                  />
+                </div>
+                <div className="mt-2 text-center">
+                  <span className="text-[11px] font-black text-slate-700 uppercase tracking-widest block">
+                    TOKEN QR
+                  </span>
+                  <span className="text-sm font-black font-mono text-blue-700">
+                    {purchasedTickets.length > 0
+                      ? purchasedTickets[0].qrToken
+                      : "RN-DEMOQR12345"}
+                  </span>
+                </div>
+
+                <div className="w-full mt-3 pt-2 border-t border-slate-200 text-left grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[10px]">PASAJERO</span>
+                    <span className="font-extrabold text-slate-900">
+                      {purchasedTickets.length > 0
+                        ? purchasedTickets[0].passengerName
+                        : passengerName}
+                    </span>
                   </div>
-
-                  {/* Cuerpo del Boleto */}
-                  <div className="p-6 sm:p-8 space-y-6">
-                    {/* Trayecto */}
-                    <div className="flex items-center justify-between border-b-2 border-dashed border-slate-200 pb-6">
-                      <div>
-                        <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">
-                          ORIGEN
-                        </span>
-                        <span className="text-3xl font-black text-slate-900">{ticket.originCity}</span>
-                      </div>
-                      <span className="text-3xl text-slate-300 font-black">➔</span>
-                      <div className="text-right">
-                        <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">
-                          DESTINO
-                        </span>
-                        <span className="text-3xl font-black text-slate-900">{ticket.destinationCity}</span>
-                      </div>
-                    </div>
-
-                    {/* Datos Clave */}
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
-                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                        <span className="text-xs font-black text-slate-400 uppercase block">PASAJERO</span>
-                        <span className="text-base font-bold text-slate-800 truncate block">
-                          {ticket.passengerName}
-                        </span>
-                      </div>
-
-                      <div className="bg-blue-50 p-3 rounded-2xl border-2 border-blue-300">
-                        <span className="text-xs font-black text-blue-800 uppercase block">ASIENTO</span>
-                        <span className="text-3xl font-black text-blue-700">#{ticket.seatNumber}</span>
-                      </div>
-
-                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                        <span className="text-xs font-black text-slate-400 uppercase block">HORA</span>
-                        <span className="text-lg font-black text-slate-800">{ticket.departureTime}</span>
-                      </div>
-
-                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-200">
-                        <span className="text-xs font-black text-slate-400 uppercase block">VALOR</span>
-                        <span className="text-xl font-black text-emerald-600">${ticket.price.toFixed(2)}</span>
-                      </div>
-                    </div>
-
-                    {/* Código QR Gigante */}
-                    <div className="pt-4 flex flex-col items-center justify-center space-y-3 bg-slate-50 p-6 rounded-3xl border border-slate-200">
-                      <div className="p-4 bg-white rounded-2xl shadow-md border-2 border-slate-300">
-                        <QRCodeSVG value={ticket.qrToken} size={220} level="H" includeMargin={true} />
-                      </div>
-                      <span className="font-mono text-sm font-black text-slate-700 tracking-widest">
-                        TOKEN: {ticket.qrToken}
-                      </span>
-                    </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[10px]">ASIENTO</span>
+                    <span className="font-black text-emerald-600 text-base">
+                      #{purchasedTickets.map((t) => t.seatNumber).join(", #")}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[10px]">SALIDA</span>
+                    <span className="font-bold text-slate-800">
+                      {purchasedTickets.length > 0
+                        ? purchasedTickets[0].departureTime
+                        : selectedTrip?.departureTime}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 font-bold block text-[10px]">COOPERATIVA</span>
+                    <span className="font-bold text-slate-800">
+                      {purchasedTickets.length > 0
+                        ? purchasedTickets[0].cooperativeName
+                        : selectedTrip?.cooperativeName}
+                    </span>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
 
-            {/* Acciones */}
-            <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button
-                type="button"
-                onClick={() => window.print()}
-                className="flex-1 h-16 rounded-2xl bg-slate-900 text-white font-black text-xl flex items-center justify-center space-x-2 shadow-lg hover:bg-slate-800 transition-colors"
-              >
-                <Printer className="w-6 h-6" />
-                <span>🖨️ Imprimir / Guardar Boleto</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setStep(1);
-                  setSelectedSeats([]);
-                  setSelectedTrip(null);
-                }}
-                className="flex-1 h-16 rounded-2xl bg-blue-600 text-white font-black text-xl flex items-center justify-center space-x-2 shadow-lg hover:bg-blue-700 transition-colors"
-              >
-                <RotateCcw className="w-6 h-6" />
-                <span>Comprar Otro Pasaje</span>
-              </button>
+              {/* Botones de Acción */}
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={() => window.print()}
+                  className="w-full py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs sm:text-sm flex items-center justify-center space-x-1.5 shadow-md"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>🖨️ Imprimir / Guardar Boleto</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetKiosk}
+                  className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center space-x-1 border border-slate-200"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>🔄 Comprar Otro Boleto</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
