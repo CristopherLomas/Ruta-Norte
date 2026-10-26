@@ -309,11 +309,11 @@ export default function OperacionesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       <NavbarVisual />
 
       {/* Selector de Pestañas Gigante para Modo Operativo */}
-      <div className="bg-white border-b border-slate-200 py-3 px-4 sticky top-20 z-40 shadow-xs">
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-3 px-4 sticky top-16 z-40 shadow-xs">
         <div className="max-w-4xl mx-auto grid grid-cols-2 gap-3">
           <button
             type="button"
@@ -321,7 +321,7 @@ export default function OperacionesPage() {
             className={`h-13 sm:h-16 rounded-2xl font-black text-xs sm:text-base md:text-xl flex items-center justify-center space-x-1.5 sm:space-x-3 transition-all px-2 ${
               activeTab === "VENTA"
                 ? "bg-emerald-600 text-white shadow-lg shadow-emerald-500/30 scale-102"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             <Zap className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
@@ -334,7 +334,7 @@ export default function OperacionesPage() {
             className={`h-13 sm:h-16 rounded-2xl font-black text-xs sm:text-base md:text-xl flex items-center justify-center space-x-1.5 sm:space-x-3 transition-all px-2 ${
               activeTab === "ESCANER"
                 ? "bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-102"
-                : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
             }`}
           >
             <Camera className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
@@ -385,8 +385,8 @@ export default function OperacionesPage() {
             )}
 
             {/* Selector Visual de Salidas de Hoy */}
-            <div className="bg-white rounded-3xl p-6 border-2 border-slate-200 shadow-sm space-y-4">
-              <span className="text-xs font-black text-slate-400 uppercase tracking-widest block">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border-2 border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+              <span className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest block">
                 PASO 1: SELECCIONA LA SALIDA ACTIVA
               </span>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
@@ -397,23 +397,23 @@ export default function OperacionesPage() {
                       key={trip.id}
                       type="button"
                       onClick={() => setSelectedTrip(trip)}
-                      className={`p-4 rounded-2xl text-left transition-all border-2 ${
+                      className={`p-4 rounded-2xl text-left transition-all border-2 cursor-pointer ${
                         isSelected
-                          ? "border-emerald-500 bg-emerald-50/80 shadow-md scale-102"
-                          : "border-slate-200 bg-slate-50 hover:border-slate-300"
+                          ? "border-emerald-500 bg-emerald-50/80 dark:bg-emerald-950/60 shadow-md scale-102"
+                          : "border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
                       }`}
                     >
-                      <div className="flex items-center justify-between text-xs font-bold text-slate-500 mb-1">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400 mb-1">
                         <span>{trip.cooperativeName}</span>
-                        <span className="text-emerald-700 font-black">${trip.price.toFixed(2)}</span>
+                        <span className="text-emerald-700 dark:text-emerald-400 font-black">${trip.price.toFixed(2)}</span>
                       </div>
-                      <div className="text-lg font-black text-slate-900 truncate">
+                      <div className="text-lg font-black text-slate-900 dark:text-white truncate">
                         {trip.originCityName} ➔ {trip.destinationCityName}
                       </div>
-                      <div className="flex items-center space-x-1.5 mt-2 text-blue-700 font-black text-sm">
+                      <div className="flex items-center space-x-1.5 mt-2 text-blue-700 dark:text-blue-400 font-black text-sm">
                         <Clock className="w-4 h-4" />
                         <span>{trip.departureTime}</span>
-                        <span className="text-slate-400 font-normal">({trip.unitNumber})</span>
+                        <span className="text-slate-400 dark:text-slate-500 font-normal">({trip.unitNumber})</span>
                       </div>
                     </button>
                   );
@@ -425,7 +425,7 @@ export default function OperacionesPage() {
             {selectedTrip && (
               <div className="space-y-4">
                 <div className="text-center">
-                  <h3 className="text-2xl font-black text-slate-900">
+                  <h3 className="text-2xl font-black text-slate-900 dark:text-white">
                     PASO 2: Toca el Asiento a Vender
                   </h3>
                   <p className="text-slate-500 text-sm font-semibold">

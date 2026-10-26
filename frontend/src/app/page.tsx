@@ -18,6 +18,8 @@ import {
   Banknote,
   RefreshCw,
   Check,
+  ShieldCheck,
+  Bus,
 } from "lucide-react";
 
 interface City {
@@ -261,41 +263,25 @@ export default function HomePage() {
       });
   }, []);
 
-  // Lógica clara y directa al hacer clic en cualquier ciudad
-  const handleCityClick = (city: City) => {
-    if (!originCity) {
-      // 1er Clic: Selecciona Origen
-      setOriginCity(city);
-    } else if (originCity.id === city.id) {
-      // Clic en la misma ciudad de origen: la deselecciona para permitir cambiar
-      setOriginCity(null);
-      setDestinationCity(null);
-    } else if (!destinationCity) {
-      // 2do Clic: Selecciona Destino y prepara las salidas
-      setDestinationCity(city);
-      const generated = generateDemoTrips(originCity.name, city.name);
-      setTrips(generated);
-    } else if (destinationCity.id === city.id) {
-      // Clic en el destino actual: lo deselecciona
-      setDestinationCity(null);
-    } else {
-      // Clic en una ciudad diferente: cambia el destino
-      setDestinationCity(city);
-      const generated = generateDemoTrips(originCity.name, city.name);
-      setTrips(generated);
-    }
+  // Paso 1: Seleccionar Origen -> Pasa directo al Paso 2
+  const handleSelectOrigin = (city: City) => {
+    setOriginCity(city);
+    setDestinationCity(null);
+    setStep(2);
   };
 
-  // Botón para continuar al paso 3 (Horarios)
-  const handleProceedToTrips = () => {
-    if (!originCity || !destinationCity) return;
-    const generated = generateDemoTrips(originCity.name, destinationCity.name);
+  // Paso 2: Seleccionar Destino -> Carga viajes y pasa al Paso 3
+  const handleSelectDestination = (city: City) => {
+    if (!originCity || city.id === originCity.id) return;
+    setDestinationCity(city);
+
+    const generated = generateDemoTrips(originCity.name, city.name);
     setTrips(generated);
     setStep(3);
 
-    // Consulta en segundo plano por si el servidor tiene viajes en BD
+    // Consulta al backend en segundo plano
     axiosClient
-      .get<Trip[]>(`/trips/search?originId=${originCity.id}&destinationId=${destinationCity.id}`)
+      .get<Trip[]>(`/trips/search?originId=${originCity.id}&destinationId=${city.id}`)
       .then((res) => {
         if (res.data && res.data.length > 0) {
           setTrips(res.data);
@@ -434,44 +420,55 @@ export default function HomePage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-slate-50 text-slate-800">
-      {/* 1. Barra de Navegación */}
+    <div className="h-screen max-h-screen overflow-hidden flex flex-col justify-between bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
+      {/* 1. Barra de Navegación Superior */}
       <NavbarVisual />
 
-      {/* 2. Barra de Pasos */}
-      <div className="bg-white border-b border-slate-200 py-3 px-4">
-        <div className="max-w-4xl mx-auto flex items-center justify-between text-xs sm:text-sm font-medium">
+      {/* 2. Barra de Pasos Kiosco Compacta */}
+      <div className="shrink-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 py-1.5 px-3 sm:px-6 shadow-xs z-40">
+        <div className="max-w-5xl mx-auto flex items-center justify-between text-xs sm:text-sm font-semibold">
           {[
-            { num: 1, label: "Ruta" },
-            { num: 2, label: "Horario" },
-            { num: 3, label: "Asiento" },
-            { num: 4, label: "Boleto" },
+            { num: 1, label: "1. Origen" },
+            { num: 2, label: "2. Destino" },
+            { num: 3, label: "3. Horario" },
+            { num: 4, label: "4. Asiento" },
+            { num: 5, label: "5. Boleto QR" },
           ].map((item, idx, arr) => {
-            const stepNum = item.num === 1 ? 1 : item.num === 2 ? 3 : item.num === 3 ? 4 : 5;
-            const isCurrent = (item.num === 1 && (step === 1 || step === 2)) || step === stepNum;
-            const isPast = (item.num === 1 && step > 2) || (item.num > 1 && step > stepNum);
+            const isCurrent = step === item.num;
+            const isPast = step > item.num;
 
             return (
               <React.Fragment key={item.num}>
-                <div className="flex items-center space-x-2">
+                <div
+                  onClick={() => {
+                    if (isPast) {
+                      if (item.num === 1) setStep(1);
+                      if (item.num === 2 && originCity) setStep(2);
+                      if (item.num === 3 && originCity && destinationCity) setStep(3);
+                    }
+                  }}
+                  className={`flex items-center space-x-1.5 ${
+                    isPast ? "cursor-pointer hover:opacity-80" : ""
+                  }`}
+                >
                   <div
-                    className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold ${
+                    className={`w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-black transition-colors ${
                       isCurrent
-                        ? "bg-blue-600 text-white"
+                        ? "bg-blue-600 text-white shadow-md shadow-blue-500/30 scale-105"
                         : isPast
                         ? "bg-emerald-600 text-white"
-                        : "bg-slate-100 text-slate-400"
+                        : "bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400"
                     }`}
                   >
-                    {isPast ? <Check className="w-3.5 h-3.5" /> : item.num}
+                    {isPast ? <Check className="w-3 h-3" /> : item.num}
                   </div>
                   <span
-                    className={`hidden sm:inline ${
+                    className={`hidden sm:inline text-xs transition-colors ${
                       isCurrent
-                        ? "text-blue-700 font-bold"
+                        ? "text-blue-600 dark:text-blue-400 font-extrabold"
                         : isPast
-                        ? "text-slate-700"
-                        : "text-slate-400"
+                        ? "text-slate-700 dark:text-slate-300 font-medium"
+                        : "text-slate-400 dark:text-slate-600 font-normal"
                     }`}
                   >
                     {item.label}
@@ -479,8 +476,12 @@ export default function HomePage() {
                 </div>
                 {idx < arr.length - 1 && (
                   <div
-                    className={`hidden md:block flex-1 h-0.5 mx-3 rounded-full ${
-                      isPast ? "bg-emerald-500" : "bg-slate-200"
+                    className={`hidden md:block flex-1 h-0.5 mx-2 rounded-full transition-colors ${
+                      isPast
+                        ? "bg-emerald-500"
+                        : isCurrent
+                        ? "bg-blue-500"
+                        : "bg-slate-200 dark:bg-slate-800"
                     }`}
                   />
                 )}
@@ -490,280 +491,284 @@ export default function HomePage() {
         </div>
       </div>
 
-      {/* 3. Contenedor Principal */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6 pb-12 flex flex-col justify-start">
+      {/* 3. Contenedor Principal (100vh Libre de Scroll en Pantallas Kiosco) */}
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 py-2 overflow-hidden flex flex-col justify-start">
         {/* =================================================================== */}
-        {/* PASOS 1 Y 2: SELECCIÓN DE RUTA (CONSOLA + GRILLA VISUAL ACTIVA)     */}
+        {/* PASO 1: ORIGEN (¿DE DÓNDE SALES?) — 100% CERO SCROLL                */}
         {/* =================================================================== */}
-        {(step === 1 || step === 2) && (
-          <div className="space-y-6">
-            {/* Banner de Consola de Viaje (Fondo Claro, Limpio y Accesible) */}
-            <div className="w-full bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-xs">
-              {/* Instrucción directa */}
-              <div className="mb-4 pb-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        {step === 1 && (
+          <div className="h-full flex flex-col justify-between py-1">
+            {/* Cabecera Compacta */}
+            <div className="shrink-0 flex items-center justify-between pb-1.5 border-b border-slate-200 dark:border-slate-800">
+              <div>
+                <h1 className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                  <span>📍 1. ¿De dónde sales?</span>
+                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 px-2 py-0.5 rounded-full">
+                    Elige tu Terminal de Salida
+                  </span>
+                </h1>
+                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                  Toca la ciudad donde abordarás el bus en el Corredor Norte E35.
+                </p>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                  Paso 1 de 5
+                </span>
+                <span className="text-xs font-bold text-amber-500 dark:text-amber-400">
+                  9 Ciudades Disponibles
+                </span>
+              </div>
+            </div>
+
+            {/* Contenedor de las dos filas de ciudades (Carchi + Imbabura) */}
+            <div className="flex-1 overflow-hidden flex flex-col justify-between gap-1.5 pt-1.5">
+              {/* FILA 1: CARCHI (5 CIUDADES) */}
+              <div className="h-[49%] flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                    Provincia del Carchi (5 Terminales)
+                  </span>
+                </div>
+                <div className="grid grid-cols-5 gap-2 sm:gap-3 flex-1">
+                  {carchiCities.map((city) => (
+                    <button
+                      key={city.id}
+                      type="button"
+                      onClick={() => handleSelectOrigin(city)}
+                      className="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer text-left"
+                    >
+                      {/* 70% Fotografía Real HD */}
+                      <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                        <img
+                          src={city.imageUrl}
+                          alt={city.name}
+                          onError={(e) => handleImageError(e, city.backupUrl)}
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                          loading="eager"
+                        />
+                        <span className="absolute top-1.5 right-1.5 bg-slate-900/80 dark:bg-slate-950/80 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs group-hover:bg-blue-600 transition-colors shadow-xs">
+                          Elegir ➔
+                        </span>
+                      </div>
+                      {/* 30% Barra de Texto Sólida */}
+                      <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+                        <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {city.name}
+                        </h3>
+                        <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-2.5 h-2.5 shrink-0" />
+                          <span className="truncate">{city.terminalName}</span>
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* FILA 2: IMBABURA (4 CIUDADES) */}
+              <div className="h-[49%] flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Provincia de Imbabura (4 Terminales)
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-2 sm:gap-3 flex-1 max-w-[85%] mx-auto w-full">
+                  {imbaburaCities.map((city) => (
+                    <button
+                      key={city.id}
+                      type="button"
+                      onClick={() => handleSelectOrigin(city)}
+                      className="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer text-left"
+                    >
+                      {/* 70% Fotografía Real HD */}
+                      <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                        <img
+                          src={city.imageUrl}
+                          alt={city.name}
+                          onError={(e) => handleImageError(e, city.backupUrl)}
+                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                          loading="eager"
+                        />
+                        <span className="absolute top-1.5 right-1.5 bg-slate-900/80 dark:bg-slate-950/80 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs group-hover:bg-blue-600 transition-colors shadow-xs">
+                          Elegir ➔
+                        </span>
+                      </div>
+                      {/* 30% Barra de Texto Sólida */}
+                      <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+                        <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {city.name}
+                        </h3>
+                        <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
+                          <MapPin className="w-2.5 h-2.5 shrink-0" />
+                          <span className="truncate">{city.terminalName}</span>
+                        </p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* =================================================================== */}
+        {/* PASO 2: DESTINO (¿A DÓNDE VAS?) — 100% CERO SCROLL                  */}
+        {/* =================================================================== */}
+        {step === 2 && originCity && (
+          <div className="h-full flex flex-col justify-between py-1">
+            {/* Cabecera Kiosco con Origen Seleccionado */}
+            <div className="shrink-0 flex items-center justify-between pb-1.5 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="px-2.5 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Cambiar</span>
+                </button>
                 <div>
-                  <h1 className="text-lg sm:text-xl font-bold text-slate-900">
-                    {!originCity
-                      ? "Paso 1: Elige tu ciudad de salida"
-                      : !destinationCity
-                      ? `Saliendo desde ${originCity.name}. Ahora elige tu ciudad de llegada.`
-                      : `Ruta lista: ${originCity.name} hacia ${destinationCity.name}`}
+                  <h1 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
+                    <span className="text-emerald-600 dark:text-emerald-400">
+                      Saliendo de {originCity.name}
+                    </span>
+                    <ArrowRight className="w-4 h-4 text-slate-400" />
+                    <span>2. ¿A dónde viajas?</span>
                   </h1>
-                  <p className="text-xs text-slate-500 mt-0.5">
-                    {!originCity
-                      ? "Haz clic sobre la ciudad donde abordarás el bus."
-                      : !destinationCity
-                      ? "Haz clic en la ciudad a donde te diriges."
-                      : "Puedes continuar a los horarios o hacer clic en cambiar si deseas modificarla."}
-                  </p>
-                </div>
-                {(originCity || destinationCity) && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOriginCity(null);
-                      setDestinationCity(null);
-                    }}
-                    className="text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer self-start sm:self-auto"
-                  >
-                    Limpiar selección
-                  </button>
-                )}
-              </div>
-
-              {/* Bloques de Origen y Destino */}
-              <div className="grid grid-cols-1 md:grid-cols-[1fr,auto,1fr] gap-3 items-center">
-                {/* Bloque ORIGEN */}
-                <div
-                  className={`rounded-xl p-3.5 border transition-all ${
-                    originCity
-                      ? "bg-blue-50/80 border-2 border-blue-500 text-blue-900"
-                      : "bg-slate-50 border-2 border-dashed border-blue-400 text-blue-800"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider">
-                      {originCity ? "✓ Origen seleccionado" : "1. Ciudad de Salida"}
-                    </span>
-                    {originCity && (
-                      <button
-                        type="button"
-                        onClick={() => setOriginCity(null)}
-                        className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer"
-                      >
-                        Cambiar
-                      </button>
-                    )}
-                  </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900 truncate">
-                    {originCity ? originCity.name : "Toca una ciudad abajo"}
-                  </div>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
-                    {originCity ? originCity.terminalName : "Punto de salida"}
-                  </p>
-                </div>
-
-                {/* Flecha conectora */}
-                <div className="flex items-center justify-center text-slate-400 font-bold px-2">
-                  <ArrowRight className="w-5 h-5 hidden md:block" />
-                  <span className="md:hidden text-xs text-slate-400 font-semibold">hacia</span>
-                </div>
-
-                {/* Bloque DESTINO */}
-                <div
-                  className={`rounded-xl p-3.5 border transition-all ${
-                    destinationCity
-                      ? "bg-emerald-50/80 border-2 border-emerald-500 text-emerald-900"
-                      : originCity
-                      ? "bg-emerald-50/50 border-2 border-dashed border-emerald-400 text-emerald-800"
-                      : "bg-slate-50 border border-slate-200 text-slate-400"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider">
-                      {destinationCity
-                        ? "✓ Destino seleccionado"
-                        : originCity
-                        ? "2. Ciudad de Llegada"
-                        : "2. Destino"}
-                    </span>
-                    {destinationCity && (
-                      <button
-                        type="button"
-                        onClick={() => setDestinationCity(null)}
-                        className="text-xs font-semibold text-emerald-700 hover:underline cursor-pointer"
-                      >
-                        Cambiar
-                      </button>
-                    )}
-                  </div>
-                  <div className="text-lg sm:text-xl font-bold text-slate-900 truncate">
-                    {destinationCity
-                      ? destinationCity.name
-                      : originCity
-                      ? "Toca la ciudad de llegada abajo"
-                      : "Pendiente"}
-                  </div>
-                  <p className="text-xs text-slate-500 truncate mt-0.5">
-                    {destinationCity ? destinationCity.terminalName : "Punto de llegada"}
+                  <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
+                    Toca tu ciudad de destino para ver los buses y horarios disponibles.
                   </p>
                 </div>
               </div>
-
-              {/* Botón Prominente de Continuar */}
-              {originCity && destinationCity && (
-                <div className="mt-4 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                  <p className="text-xs font-medium text-slate-600">
-                    Viaje de <strong className="text-slate-900">{originCity.name}</strong> a{" "}
-                    <strong className="text-slate-900">{destinationCity.name}</strong>.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={handleProceedToTrips}
-                    className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm transition-colors flex items-center justify-center space-x-2 cursor-pointer shadow-sm"
-                  >
-                    <span>Ver horarios y salidas disponibles</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
-            </div>
-
-            {/* Grilla de Ciudades de Carchi */}
-            <div>
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-                <h2 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  Provincia del Carchi
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
-                {carchiCities.map((city) => {
-                  const isOrigin = originCity?.id === city.id;
-                  const isDestination = destinationCity?.id === city.id;
-
-                  return (
-                    <button
-                      key={city.id}
-                      type="button"
-                      onClick={() => handleCityClick(city)}
-                      className={`group rounded-xl overflow-hidden text-left transition-all cursor-pointer bg-white border ${
-                        isOrigin
-                          ? "border-2 border-blue-600 ring-4 ring-blue-100 shadow-md scale-[1.02]"
-                          : isDestination
-                          ? "border-2 border-emerald-600 ring-4 ring-emerald-100 shadow-md scale-[1.02]"
-                          : "border-slate-200 hover:border-slate-400 hover:shadow-xs"
-                      }`}
-                    >
-                      <div className="relative w-full h-32 bg-slate-100 overflow-hidden">
-                        <img
-                          src={city.imageUrl}
-                          alt={city.name}
-                          onError={(e) => handleImageError(e, city.backupUrl)}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                          loading="eager"
-                        />
-                        <div className="absolute top-2 right-2">
-                          {isOrigin ? (
-                            <span className="bg-blue-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                              <Check className="w-3 h-3" /> Origen
-                            </span>
-                          ) : isDestination ? (
-                            <span className="bg-emerald-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                              <Check className="w-3 h-3" /> Destino
-                            </span>
-                          ) : !originCity ? (
-                            <span className="bg-slate-900/80 text-white text-[10px] font-medium px-2 py-0.5 rounded-md backdrop-blur-xs">
-                              Elegir salida
-                            </span>
-                          ) : (
-                            <span className="bg-emerald-700/90 text-white text-[10px] font-medium px-2 py-0.5 rounded-md backdrop-blur-xs">
-                              Elegir llegada
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                      <div className="p-3 border-t border-slate-100">
-                        <h3 className="font-bold text-slate-900 text-sm leading-tight truncate">
-                          {city.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 truncate flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-                          <span className="truncate">{city.terminalName}</span>
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+              <div className="text-right">
+                <span className="text-[10px] sm:text-xs font-extrabold uppercase tracking-wider text-slate-400 dark:text-slate-500 block">
+                  Paso 2 de 5
+                </span>
+                <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  Selecciona Llegada
+                </span>
               </div>
             </div>
 
-            {/* Grilla de Ciudades de Imbabura */}
-            <div>
-              <div className="flex items-center space-x-2 mb-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                <h2 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  Provincia de Imbabura
-                </h2>
-              </div>
-              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3.5 md:max-w-4xl">
-                {imbaburaCities.map((city) => {
-                  const isOrigin = originCity?.id === city.id;
-                  const isDestination = destinationCity?.id === city.id;
-
-                  return (
-                    <button
-                      key={city.id}
-                      type="button"
-                      onClick={() => handleCityClick(city)}
-                      className={`group rounded-xl overflow-hidden text-left transition-all cursor-pointer bg-white border ${
-                        isOrigin
-                          ? "border-2 border-blue-600 ring-4 ring-blue-100 shadow-md scale-[1.02]"
-                          : isDestination
-                          ? "border-2 border-emerald-600 ring-4 ring-emerald-100 shadow-md scale-[1.02]"
-                          : "border-slate-200 hover:border-slate-400 hover:shadow-xs"
-                      }`}
-                    >
-                      <div className="relative w-full h-32 bg-slate-100 overflow-hidden">
-                        <img
-                          src={city.imageUrl}
-                          alt={city.name}
-                          onError={(e) => handleImageError(e, city.backupUrl)}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                          loading="eager"
-                        />
-                        <div className="absolute top-2 right-2">
-                          {isOrigin ? (
-                            <span className="bg-blue-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                              <Check className="w-3 h-3" /> Origen
-                            </span>
-                          ) : isDestination ? (
-                            <span className="bg-emerald-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shadow-xs flex items-center gap-1">
-                              <Check className="w-3 h-3" /> Destino
-                            </span>
-                          ) : !originCity ? (
-                            <span className="bg-slate-900/80 text-white text-[10px] font-medium px-2 py-0.5 rounded-md backdrop-blur-xs">
-                              Elegir salida
-                            </span>
-                          ) : (
-                            <span className="bg-emerald-700/90 text-white text-[10px] font-medium px-2 py-0.5 rounded-md backdrop-blur-xs">
-                              Elegir llegada
-                            </span>
-                          )}
+            {/* Contenedor de las dos filas de ciudades (Carchi + Imbabura) */}
+            <div className="flex-1 overflow-hidden flex flex-col justify-between gap-1.5 pt-1.5">
+              {/* FILA 1: CARCHI */}
+              <div className="h-[49%] flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                    Provincia del Carchi (5 Terminales)
+                  </span>
+                </div>
+                <div className="grid grid-cols-5 gap-2 sm:gap-3 flex-1">
+                  {carchiCities.map((city) => {
+                    const isOrigin = originCity.id === city.id;
+                    return (
+                      <button
+                        key={city.id}
+                        type="button"
+                        disabled={isOrigin}
+                        onClick={() => handleSelectDestination(city)}
+                        className={`group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all text-left ${
+                          isOrigin
+                            ? "opacity-50 grayscale border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 cursor-not-allowed"
+                            : "bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
+                        }`}
+                      >
+                        {/* 70% Fotografía Real HD */}
+                        <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                          <img
+                            src={city.imageUrl}
+                            alt={city.name}
+                            onError={(e) => handleImageError(e, city.backupUrl)}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                            loading="eager"
+                          />
+                          <span
+                            className={`absolute top-1.5 right-1.5 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs shadow-xs ${
+                              isOrigin
+                                ? "bg-blue-600 text-white"
+                                : "bg-slate-900/80 dark:bg-slate-950/80 text-white group-hover:bg-emerald-600 transition-colors"
+                            }`}
+                          >
+                            {isOrigin ? "✓ Salida" : "Llegar ➔"}
+                          </span>
                         </div>
-                      </div>
-                      <div className="p-3 border-t border-slate-100">
-                        <h3 className="font-bold text-slate-900 text-sm leading-tight truncate">
-                          {city.name}
-                        </h3>
-                        <p className="text-xs text-slate-500 truncate flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-3 h-3 text-slate-400 shrink-0" />
-                          <span className="truncate">{city.terminalName}</span>
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
+                        {/* 30% Barra de Texto Sólida */}
+                        <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+                          <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                            {city.name}
+                          </h3>
+                          <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-2.5 h-2.5 shrink-0" />
+                            <span className="truncate">{city.terminalName}</span>
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* FILA 2: IMBABURA */}
+              <div className="h-[49%] flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-2 mb-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                  <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                    Provincia de Imbabura (4 Terminales)
+                  </span>
+                </div>
+                <div className="grid grid-cols-4 gap-2 sm:gap-3 flex-1 max-w-[85%] mx-auto w-full">
+                  {imbaburaCities.map((city) => {
+                    const isOrigin = originCity.id === city.id;
+                    return (
+                      <button
+                        key={city.id}
+                        type="button"
+                        disabled={isOrigin}
+                        onClick={() => handleSelectDestination(city)}
+                        className={`group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all text-left ${
+                          isOrigin
+                            ? "opacity-50 grayscale border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 cursor-not-allowed"
+                            : "bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
+                        }`}
+                      >
+                        {/* 70% Fotografía Real HD */}
+                        <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
+                          <img
+                            src={city.imageUrl}
+                            alt={city.name}
+                            onError={(e) => handleImageError(e, city.backupUrl)}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
+                            loading="eager"
+                          />
+                          <span
+                            className={`absolute top-1.5 right-1.5 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs shadow-xs ${
+                              isOrigin
+                                ? "bg-blue-600 text-white"
+                                : "bg-slate-900/80 dark:bg-slate-950/80 text-white group-hover:bg-emerald-600 transition-colors"
+                            }`}
+                          >
+                            {isOrigin ? "✓ Salida" : "Llegar ➔"}
+                          </span>
+                        </div>
+                        {/* 30% Barra de Texto Sólida */}
+                        <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
+                          <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                            {city.name}
+                          </h3>
+                          <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
+                            <MapPin className="w-2.5 h-2.5 shrink-0" />
+                            <span className="truncate">{city.terminalName}</span>
+                          </p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           </div>
@@ -773,59 +778,70 @@ export default function HomePage() {
         {/* PASO 3: SELECCIONA HORARIO Y SALIDA                                 */}
         {/* =================================================================== */}
         {step === 3 && (
-          <div className="space-y-4">
-            {/* Cabecera */}
-            <div className="bg-white border border-slate-200 rounded-2xl p-4 flex items-center justify-between shadow-xs">
-              <div>
-                <span className="text-xs text-slate-500 block">Ruta seleccionada</span>
-                <span className="text-lg font-bold text-slate-900">
-                  {originCity?.name} → {destinationCity?.name}
-                </span>
+          <div className="h-full flex flex-col justify-between py-1">
+            {/* Cabecera con Ruta y Filtros */}
+            <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="px-2.5 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5" />
+                  <span>Volver a Destino</span>
+                </button>
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block">
+                    Ruta Seleccionada
+                  </span>
+                  <div className="flex items-center space-x-1.5 text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                    <span>{originCity?.name}</span>
+                    <ArrowRight className="w-4 h-4 text-emerald-500" />
+                    <span>{destinationCity?.name}</span>
+                  </div>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="text-xs font-semibold text-blue-600 hover:underline cursor-pointer"
-              >
-                Cambiar ruta
-              </button>
-            </div>
 
-            {/* Filtros de Turno */}
-            <div className="flex items-center gap-2 overflow-x-auto py-1">
-              {[
-                { id: "ALL", label: "Todos los horarios" },
-                { id: "MORNING", label: "Mañana" },
-                { id: "AFTERNOON", label: "Tarde" },
-                { id: "NIGHT", label: "Noche" },
-              ].map((tab) => {
-                const active = selectedShift === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    onClick={() => setSelectedShift(tab.id as "ALL" | "MORNING" | "AFTERNOON" | "NIGHT")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer shrink-0 ${
-                      active
-                        ? "bg-slate-900 text-white"
-                        : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200"
-                    }`}
-                  >
-                    {tab.label}
-                  </button>
-                );
-              })}
+              {/* Filtros de Turno */}
+              <div className="flex items-center gap-1.5 overflow-x-auto">
+                {[
+                  { id: "ALL", label: "Todos los horarios" },
+                  { id: "MORNING", label: "🌅 Mañana" },
+                  { id: "AFTERNOON", label: "☀️ Tarde" },
+                  { id: "NIGHT", label: "🌙 Noche" },
+                ].map((tab) => {
+                  const active = selectedShift === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      onClick={() =>
+                        setSelectedShift(
+                          tab.id as "ALL" | "MORNING" | "AFTERNOON" | "NIGHT"
+                        )
+                      }
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                        active
+                          ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 scale-102"
+                          : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
+                      }`}
+                    >
+                      {tab.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Lista de Salidas */}
-            <div className="space-y-3">
+            <div className="flex-1 overflow-y-auto pr-1 py-2 space-y-2.5">
               {filteredTrips.map((trip) => (
                 <div
                   key={trip.id}
-                  className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-slate-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                  className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-sm hover:border-blue-500 dark:hover:border-blue-400 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex items-center space-x-3.5">
-                    <div className="w-16 h-16 rounded-xl overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
                       <img
                         src={trip.photoUrl}
                         alt={trip.cooperativeName}
@@ -833,43 +849,51 @@ export default function HomePage() {
                       />
                     </div>
                     <div>
-                      <span className="text-xs font-semibold text-slate-500 block">
-                        {trip.cooperativeName} · {trip.unitNumber}
-                      </span>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-black text-slate-600 dark:text-slate-300">
+                          {trip.cooperativeName}
+                        </span>
+                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-full">
+                          {trip.unitNumber}
+                        </span>
+                      </div>
                       <div className="flex items-baseline space-x-2 mt-0.5">
-                        <span className="text-2xl font-bold text-slate-900">
+                        <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
                           {trip.departureTime}
                         </span>
-                        <span className="text-xs text-slate-500 font-medium">Hoy</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
+                          Hoy
+                        </span>
                       </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500 font-medium mt-1">
+                      <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
                           Salida programada
                         </span>
-                        <span className="flex items-center gap-1 text-emerald-700 font-semibold">
+                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
                           <Users className="w-3.5 h-3.5" />
-                          {trip.availableSeats} disponibles
+                          {trip.availableSeats} asientos libres
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between sm:justify-end space-x-4 border-t sm:border-t-0 pt-3 sm:pt-0 border-slate-100">
+                  <div className="flex items-center justify-between sm:justify-end space-x-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 dark:border-slate-800">
                     <div className="text-left sm:text-right">
-                      <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wide block">
-                        Tarifa
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">
+                        Tarifa Fija
                       </span>
-                      <span className="text-xl font-bold text-slate-900">
+                      <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
                         ${trip.price.toFixed(2)}
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleSelectTrip(trip)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
+                      className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all shadow-md shadow-blue-500/20 hover:scale-102 cursor-pointer flex items-center space-x-1.5"
                     >
-                      Elegir asiento
+                      <span>Elegir asiento</span>
+                      <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -882,238 +906,260 @@ export default function HomePage() {
         {/* PASO 4: MAPA DE ASIENTOS Y DATOS                                    */}
         {/* =================================================================== */}
         {step === 4 && selectedTrip && (
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* Mapa de Asientos */}
-            <div className="flex-1 flex flex-col items-center justify-center bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
-              <BusSeatMap
-                occupiedSeats={occupiedSeats}
-                selectedSeats={selectedSeats}
-                onToggleSeat={handleToggleSeat}
-                compact={false}
-              />
-            </div>
+          <div className="h-full flex flex-col justify-between py-1 overflow-y-auto">
+            <div className="flex flex-col lg:flex-row gap-4 h-full">
+              {/* Mapa de Asientos (40 puestos estándar) */}
+              <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-3 sm:p-5 shadow-xs overflow-y-auto">
+                <BusSeatMap
+                  occupiedSeats={occupiedSeats}
+                  selectedSeats={selectedSeats}
+                  onToggleSeat={handleToggleSeat}
+                  compact={true}
+                />
+              </div>
 
-            {/* Datos del Pasajero */}
-            <div className="w-full lg:w-96 shrink-0 bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col justify-between">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                  <h3 className="font-bold text-slate-900 text-base">
-                    Datos del Pasajero
-                  </h3>
-                  <button
-                    type="button"
-                    onClick={() => setStep(3)}
-                    className="text-xs text-blue-600 font-medium hover:underline flex items-center gap-1 cursor-pointer"
-                  >
-                    <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>Volver a horarios</span>
-                  </button>
-                </div>
-
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div className="flex justify-between font-bold text-slate-900">
-                    <span>{selectedTrip.originCityName} → {selectedTrip.destinationCityName}</span>
-                    <span>${selectedTrip.price.toFixed(2)} c/u</span>
-                  </div>
-                  <p className="text-slate-500 mt-0.5">
-                    {selectedTrip.departureTime} · {selectedTrip.cooperativeName}
-                  </p>
-                </div>
-
-                <div className="space-y-3 text-xs">
-                  <div>
-                    <label className="font-semibold text-slate-700 block mb-1">
-                      Nombre y Apellido
-                    </label>
-                    <input
-                      type="text"
-                      value={passengerName}
-                      onChange={(e) => setPassengerName(e.target.value)}
-                      placeholder="Ej. Juan Pérez"
-                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-semibold text-slate-700 block mb-1">
-                      Cédula / Identificación
-                    </label>
-                    <input
-                      type="text"
-                      value={passengerDni}
-                      onChange={(e) => setPassengerDni(e.target.value)}
-                      placeholder="1004567890"
-                      className="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs text-slate-900 focus:outline-none focus:border-blue-600"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="font-semibold text-slate-700 block mb-1.5 text-xs">
-                    Forma de Pago
-                  </label>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
+              {/* Datos del Pasajero y Pago */}
+              <div className="w-full lg:w-96 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
+                    <h3 className="font-black text-slate-900 dark:text-white text-base">
+                      Datos del Pasajero
+                    </h3>
                     <button
                       type="button"
-                      onClick={() => setPaymentMethod("TRANSFERENCIA")}
-                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                        paymentMethod === "TRANSFERENCIA"
-                          ? "border-blue-600 bg-blue-50/60 text-blue-900 font-bold"
-                          : "border-slate-200 bg-slate-50 text-slate-700"
-                      }`}
+                      onClick={() => setStep(3)}
+                      className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline flex items-center gap-1 cursor-pointer"
                     >
-                      <div className="flex items-center space-x-1.5">
-                        <Building2 className="w-4 h-4 text-blue-600" />
-                        <span>Transferencia</span>
-                      </div>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={() => setPaymentMethod("EFECTIVO")}
-                      className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer ${
-                        paymentMethod === "EFECTIVO"
-                          ? "border-emerald-600 bg-emerald-50/60 text-emerald-900 font-bold"
-                          : "border-slate-200 bg-slate-50 text-slate-700"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-1.5">
-                        <Banknote className="w-4 h-4 text-emerald-600" />
-                        <span>Ventanilla</span>
-                      </div>
+                      <ArrowLeft className="w-3.5 h-3.5" />
+                      <span>Volver</span>
                     </button>
                   </div>
-                </div>
 
-                {paymentMethod === "TRANSFERENCIA" && (
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-2">
-                    <div className="leading-tight">
-                      <span className="font-bold text-slate-800 block text-[11px]">
-                        Banco Pichincha · Cta. Cte #2100458921
-                      </span>
-                      <p className="text-slate-500 text-[10px]">Ruta Norte S.A. · RUC 0490012345001</p>
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs">
+                    <div className="flex justify-between font-black text-slate-900 dark:text-white">
+                      <span>{selectedTrip.originCityName} → {selectedTrip.destinationCityName}</span>
+                      <span>${selectedTrip.price.toFixed(2)} c/u</span>
                     </div>
-
-                    <input
-                      type="text"
-                      value={paymentReference}
-                      onChange={(e) => setPaymentReference(e.target.value)}
-                      placeholder="Número de comprobante"
-                      className="w-full bg-white border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-blue-600"
-                    />
+                    <p className="text-slate-500 dark:text-slate-400 mt-0.5 text-[11px]">
+                      {selectedTrip.departureTime} · {selectedTrip.cooperativeName}
+                    </p>
                   </div>
-                )}
 
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-slate-700">Asientos seleccionados:</span>
-                    <span className="font-bold text-blue-600">
+                  <div className="space-y-2.5 text-xs">
+                    <div>
+                      <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                        Nombre y Apellido
+                      </label>
+                      <input
+                        type="text"
+                        value={passengerName}
+                        onChange={(e) => setPassengerName(e.target.value)}
+                        placeholder="Ej. Cristopher Lomas"
+                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                        Cédula / Identificación
+                      </label>
+                      <input
+                        type="text"
+                        value={passengerDni}
+                        onChange={(e) => setPassengerDni(e.target.value)}
+                        placeholder="1004567890"
+                        className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-slate-700 dark:text-slate-300 block mb-1 text-xs">
+                      Forma de Pago
+                    </label>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("TRANSFERENCIA")}
+                        className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                          paymentMethod === "TRANSFERENCIA"
+                            ? "border-blue-600 bg-blue-50/80 dark:bg-blue-950/80 text-blue-900 dark:text-blue-200 font-bold"
+                            : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-1.5">
+                          <Building2 className="w-4 h-4 text-blue-600" />
+                          <span>Transferencia</span>
+                        </div>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod("EFECTIVO")}
+                        className={`p-2 rounded-xl border text-left transition-all cursor-pointer ${
+                          paymentMethod === "EFECTIVO"
+                            ? "border-emerald-600 bg-emerald-50/80 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-200 font-bold"
+                            : "border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-1.5">
+                          <Banknote className="w-4 h-4 text-emerald-600" />
+                          <span>Ventanilla</span>
+                        </div>
+                      </button>
+                    </div>
+                  </div>
+
+                  {paymentMethod === "TRANSFERENCIA" && (
+                    <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs space-y-1.5">
+                      <div className="leading-tight">
+                        <span className="font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
+                          Banco Pichincha · Cta. Cte #2100458921
+                        </span>
+                        <p className="text-slate-500 dark:text-slate-400 text-[10px]">
+                          Ruta Norte S.A. · RUC 0490012345001
+                        </p>
+                      </div>
+
+                      <input
+                        type="text"
+                        value={paymentReference}
+                        onChange={(e) => setPaymentReference(e.target.value)}
+                        placeholder="Número de comprobante"
+                        className="w-full bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-800 dark:text-white focus:outline-none focus:border-blue-600"
+                      />
+                    </div>
+                  )}
+
+                  <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs flex justify-between items-center">
+                    <span className="font-bold text-slate-700 dark:text-slate-300">
+                      Asientos elegidos:
+                    </span>
+                    <span className="font-black text-blue-600 dark:text-blue-400">
                       {selectedSeats.length > 0 ? selectedSeats.join(", ") : "Ninguno"}
                     </span>
                   </div>
                 </div>
-              </div>
 
-              <div className="pt-4 border-t border-slate-100 mt-4">
-                <div className="flex items-baseline justify-between mb-3">
-                  <span className="font-semibold text-slate-600 text-xs">Total:</span>
-                  <span className="text-2xl font-bold text-slate-900">
-                    ${(selectedSeats.length * selectedTrip.price).toFixed(2)}
-                  </span>
+                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 mt-2">
+                  <div className="flex items-baseline justify-between mb-2.5">
+                    <span className="font-bold text-slate-600 dark:text-slate-400 text-xs">
+                      Total a pagar:
+                    </span>
+                    <span className="text-2xl font-black text-slate-900 dark:text-white">
+                      ${(selectedSeats.length * selectedTrip.price).toFixed(2)}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    disabled={selectedSeats.length === 0 || purchasing}
+                    onClick={handleConfirmPurchase}
+                    className="w-full py-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer shadow-md shadow-blue-500/20"
+                  >
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span>
+                      {purchasing
+                        ? "Emitiendo boleto..."
+                        : selectedSeats.length === 0
+                        ? "Elige asiento en el mapa"
+                        : "Confirmar Boleto"}
+                    </span>
+                  </button>
                 </div>
-
-                <button
-                  type="button"
-                  disabled={selectedSeats.length === 0 || purchasing}
-                  onClick={handleConfirmPurchase}
-                  className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center space-x-2 cursor-pointer"
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>
-                    {purchasing
-                      ? "Procesando..."
-                      : selectedSeats.length === 0
-                      ? "Elige un asiento en el mapa"
-                      : "Confirmar boleto"}
-                  </span>
-                </button>
               </div>
             </div>
           </div>
         )}
 
         {/* =================================================================== */}
-        {/* PASO 5: BOLETO EMITIDO                                              */}
+        {/* PASO 5: BOLETO EMITIDO CON QR                                       */}
         {/* =================================================================== */}
         {step === 5 && (
-          <div className="flex items-center justify-center py-6">
-            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs max-w-sm w-full text-center">
-              <h2 className="text-lg font-bold text-slate-900 mb-1">
-                Boleto de Viaje
-              </h2>
-              <p className="text-xs text-slate-500 mb-4">
-                Presenta este código al momento de abordar
+          <div className="h-full flex items-center justify-center py-2">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-sm w-full text-center animate-in zoom-in-95 duration-200">
+              <div className="flex items-center justify-center space-x-2 mb-1">
+                <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                <h2 className="text-lg font-black text-slate-900 dark:text-white">
+                  Boleto Electrónico
+                </h2>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+                Presenta este código al abordar el bus
               </p>
 
-              <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 my-3 flex flex-col items-center">
-                <div className="bg-white p-3 rounded-xl shadow-xs">
+              <div className="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 my-2 flex flex-col items-center">
+                {/* QR en fondo blanco para lectura óptica fiable */}
+                <div className="bg-white p-3 rounded-2xl shadow-xs">
                   <QRCodeSVG
                     value={
                       purchasedTickets.length > 0
                         ? purchasedTickets[0].qrToken
                         : "RN-DEMO12345"
                     }
-                    size={130}
+                    size={140}
                     level="H"
                   />
                 </div>
-                <span className="text-xs font-mono font-bold text-slate-700 mt-2">
+                <span className="text-xs font-mono font-black text-slate-800 dark:text-slate-200 mt-2 bg-white dark:bg-slate-900 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
                   {purchasedTickets[0]?.qrToken || "RN-DEMO12345"}
                 </span>
 
-                <div className="w-full mt-3 pt-3 border-t border-slate-200 text-left grid grid-cols-2 gap-2 text-xs">
+                <div className="w-full mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 text-left grid grid-cols-2 gap-2 text-xs">
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Pasajero</span>
-                    <span className="font-semibold text-slate-800 truncate block">
+                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
+                      Pasajero
+                    </span>
+                    <span className="font-bold text-slate-800 dark:text-slate-200 truncate block">
                       {purchasedTickets[0]?.passengerName || passengerName}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Asiento(s)</span>
-                    <span className="font-bold text-slate-900">
+                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
+                      Asiento(s)
+                    </span>
+                    <span className="font-black text-blue-600 dark:text-blue-400">
                       {purchasedTickets.map((t) => t.seatNumber).join(", ")}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Salida</span>
-                    <span className="font-medium text-slate-800">
+                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
+                      Salida
+                    </span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {purchasedTickets[0]?.departureTime || selectedTrip?.departureTime}
                     </span>
                   </div>
                   <div>
-                    <span className="text-slate-400 block text-[10px]">Ruta</span>
-                    <span className="font-medium text-slate-800">
+                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
+                      Ruta
+                    </span>
+                    <span className="font-semibold text-slate-800 dark:text-slate-200">
                       {originCity?.name} → {destinationCity?.name}
                     </span>
                   </div>
                 </div>
               </div>
 
-              <div className="space-y-2 mt-4">
+              <div className="space-y-2 mt-3">
                 <button
                   type="button"
                   onClick={handleCheckTicketStatus}
                   disabled={updatingTicketStatus}
-                  className="w-full py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center space-x-1.5 cursor-pointer"
+                  className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
                 >
-                  <RefreshCw className={`w-3.5 h-3.5 ${updatingTicketStatus ? "animate-spin" : ""}`} />
-                  <span>Actualizar estado</span>
+                  <RefreshCw
+                    className={`w-3.5 h-3.5 ${
+                      updatingTicketStatus ? "animate-spin" : ""
+                    }`}
+                  />
+                  <span>Actualizar estado de boleto</span>
                 </button>
 
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => window.print()}
-                    className="flex-1 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
                   >
                     <Printer className="w-3.5 h-3.5" />
                     <span>Imprimir</span>
@@ -1121,7 +1167,7 @@ export default function HomePage() {
                   <button
                     type="button"
                     onClick={handleReset}
-                    className="flex-1 py-2 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 font-semibold text-xs flex items-center justify-center space-x-1.5 cursor-pointer"
+                    className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs flex items-center justify-center space-x-1.5 cursor-pointer"
                   >
                     <RotateCcw className="w-3.5 h-3.5" />
                     <span>Nuevo viaje</span>
