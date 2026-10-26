@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import NavbarVisual from "@/components/NavbarVisual";
+import { AdminMetrics, BusUnit, PendingTicket, adminService } from "@/features/admin";
+import { City } from "@/features/kiosk";
 import { axiosClient } from "@/lib/axiosClient";
 import {
   DollarSign,
@@ -20,41 +22,6 @@ import {
   Banknote,
   Search,
 } from "lucide-react";
-
-interface City {
-  id: number;
-  name: string;
-  terminalName: string;
-}
-
-interface BusUnit {
-  id: number;
-  cooperativeName: string;
-  unitNumber: string;
-  plate: string;
-  photoUrl: string;
-  capacity: number;
-}
-
-interface PendingTicket {
-  id: string;
-  passengerName: string;
-  passengerDni?: string;
-  seatNumber: number;
-  qrToken: string;
-  status: "PENDING_VERIFICATION" | "PAID" | "REJECTED" | "BOARDED";
-  paymentMethod: string;
-  paymentReference: string;
-  bankName: string;
-  originCity: string;
-  destinationCity: string;
-  departureTime: string;
-  departureDate: string;
-  cooperativeName: string;
-  unitNumber?: string;
-  price: number;
-  createdAt?: string;
-}
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<"PAGOS" | "SALIDAS" | "BUSES">("PAGOS");

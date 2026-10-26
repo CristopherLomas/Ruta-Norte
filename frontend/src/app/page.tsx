@@ -2,217 +2,26 @@
 
 import React, { useState, useEffect } from "react";
 import NavbarVisual from "@/components/NavbarVisual";
-import BusSeatMap from "@/components/BusSeatMap";
-import LoginModal, { AuthUser } from "@/components/LoginModal";
-import { axiosClient } from "@/lib/axiosClient";
-import { QRCodeSVG } from "qrcode.react";
+import { AuthUser, LoginModal } from "@/features/auth";
+import { authService } from "@/features/auth/services/authService";
+import { City, Trip } from "@/features/kiosk";
+import { kioskService, FALLBACK_CITIES } from "@/features/kiosk/services/kioskService";
+import { CityCard } from "@/features/kiosk/components/CityCard";
+import { TripCard } from "@/features/kiosk/components/TripCard";
+import { BusSeatMap } from "@/features/kiosk/components/BusSeatMap";
+import { TicketPurchased } from "@/features/tickets";
+import { ticketService } from "@/features/tickets/services/ticketService";
+import { TicketQrCard } from "@/features/tickets/components/TicketQrCard";
 import {
-  MapPin,
-  Clock,
   ArrowRight,
   ArrowLeft,
   CheckCircle2,
-  Printer,
-  RotateCcw,
-  Users,
   Building2,
   Banknote,
-  RefreshCw,
   Check,
-  ShieldCheck,
   LogIn,
   UserCheck,
 } from "lucide-react";
-
-interface City {
-  id: number;
-  name: string;
-  province: string;
-  terminalName: string;
-  imageUrl: string;
-  backupUrl?: string;
-}
-
-interface Trip {
-  id: string;
-  originCityId: number;
-  originCityName: string;
-  originTerminal: string;
-  destinationCityId: number;
-  destinationCityName: string;
-  destinationTerminal: string;
-  busId: number;
-  cooperativeName: string;
-  unitNumber: string;
-  plate: string;
-  photoUrl: string;
-  departureDate: string;
-  departureTime: string;
-  shift: string;
-  price: number;
-  totalSeats: number;
-  occupiedSeats: number;
-  availableSeats: number;
-}
-
-interface TicketPurchased {
-  id: string;
-  passengerName: string;
-  passengerDni?: string;
-  seatNumber: number;
-  qrToken: string;
-  status: "PENDING_VERIFICATION" | "PAID" | "REJECTED" | "BOARDED";
-  paymentMethod?: string;
-  paymentReference?: string;
-  bankName?: string;
-  originCity: string;
-  destinationCity: string;
-  departureTime: string;
-  departureDate: string;
-  cooperativeName: string;
-  price: number;
-}
-
-const FALLBACK_CITIES: City[] = [
-  {
-    id: 1,
-    name: "Tulcán",
-    province: "Carchi",
-    terminalName: "Terminal Terrestre de Tulcán",
-    imageUrl: "/images/cities/tulcan.jpg",
-    backupUrl: "/cities/tulcan.jpg",
-  },
-  {
-    id: 2,
-    name: "Julio Andrade",
-    province: "Carchi",
-    terminalName: "Terminal Parroquial Julio Andrade",
-    imageUrl: "/images/cities/julio-andrade.jpg",
-    backupUrl: "/cities/julio-andrade.jpg",
-  },
-  {
-    id: 3,
-    name: "San Gabriel",
-    province: "Carchi",
-    terminalName: "Terminal Terrestre San Gabriel",
-    imageUrl: "/images/cities/san-gabriel.jpg",
-    backupUrl: "/cities/san-gabriel.jpg",
-  },
-  {
-    id: 4,
-    name: "Bolívar",
-    province: "Carchi",
-    terminalName: "Terminal Cantonal Bolívar",
-    imageUrl: "/images/cities/bolivar.jpg",
-    backupUrl: "/cities/bolivar.jpg",
-  },
-  {
-    id: 5,
-    name: "El Ángel",
-    province: "Carchi",
-    terminalName: "Terminal Terrestre El Ángel",
-    imageUrl: "/images/cities/el-angel.jpg",
-    backupUrl: "/cities/el-angel.jpg",
-  },
-  {
-    id: 6,
-    name: "Ibarra",
-    province: "Imbabura",
-    terminalName: "Terminal Terrestre de Ibarra",
-    imageUrl: "/images/cities/ibarra.jpg",
-    backupUrl: "/cities/ibarra.jpg",
-  },
-  {
-    id: 7,
-    name: "Atuntaqui",
-    province: "Imbabura",
-    terminalName: "Terminal Intercantonal Atuntaqui",
-    imageUrl: "/images/cities/atuntaqui.jpg",
-    backupUrl: "/cities/atuntaqui.jpg",
-  },
-  {
-    id: 8,
-    name: "Otavalo",
-    province: "Imbabura",
-    terminalName: "Terminal Terrestre de Otavalo",
-    imageUrl: "/images/cities/otavalo.jpg",
-    backupUrl: "/cities/otavalo.jpg",
-  },
-  {
-    id: 9,
-    name: "Cotacachi",
-    province: "Imbabura",
-    terminalName: "Terminal Terrestre Cotacachi",
-    imageUrl: "/images/cities/cotacachi.jpg",
-    backupUrl: "/cities/cotacachi.jpg",
-  },
-];
-
-const generateDemoTrips = (origName = "Tulcán", destName = "Ibarra"): Trip[] => [
-  {
-    id: "trip-1",
-    originCityId: 1,
-    originCityName: origName,
-    originTerminal: `Terminal Terrestre de ${origName}`,
-    destinationCityId: 6,
-    destinationCityName: destName,
-    destinationTerminal: `Terminal Terrestre de ${destName}`,
-    busId: 1,
-    cooperativeName: "Velotax del Norte",
-    unitNumber: "Disco 12",
-    plate: "CAA-1020",
-    photoUrl: "/images/buses/bus-velotax.jpg",
-    departureDate: "Hoy",
-    departureTime: "07:30",
-    shift: "MORNING",
-    price: 3.75,
-    totalSeats: 40,
-    occupiedSeats: 8,
-    availableSeats: 32,
-  },
-  {
-    id: "trip-2",
-    originCityId: 1,
-    originCityName: origName,
-    originTerminal: `Terminal Terrestre de ${origName}`,
-    destinationCityId: 6,
-    destinationCityName: destName,
-    destinationTerminal: `Terminal Terrestre de ${destName}`,
-    busId: 2,
-    cooperativeName: "Expreso Tulcán",
-    unitNumber: "Disco 05",
-    plate: "CAA-2345",
-    photoUrl: "/images/buses/bus-expreso-tulcan.jpg",
-    departureDate: "Hoy",
-    departureTime: "13:30",
-    shift: "AFTERNOON",
-    price: 3.75,
-    totalSeats: 40,
-    occupiedSeats: 14,
-    availableSeats: 26,
-  },
-  {
-    id: "trip-3",
-    originCityId: 1,
-    originCityName: origName,
-    originTerminal: `Terminal Terrestre de ${origName}`,
-    destinationCityId: 6,
-    destinationCityName: destName,
-    destinationTerminal: `Terminal Terrestre de ${destName}`,
-    busId: 3,
-    cooperativeName: "Flota Imbabura",
-    unitNumber: "Disco 44",
-    plate: "IAC-3456",
-    photoUrl: "/images/buses/bus-flota-imbabura.jpg",
-    departureDate: "Hoy",
-    departureTime: "18:45",
-    shift: "NIGHT",
-    price: 4.0,
-    totalSeats: 40,
-    occupiedSeats: 6,
-    availableSeats: 34,
-  },
-];
 
 export default function HomePage() {
   const [step, setStep] = useState<1 | 2 | 3 | 4 | 5>(1);
@@ -247,41 +56,19 @@ export default function HomePage() {
 
   // Carga inicial de sesión de usuario
   useEffect(() => {
-    const savedUser = localStorage.getItem("rn_user");
-    if (savedUser) {
-      try {
-        const parsed = JSON.parse(savedUser);
-        setCurrentUser(parsed);
-        if (parsed.name) setPassengerName(parsed.name);
-        if (parsed.dni) setPassengerDni(parsed.dni);
-      } catch {
-        // Ignorar error de parsing
-      }
+    const user = authService.getCurrentUser();
+    if (user) {
+      setCurrentUser(user);
+      if (user.name) setPassengerName(user.name);
+      if (user.dni) setPassengerDni(user.dni);
     }
   }, []);
 
   // Carga de ciudades
   useEffect(() => {
-    axiosClient
-      .get<City[]>("/cities")
-      .then((res) => {
-        if (res.data && res.data.length > 0) {
-          const merged = res.data.map((c) => {
-            const found = FALLBACK_CITIES.find(
-              (f) => f.id === c.id || f.name.toLowerCase() === c.name.toLowerCase()
-            );
-            return {
-              ...c,
-              imageUrl: found?.imageUrl || `/images/cities/${c.name.toLowerCase().replace(/ /g, "-")}.jpg`,
-              backupUrl: found?.backupUrl || `/cities/${c.name.toLowerCase().replace(/ /g, "-")}.jpg`,
-            };
-          });
-          setCities(merged);
-        }
-      })
-      .catch(() => {
-        setCities(FALLBACK_CITIES);
-      });
+    kioskService.getCities().then((data) => {
+      setCities(data);
+    });
   }, []);
 
   // Paso 1: Seleccionar Origen -> Pasa directo al Paso 2
@@ -296,36 +83,21 @@ export default function HomePage() {
     if (!originCity || city.id === originCity.id) return;
     setDestinationCity(city);
 
-    const generated = generateDemoTrips(originCity.name, city.name);
-    setTrips(generated);
-    setStep(3);
+    kioskService
+      .searchTrips(originCity.id, city.id, originCity.name, city.name)
+      .then((data) => {
+        setTrips(data);
+      });
 
-    // Consulta al backend en segundo plano
-    axiosClient
-      .get<Trip[]>(`/trips/search?originId=${originCity.id}&destinationId=${city.id}`)
-      .then((res) => {
-        if (res.data && res.data.length > 0) {
-          setTrips(res.data);
-        }
-      })
-      .catch(() => {});
+    setStep(3);
   };
 
   // Paso 3 -> Seleccionar Viaje
   const handleSelectTrip = async (trip: Trip) => {
     setSelectedTrip(trip);
     setSelectedSeats([]);
-    try {
-      const res = await axiosClient.get(`/trips/${trip.id}/seats`);
-      if (res.data) {
-        const occ = res.data
-          .filter((s: { status: string; seatNumber: number }) => s.status === "OCCUPIED")
-          .map((s: { seatNumber: number }) => s.seatNumber);
-        setOccupiedSeats(occ);
-      }
-    } catch {
-      setOccupiedSeats([2, 5, 14, 18]);
-    }
+    const occ = await kioskService.getOccupiedSeats(trip.id);
+    setOccupiedSeats(occ);
     setStep(4);
   };
 
@@ -342,17 +114,15 @@ export default function HomePage() {
   const handlePreConfirmPurchase = () => {
     if (!selectedTrip || selectedSeats.length === 0) return;
 
-    // Si el usuario no ha iniciado sesión, abrimos el modal flotante sin perder el flujo
     if (!currentUser) {
       setLoginModalOpen(true);
       return;
     }
 
-    // Si ya está autenticado, procede directamente con la compra
     executePurchase(currentUser);
   };
 
-  // Ejecución de la compra (tras autenticación o si ya estaba conectado)
+  // Ejecución de la compra
   const executePurchase = async (userToUse?: AuthUser | null) => {
     if (!selectedTrip || selectedSeats.length === 0) return;
     setPurchasing(true);
@@ -366,24 +136,43 @@ export default function HomePage() {
         ? paymentReference.trim() || "TR-" + Math.floor(100000 + Math.random() * 900000)
         : "EFECTIVO-VENTANILLA";
 
-    try {
-      const res = await axiosClient.post<TicketPurchased[]>("/tickets/purchase", {
-        tripId: selectedTrip.id,
-        seatNumbers: selectedSeats,
-        passengerName: finalName,
-        passengerDni: finalDni,
-        paymentMethod: paymentMethod,
-        bankName: paymentMethod === "TRANSFERENCIA" ? bankName : "Ventanilla",
-        paymentReference: ref,
-      });
+    const payload = {
+      tripId: selectedTrip.id,
+      seatNumbers: selectedSeats,
+      passengerName: finalName,
+      passengerDni: finalDni,
+      paymentMethod,
+      bankName: paymentMethod === "TRANSFERENCIA" ? bankName : "Ventanilla",
+      paymentReference: ref,
+    };
 
-      if (res.data && res.data.length > 0) {
-        setPurchasedTickets(res.data);
+    try {
+      const tickets = await ticketService.purchase(payload);
+      if (tickets && tickets.length > 0) {
+        setPurchasedTickets(tickets);
       } else {
-        generateFallbackTickets(ref, finalName, finalDni);
+        const fallbacks = ticketService.generateFallbackTickets(
+          payload,
+          selectedTrip.originCityName,
+          selectedTrip.destinationCityName,
+          selectedTrip.departureTime,
+          selectedTrip.departureDate,
+          selectedTrip.cooperativeName,
+          selectedTrip.price
+        );
+        setPurchasedTickets(fallbacks);
       }
     } catch {
-      generateFallbackTickets(ref, finalName, finalDni);
+      const fallbacks = ticketService.generateFallbackTickets(
+        payload,
+        selectedTrip.originCityName,
+        selectedTrip.destinationCityName,
+        selectedTrip.departureTime,
+        selectedTrip.departureDate,
+        selectedTrip.cooperativeName,
+        selectedTrip.price
+      );
+      setPurchasedTickets(fallbacks);
     } finally {
       setPurchasing(false);
       setStep(5);
@@ -396,31 +185,9 @@ export default function HomePage() {
     setPassengerName(user.name);
     if (user.dni) setPassengerDni(user.dni);
 
-    // Si ya tenía asientos seleccionados en el Paso 4, completa la compra automáticamente
     if (step === 4 && selectedSeats.length > 0) {
       executePurchase(user);
     }
-  };
-
-  const generateFallbackTickets = (ref: string, pName: string, pDni: string) => {
-    const tickets: TicketPurchased[] = selectedSeats.map((seat) => ({
-      id: "tk-" + Math.random().toString(36).substring(2, 9),
-      passengerName: pName,
-      passengerDni: pDni,
-      seatNumber: seat,
-      qrToken: "RN-" + Math.random().toString(36).substring(2, 10).toUpperCase(),
-      status: "PENDING_VERIFICATION",
-      paymentMethod: paymentMethod,
-      bankName: paymentMethod === "TRANSFERENCIA" ? bankName : "Ventanilla",
-      paymentReference: ref,
-      originCity: selectedTrip?.originCityName || originCity?.name || "Tulcán",
-      destinationCity: selectedTrip?.destinationCityName || destinationCity?.name || "Ibarra",
-      departureTime: selectedTrip?.departureTime || "08:00",
-      departureDate: selectedTrip?.departureDate || "Hoy",
-      cooperativeName: selectedTrip?.cooperativeName || "Velotax del Norte",
-      price: selectedTrip?.price || 3.75,
-    }));
-    setPurchasedTickets(tickets);
   };
 
   const handleCheckTicketStatus = async () => {
@@ -428,10 +195,10 @@ export default function HomePage() {
     setUpdatingTicketStatus(true);
     try {
       const firstId = purchasedTickets[0].id;
-      const res = await axiosClient.get(`/tickets/${firstId}`);
-      if (res.data && res.data.status) {
+      const res = await ticketService.getTicket(firstId);
+      if (res && res.status) {
         setPurchasedTickets((prev) =>
-          prev.map((t) => ({ ...t, status: res.data.status }))
+          prev.map((t) => ({ ...t, status: res.status }))
         );
       }
     } catch {
@@ -452,16 +219,6 @@ export default function HomePage() {
     setStep(1);
   };
 
-  const handleImageError = (
-    e: React.SyntheticEvent<HTMLImageElement, Event>,
-    backupUrl?: string
-  ) => {
-    const target = e.currentTarget;
-    if (backupUrl && target.src !== backupUrl) {
-      target.src = backupUrl;
-    }
-  };
-
   const carchiCities = cities.filter((c) => c.province === "Carchi");
   const imbaburaCities = cities.filter((c) => c.province === "Imbabura");
 
@@ -477,6 +234,7 @@ export default function HomePage() {
         currentUser={currentUser}
         onOpenLoginModal={() => setLoginModalOpen(true)}
         onLogout={() => {
+          authService.logout();
           setCurrentUser(null);
           setPassengerName("Pasajero General");
           setPassengerDni("1004567890");
@@ -593,36 +351,12 @@ export default function HomePage() {
                 </div>
                 <div className="grid grid-cols-5 gap-2 sm:gap-3 flex-1">
                   {carchiCities.map((city) => (
-                    <button
+                    <CityCard
                       key={city.id}
-                      type="button"
-                      onClick={() => handleSelectOrigin(city)}
-                      className="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer text-left"
-                    >
-                      {/* 70% Fotografía Real HD */}
-                      <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                        <img
-                          src={city.imageUrl}
-                          alt={city.name}
-                          onError={(e) => handleImageError(e, city.backupUrl)}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                          loading="eager"
-                        />
-                        <span className="absolute top-1.5 right-1.5 bg-slate-900/80 dark:bg-slate-950/80 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs group-hover:bg-blue-600 transition-colors shadow-xs">
-                          Elegir ➔
-                        </span>
-                      </div>
-                      {/* 30% Barra de Texto Sólida */}
-                      <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                        <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          {city.name}
-                        </h3>
-                        <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-2.5 h-2.5 shrink-0" />
-                          <span className="truncate">{city.terminalName}</span>
-                        </p>
-                      </div>
-                    </button>
+                      city={city}
+                      onSelect={handleSelectOrigin}
+                      mode="ORIGIN"
+                    />
                   ))}
                 </div>
               </div>
@@ -637,36 +371,12 @@ export default function HomePage() {
                 </div>
                 <div className="grid grid-cols-4 gap-2 sm:gap-3 flex-1 max-w-[85%] mx-auto w-full">
                   {imbaburaCities.map((city) => (
-                    <button
+                    <CityCard
                       key={city.id}
-                      type="button"
-                      onClick={() => handleSelectOrigin(city)}
-                      className="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer text-left"
-                    >
-                      {/* 70% Fotografía Real HD */}
-                      <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                        <img
-                          src={city.imageUrl}
-                          alt={city.name}
-                          onError={(e) => handleImageError(e, city.backupUrl)}
-                          className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                          loading="eager"
-                        />
-                        <span className="absolute top-1.5 right-1.5 bg-slate-900/80 dark:bg-slate-950/80 text-white text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs group-hover:bg-blue-600 transition-colors shadow-xs">
-                          Elegir ➔
-                        </span>
-                      </div>
-                      {/* 30% Barra de Texto Sólida */}
-                      <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                        <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                          {city.name}
-                        </h3>
-                        <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
-                          <MapPin className="w-2.5 h-2.5 shrink-0" />
-                          <span className="truncate">{city.terminalName}</span>
-                        </p>
-                      </div>
-                    </button>
+                      city={city}
+                      onSelect={handleSelectOrigin}
+                      mode="ORIGIN"
+                    />
                   ))}
                 </div>
               </div>
@@ -724,52 +434,16 @@ export default function HomePage() {
                   </span>
                 </div>
                 <div className="grid grid-cols-5 gap-2 sm:gap-3 flex-1">
-                  {carchiCities.map((city) => {
-                    const isOrigin = originCity.id === city.id;
-                    return (
-                      <button
-                        key={city.id}
-                        type="button"
-                        disabled={isOrigin}
-                        onClick={() => handleSelectDestination(city)}
-                        className={`group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all text-left ${
-                          isOrigin
-                            ? "opacity-50 grayscale border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 cursor-not-allowed"
-                            : "bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
-                        }`}
-                      >
-                        {/* 70% Fotografía Real HD */}
-                        <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                          <img
-                            src={city.imageUrl}
-                            alt={city.name}
-                            onError={(e) => handleImageError(e, city.backupUrl)}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                            loading="eager"
-                          />
-                          <span
-                            className={`absolute top-1.5 right-1.5 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs shadow-xs ${
-                              isOrigin
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-900/80 dark:bg-slate-950/80 text-white group-hover:bg-emerald-600 transition-colors"
-                            }`}
-                          >
-                            {isOrigin ? "✓ Salida" : "Llegar ➔"}
-                          </span>
-                        </div>
-                        {/* 30% Barra de Texto Sólida */}
-                        <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                          <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                            {city.name}
-                          </h3>
-                          <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-2.5 h-2.5 shrink-0" />
-                            <span className="truncate">{city.terminalName}</span>
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
+                  {carchiCities.map((city) => (
+                    <CityCard
+                      key={city.id}
+                      city={city}
+                      onSelect={handleSelectDestination}
+                      isOrigin={originCity.id === city.id}
+                      isDisabled={originCity.id === city.id}
+                      mode="DESTINATION"
+                    />
+                  ))}
                 </div>
               </div>
 
@@ -782,52 +456,16 @@ export default function HomePage() {
                   </span>
                 </div>
                 <div className="grid grid-cols-4 gap-2 sm:gap-3 flex-1 max-w-[85%] mx-auto w-full">
-                  {imbaburaCities.map((city) => {
-                    const isOrigin = originCity.id === city.id;
-                    return (
-                      <button
-                        key={city.id}
-                        type="button"
-                        disabled={isOrigin}
-                        onClick={() => handleSelectDestination(city)}
-                        className={`group relative flex flex-col h-full rounded-2xl overflow-hidden transition-all text-left ${
-                          isOrigin
-                            ? "opacity-50 grayscale border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 cursor-not-allowed"
-                            : "bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-400 hover:shadow-xl hover:scale-[1.02] cursor-pointer"
-                        }`}
-                      >
-                        {/* 70% Fotografía Real HD */}
-                        <div className="relative w-full h-[68%] sm:h-[72%] overflow-hidden bg-slate-100 dark:bg-slate-800">
-                          <img
-                            src={city.imageUrl}
-                            alt={city.name}
-                            onError={(e) => handleImageError(e, city.backupUrl)}
-                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
-                            loading="eager"
-                          />
-                          <span
-                            className={`absolute top-1.5 right-1.5 text-[9px] sm:text-[10px] font-extrabold px-2 py-0.5 rounded-full backdrop-blur-xs shadow-xs ${
-                              isOrigin
-                                ? "bg-blue-600 text-white"
-                                : "bg-slate-900/80 dark:bg-slate-950/80 text-white group-hover:bg-emerald-600 transition-colors"
-                            }`}
-                          >
-                            {isOrigin ? "✓ Salida" : "Llegar ➔"}
-                          </span>
-                        </div>
-                        {/* 30% Barra de Texto Sólida */}
-                        <div className="h-[32%] sm:h-[28%] min-h-[40px] px-2 sm:px-2.5 py-1 flex flex-col justify-center bg-white dark:bg-slate-900 border-t border-slate-100 dark:border-slate-800">
-                          <h3 className="font-black text-slate-900 dark:text-white text-xs sm:text-sm md:text-base leading-tight truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                            {city.name}
-                          </h3>
-                          <p className="text-[9px] sm:text-[11px] text-amber-600 dark:text-amber-400 font-semibold truncate flex items-center gap-1 mt-0.5">
-                            <MapPin className="w-2.5 h-2.5 shrink-0" />
-                            <span className="truncate">{city.terminalName}</span>
-                          </p>
-                        </div>
-                      </button>
-                    );
-                  })}
+                  {imbaburaCities.map((city) => (
+                    <CityCard
+                      key={city.id}
+                      city={city}
+                      onSelect={handleSelectDestination}
+                      isOrigin={originCity.id === city.id}
+                      isDisabled={originCity.id === city.id}
+                      mode="DESTINATION"
+                    />
+                  ))}
                 </div>
               </div>
             </div>
@@ -896,67 +534,11 @@ export default function HomePage() {
             {/* Lista de Salidas */}
             <div className="flex-1 overflow-y-auto pr-1 py-2 space-y-2.5">
               {filteredTrips.map((trip) => (
-                <div
+                <TripCard
                   key={trip.id}
-                  className="bg-white dark:bg-slate-900 rounded-2xl border-2 border-slate-200 dark:border-slate-800 p-3.5 sm:p-4 shadow-sm hover:border-blue-500 dark:hover:border-blue-400 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3"
-                >
-                  <div className="flex items-center space-x-3.5">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200 dark:border-slate-700">
-                      <img
-                        src={trip.photoUrl}
-                        alt={trip.cooperativeName}
-                        className="w-full h-full object-cover object-center"
-                      />
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-black text-slate-600 dark:text-slate-300">
-                          {trip.cooperativeName}
-                        </span>
-                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold px-2 py-0.5 rounded-full">
-                          {trip.unitNumber}
-                        </span>
-                      </div>
-                      <div className="flex items-baseline space-x-2 mt-0.5">
-                        <span className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white">
-                          {trip.departureTime}
-                        </span>
-                        <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">
-                          Hoy
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3.5 h-3.5 text-slate-400" />
-                          Salida programada
-                        </span>
-                        <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-bold">
-                          <Users className="w-3.5 h-3.5" />
-                          {trip.availableSeats} asientos libres
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between sm:justify-end space-x-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-100 dark:border-slate-800">
-                    <div className="text-left sm:text-right">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">
-                        Tarifa Fija
-                      </span>
-                      <span className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-                        ${trip.price.toFixed(2)}
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => handleSelectTrip(trip)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs sm:text-sm px-5 py-3 rounded-xl transition-all shadow-md shadow-blue-500/20 hover:scale-102 cursor-pointer flex items-center space-x-1.5"
-                    >
-                      <span>Elegir asiento</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
+                  trip={trip}
+                  onSelect={handleSelectTrip}
+                />
               ))}
             </div>
           </div>
@@ -1179,105 +761,12 @@ export default function HomePage() {
         {/* =================================================================== */}
         {step === 5 && (
           <div className="h-full flex items-center justify-center py-2">
-            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl max-w-sm w-full text-center animate-in zoom-in-95 duration-200">
-              <div className="flex items-center justify-center space-x-2 mb-1">
-                <ShieldCheck className="w-5 h-5 text-emerald-500" />
-                <h2 className="text-lg font-black text-slate-900 dark:text-white">
-                  Boleto Electrónico
-                </h2>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
-                Presenta este código al abordar el bus
-              </p>
-
-              <div className="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 my-2 flex flex-col items-center">
-                {/* QR en fondo blanco para lectura óptica fiable */}
-                <div className="bg-white p-3 rounded-2xl shadow-xs">
-                  <QRCodeSVG
-                    value={
-                      purchasedTickets.length > 0
-                        ? purchasedTickets[0].qrToken
-                        : "RN-DEMO12345"
-                    }
-                    size={140}
-                    level="H"
-                  />
-                </div>
-                <span className="text-xs font-mono font-black text-slate-800 dark:text-slate-200 mt-2 bg-white dark:bg-slate-900 px-3 py-1 rounded-lg border border-slate-200 dark:border-slate-700">
-                  {purchasedTickets[0]?.qrToken || "RN-DEMO12345"}
-                </span>
-
-                <div className="w-full mt-3 pt-3 border-t border-slate-200 dark:border-slate-700 text-left grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
-                      Pasajero
-                    </span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200 truncate block">
-                      {purchasedTickets[0]?.passengerName || passengerName}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
-                      Asiento(s)
-                    </span>
-                    <span className="font-black text-blue-600 dark:text-blue-400">
-                      {purchasedTickets.map((t) => t.seatNumber).join(", ")}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
-                      Salida
-                    </span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {purchasedTickets[0]?.departureTime || selectedTrip?.departureTime}
-                    </span>
-                  </div>
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-500 block text-[10px]">
-                      Ruta
-                    </span>
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">
-                      {originCity?.name} → {destinationCity?.name}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-2 mt-3">
-                <button
-                  type="button"
-                  onClick={handleCheckTicketStatus}
-                  disabled={updatingTicketStatus}
-                  className="w-full py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center space-x-1.5 cursor-pointer transition-colors"
-                >
-                  <RefreshCw
-                    className={`w-3.5 h-3.5 ${
-                      updatingTicketStatus ? "animate-spin" : ""
-                    }`}
-                  />
-                  <span>Actualizar estado de boleto</span>
-                </button>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => window.print()}
-                    className="flex-1 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs flex items-center justify-center space-x-1.5 cursor-pointer shadow-xs"
-                  >
-                    <Printer className="w-3.5 h-3.5" />
-                    <span>Imprimir</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleReset}
-                    className="flex-1 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 font-bold text-xs flex items-center justify-center space-x-1.5 cursor-pointer"
-                  >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Nuevo viaje</span>
-                  </button>
-                </div>
-              </div>
-            </div>
+            <TicketQrCard
+              tickets={purchasedTickets}
+              onRefreshStatus={handleCheckTicketStatus}
+              isUpdating={updatingTicketStatus}
+              onReset={handleReset}
+            />
           </div>
         )}
       </main>

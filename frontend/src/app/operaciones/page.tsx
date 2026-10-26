@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import NavbarVisual from "@/components/NavbarVisual";
-import BusSeatMap from "@/components/BusSeatMap";
+import { BusSeatMap } from "@/features/kiosk";
+import { TripOption, RecentTicket, operationsService } from "@/features/operations";
+import { ValidationResult } from "@/features/tickets";
 import { axiosClient } from "@/lib/axiosClient";
 import { QRCodeSVG } from "qrcode.react";
 import {
@@ -16,40 +18,6 @@ import {
   RefreshCw,
   Search,
 } from "lucide-react";
-
-interface TripOption {
-  id: string;
-  originCityName: string;
-  destinationCityName: string;
-  cooperativeName: string;
-  unitNumber: string;
-  departureTime: string;
-  price: number;
-}
-
-interface RecentTicket {
-  id: string;
-  passengerName: string;
-  seatNumber: number;
-  qrToken: string;
-  status: string;
-  originCity: string;
-  destinationCity: string;
-  departureTime: string;
-  cooperativeName: string;
-  price: number;
-}
-
-interface ValidationResult {
-  valid: boolean;
-  message: string;
-  seatNumber?: number;
-  passengerName?: string;
-  origin?: string;
-  destination?: string;
-  departureTime?: string;
-  status?: string;
-}
 
 export default function OperacionesPage() {
   const [activeTab, setActiveTab] = useState<"VENTA" | "ESCANER">("VENTA");
