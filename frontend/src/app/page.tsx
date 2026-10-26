@@ -315,17 +315,17 @@ export default function HomePage() {
         {/* PASO 1: ORIGEN (¿DE DÓNDE SALES?) — 100% CERO SCROLL                */}
         {/* =================================================================== */}
         {step === 1 && (
-          <div className="h-full flex flex-col justify-between py-1">
+          <div className="h-full min-h-0 flex flex-col justify-between py-0.5">
             {/* Cabecera Compacta */}
-            <div className="shrink-0 flex items-center justify-between pb-1.5 border-b border-slate-200 dark:border-slate-800">
+            <div className="shrink-0 flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
               <div>
-                <h1 className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <h1 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
                   <span>📍 1. ¿De dónde sales?</span>
-                  <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] sm:text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950/80 px-2 py-0.5 rounded-full">
                     Elige tu Terminal de Salida
                   </span>
                 </h1>
-                <p className="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-[10px] sm:text-xs text-slate-500 dark:text-slate-400">
                   Toca la ciudad donde abordarás el bus en el Corredor Norte E35.
                 </p>
               </div>
@@ -339,17 +339,17 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Contenedor de las dos filas de ciudades (Carchi + Imbabura) */}
-            <div className="flex-1 overflow-hidden flex flex-col justify-between gap-1.5 pt-1.5">
+            {/* Contenedor de las dos filas de ciudades (Carchi + Imbabura) con cero scroll */}
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col justify-between gap-1 pt-1">
               {/* FILA 1: CARCHI (5 CIUDADES) */}
-              <div className="h-[49%] flex flex-col justify-between">
-                <div className="shrink-0 flex items-center space-x-2 mb-1">
+              <div className="h-[48.5%] min-h-0 flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
                     Provincia del Carchi (5 Terminales)
                   </span>
                 </div>
-                <div className="grid grid-cols-5 gap-2 sm:gap-3 flex-1">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 flex-1 min-h-0">
                   {carchiCities.map((city) => (
                     <CityCard
                       key={city.id}
@@ -362,14 +362,14 @@ export default function HomePage() {
               </div>
 
               {/* FILA 2: IMBABURA (4 CIUDADES) */}
-              <div className="h-[49%] flex flex-col justify-between">
-                <div className="shrink-0 flex items-center space-x-2 mb-1">
+              <div className="h-[48.5%] min-h-0 flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
                     Provincia de Imbabura (4 Terminales)
                   </span>
                 </div>
-                <div className="grid grid-cols-4 gap-2 sm:gap-3 flex-1 max-w-[85%] mx-auto w-full">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 flex-1 min-h-0 max-w-[85%] mx-auto w-full">
                   {imbaburaCities.map((city) => (
                     <CityCard
                       key={city.id}
@@ -388,9 +388,9 @@ export default function HomePage() {
         {/* PASO 2: DESTINO (¿A DÓNDE VAS?) — 100% CERO SCROLL                  */}
         {/* =================================================================== */}
         {step === 2 && originCity && (
-          <div className="h-full flex flex-col justify-between py-1">
+          <div className="h-full min-h-0 flex flex-col justify-between py-0.5">
             {/* Cabecera Kiosco con Origen Seleccionado */}
-            <div className="shrink-0 flex items-center justify-between pb-1.5 border-b border-slate-200 dark:border-slate-800">
+            <div className="shrink-0 flex items-center justify-between pb-1 border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center space-x-2 sm:space-x-3">
                 <button
                   type="button"
@@ -401,7 +401,7 @@ export default function HomePage() {
                   <span>Cambiar</span>
                 </button>
                 <div>
-                  <h1 className="text-sm sm:text-lg font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
+                  <h1 className="text-sm sm:text-base font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-1.5">
                     <span className="text-emerald-600 dark:text-emerald-400">
                       Saliendo de {originCity.name}
                     </span>
@@ -424,16 +424,16 @@ export default function HomePage() {
             </div>
 
             {/* Contenedor de las dos filas de ciudades (Carchi + Imbabura) */}
-            <div className="flex-1 overflow-hidden flex flex-col justify-between gap-1.5 pt-1.5">
+            <div className="flex-1 min-h-0 overflow-hidden flex flex-col justify-between gap-1 pt-1">
               {/* FILA 1: CARCHI */}
-              <div className="h-[49%] flex flex-col justify-between">
-                <div className="shrink-0 flex items-center space-x-2 mb-1">
+              <div className="h-[48.5%] min-h-0 flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-amber-600 dark:text-amber-400">
                     Provincia del Carchi (5 Terminales)
                   </span>
                 </div>
-                <div className="grid grid-cols-5 gap-2 sm:gap-3 flex-1">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2.5 flex-1 min-h-0">
                   {carchiCities.map((city) => (
                     <CityCard
                       key={city.id}
@@ -448,14 +448,14 @@ export default function HomePage() {
               </div>
 
               {/* FILA 2: IMBABURA */}
-              <div className="h-[49%] flex flex-col justify-between">
-                <div className="shrink-0 flex items-center space-x-2 mb-1">
+              <div className="h-[48.5%] min-h-0 flex flex-col justify-between">
+                <div className="shrink-0 flex items-center space-x-1.5 mb-0.5">
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                  <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
                     Provincia de Imbabura (4 Terminales)
                   </span>
                 </div>
-                <div className="grid grid-cols-4 gap-2 sm:gap-3 flex-1 max-w-[85%] mx-auto w-full">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2.5 flex-1 min-h-0 max-w-[85%] mx-auto w-full">
                   {imbaburaCities.map((city) => (
                     <CityCard
                       key={city.id}
@@ -548,10 +548,10 @@ export default function HomePage() {
         {/* PASO 4: MAPA DE ASIENTOS Y DATOS                                    */}
         {/* =================================================================== */}
         {step === 4 && selectedTrip && (
-          <div className="h-full flex flex-col justify-between py-1 overflow-y-auto">
-            <div className="flex flex-col lg:flex-row gap-4 h-full">
-              {/* Mapa de Asientos (40 puestos estándar) */}
-              <div className="flex-1 flex flex-col items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-3 sm:p-5 shadow-xs overflow-y-auto">
+          <div className="h-full min-h-0 flex flex-col justify-between py-0.5 overflow-hidden">
+            <div className="flex flex-col lg:flex-row gap-3 sm:gap-4 h-full min-h-0">
+              {/* Mapa de Asientos Horizontal (40 puestos visibles sin scroll) */}
+              <div className="flex-1 min-h-0 flex flex-col items-center justify-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-2 sm:p-4 shadow-xs overflow-x-auto overflow-y-hidden">
                 <BusSeatMap
                   occupiedSeats={occupiedSeats}
                   selectedSeats={selectedSeats}
@@ -561,7 +561,7 @@ export default function HomePage() {
               </div>
 
               {/* Datos del Pasajero y Pago */}
-              <div className="w-full lg:w-96 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 shadow-xs flex flex-col justify-between">
+              <div className="w-full lg:w-96 shrink-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl sm:rounded-3xl p-3 sm:p-4 shadow-xs flex flex-col justify-between overflow-y-auto">
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2">
                     <h3 className="font-black text-slate-900 dark:text-white text-base">
