@@ -24,7 +24,7 @@ function GoogleSignInControls() {
         <button
           type="button"
           disabled
-          className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 opacity-80 cursor-not-allowed shadow-xs"
+          className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm font-semibold text-slate-700 opacity-80 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
         >
           <GoogleMark />
           Continuar con Google
