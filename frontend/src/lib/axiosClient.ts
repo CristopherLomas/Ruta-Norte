@@ -36,7 +36,8 @@ if (typeof window !== "undefined") {
       config.baseURL = "/api/v1";
     }
 
-    const token = localStorage.getItem("rn_token");
+    const token =
+      localStorage.getItem("rn_token") || sessionStorage.getItem("rn_token");
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
     }

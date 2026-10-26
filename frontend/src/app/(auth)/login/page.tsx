@@ -4,13 +4,28 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { axiosClient } from "@/lib/axiosClient";
-import { Bus, LogIn, ShieldAlert, Sparkles, UserCheck, ArrowLeft, Loader2 } from "lucide-react";
+import { GoogleSignInButton } from "@/features/auth/components/GoogleSignInButton";
+import {
+  Bus,
+  LogIn,
+  ShieldAlert,
+  Sparkles,
+  ArrowLeft,
+  Loader2,
+  Eye,
+  EyeOff,
+  UserPlus,
+  Mail,
+  LockKeyhole,
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -32,9 +47,24 @@ export default function LoginPage() {
 
       if (res.data) {
         if (typeof window !== "undefined") {
-          localStorage.setItem("rn_user", JSON.stringify(res.data));
-          if (res.data.token) {
-            localStorage.setItem("rn_token", res.data.token);
+          const storage = rememberMe ? window.localStorage : window.sessionStorage;
+          const otherStorage = rememberMe ? window.sessionStorage : window.localStorage;
+
+          try {
+            otherStorage.removeItem("rn_user");
+            otherStorage.removeItem("rn_token");
+            storage.removeItem("rn_user");
+            storage.removeItem("rn_token");
+            storage.setItem("rn_user", JSON.stringify(res.data));
+            if (res.data.token) {
+              storage.setItem("rn_token", res.data.token);
+            }
+          } catch {
+            // fallback en caso de almacenamiento restringido
+            window.localStorage.setItem("rn_user", JSON.stringify(res.data));
+            if (res.data.token) {
+              window.localStorage.setItem("rn_token", res.data.token);
+            }
           }
         }
 
@@ -118,28 +148,65 @@ export default function LoginPage() {
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
             Correo Electrónico
           </label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="ejemplo@rutanorte.ec"
-            required
-            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
-          />
+          <div className="relative">
+            <Mail className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="ejemplo@rutanorte.ec"
+              required
+              className="w-full pl-10 pr-3.5 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
+            />
+          </div>
         </div>
 
         <div>
           <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
             Contraseña
           </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-            required
-            className="w-full px-3.5 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
-          />
+          <div className="relative">
+            <LockKeyhole className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full pl-10 pr-10 py-2.5 rounded-xl border-2 border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-blue-600 transition-colors"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer p-1"
+              aria-label={showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+            >
+              {showPassword ? (
+                <EyeOff className="w-4 h-4" />
+              ) : (
+                <Eye className="w-4 h-4" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Recordar sesión y Olvidó contraseña */}
+        <div className="flex items-center justify-between text-xs pt-1">
+          <label className="flex items-center gap-2 cursor-pointer font-semibold text-slate-600 dark:text-slate-400 select-none">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4 rounded border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <span>Recordar sesión</span>
+          </label>
+          <Link
+            href="/forgot-password"
+            className="font-bold text-blue-600 dark:text-blue-400 hover:underline"
+          >
+            ¿Olvidaste tu contraseña?
+          </Link>
         </div>
 
         <button
@@ -156,8 +223,37 @@ export default function LoginPage() {
         </button>
       </form>
 
+      {/* Botón de Google OAuth */}
+      <div className="mt-4">
+        <div className="relative my-3">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-200 dark:border-slate-800" />
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white dark:bg-slate-900 px-2 text-slate-400 font-bold">
+              o continuar con
+            </span>
+          </div>
+        </div>
+        <GoogleSignInButton />
+      </div>
+
+      {/* Botón de Registro */}
+      <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800 text-center">
+        <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+          ¿Aún no tienes una cuenta en Ruta Norte?
+        </p>
+        <Link
+          href="/register"
+          className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm py-2.5 px-4 shadow-xs transition-colors cursor-pointer"
+        >
+          <UserPlus className="w-4 h-4" />
+          <span>Regístrate aquí</span>
+        </Link>
+      </div>
+
       {/* Acceso Rápido para Evaluadores (1 Clic) */}
-      <div className="mt-6 pt-5 border-t border-slate-200 dark:border-slate-800">
+      <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-center space-x-1.5 mb-3 text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 py-1.5 px-3 rounded-xl border border-amber-200 dark:border-amber-800">
           <Sparkles className="w-4 h-4" />
           <span className="text-xs font-extrabold uppercase tracking-wider">
