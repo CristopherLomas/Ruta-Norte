@@ -7,7 +7,8 @@ import {
   GoogleOAuthProvider,
 } from "@react-oauth/google";
 import type { CredentialResponse } from "@react-oauth/google";
-import { Check, Loader2, Sparkles, User, X } from "lucide-react";
+import { Check, Loader2, Sparkles, User, X, Globe } from "lucide-react";
+import { authService } from "../services/authService";
 
 const googleClientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim();
 
@@ -18,6 +19,7 @@ interface GoogleAccountProfile {
   subtitle: string;
   avatarColor: string;
   initials: string;
+  dni?: string;
 }
 
 const PRESET_ACCOUNTS: GoogleAccountProfile[] = [
@@ -28,6 +30,7 @@ const PRESET_ACCOUNTS: GoogleAccountProfile[] = [
     subtitle: "Estudiante UPEC · Carchi",
     avatarColor: "bg-blue-600",
     initials: "CL",
+    dni: "0401893421",
   },
   {
     name: "Viajero Pasajero",
@@ -36,6 +39,7 @@ const PRESET_ACCOUNTS: GoogleAccountProfile[] = [
     subtitle: "Pasajero Frecuente · Imbabura",
     avatarColor: "bg-emerald-600",
     initials: "VP",
+    dni: "1004567890",
   },
 ];
 
@@ -69,41 +73,64 @@ function GoogleMark() {
   );
 }
 
-export function GoogleSignInButton() {
+interface GoogleSignInButtonProps {
+  redirectTo?: string;
+  onSuccess?: () => void;
+}
+
+export function GoogleSignInButton({ redirectTo, onSuccess }: GoogleSignInButtonProps) {
   const router = useRouter();
   const [modalOpen, setModalOpen] = useState(false);
   const [loadingAccount, setLoadingAccount] = useState<string | null>(null);
   const [customEmail, setCustomEmail] = useState("");
   const [showCustomInput, setShowCustomInput] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
 
-  const completeGoogleLogin = (email: string, name: string) => {
+  const completeGoogleLogin = (email: string, name: string, dni?: string) => {
     setLoadingAccount(email);
     setSuccessMessage(`Conectado como ${name}`);
 
-    const userObj = {
+    const user = authService.loginWithGoogleProfile({
       email,
       name,
+      dni,
       role: "PASSENGER",
-      token: "rn-google-jwt-" + Math.random().toString(36).substring(2, 12),
-      provider: "GOOGLE",
-      picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=fff`,
-    };
-
-    try {
-      localStorage.setItem("rn_user", JSON.stringify(userObj));
-      localStorage.setItem("rn_token", userObj.token);
-      sessionStorage.setItem("rn_user", JSON.stringify(userObj));
-      sessionStorage.setItem("rn_token", userObj.token);
-      document.cookie = `rn_token=${userObj.token}; path=/; max-age=86400; SameSite=Lax`;
-    } catch {
-      // Si falla storage, continuar
-    }
+    });
 
     setTimeout(() => {
       setModalOpen(false);
-      router.push("/pasajero");
-    }, 600);
+      if (onSuccess) {
+        onSuccess();
+      } else if (redirectTo) {
+        router.push(redirectTo);
+      } else if (user.role === "ADMIN") {
+        router.push("/admin");
+      } else if (user.role === "STAFF") {
+        router.push("/operaciones");
+      } else {
+        router.push("/pasajero");
+      }
+    }, 500);
+  };
+
+  const handleOAuthOfficial = async () => {
+    setIsOAuthLoading(true);
+    try {
+      const { error } = await authService.signInWithGoogleOAuth(
+        typeof window !== "undefined"
+          ? `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTo || "/pasajero")}`
+          : undefined
+      );
+      if (error) {
+        // Si no está configurado en Supabase Console, abrir modal rápido
+        setModalOpen(true);
+      }
+    } catch {
+      setModalOpen(true);
+    } finally {
+      setIsOAuthLoading(false);
+    }
   };
 
   const handleCustomSubmit = (e: React.FormEvent) => {
@@ -156,23 +183,25 @@ export function GoogleSignInButton() {
             </button>
           </div>
         ) : (
-          <button
-            type="button"
-            onClick={() => setModalOpen(true)}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-750 transition-all shadow-xs hover:shadow-md cursor-pointer group"
-          >
-            <GoogleMark />
-            <span>Continuar con Google</span>
-            <span className="ml-auto text-[10px] bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
-              1-Clic
-            </span>
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={() => setModalOpen(true)}
+              className="flex w-full items-center justify-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-3 text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-750 hover:border-blue-500 dark:hover:border-blue-400 transition-all shadow-xs hover:shadow-md cursor-pointer group"
+            >
+              <GoogleMark />
+              <span>Continuar con Google</span>
+              <span className="ml-auto text-[10px] bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                1-Clic
+              </span>
+            </button>
+          </div>
         )}
       </div>
 
       {/* MODAL DE SELECCIÓN DE CUENTA GOOGLE */}
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 dark:bg-black/80 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 dark:bg-black/85 backdrop-blur-xs p-4 animate-in fade-in duration-200">
           <div className="w-full max-w-md rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 shadow-2xl relative text-left">
             {/* Botón Cerrar */}
             <button
@@ -194,7 +223,7 @@ export function GoogleSignInButton() {
             <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight">
               Elige una cuenta
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">
               para continuar en <strong className="text-blue-600 dark:text-blue-400">Ruta Norte 2.0</strong>
             </p>
 
@@ -206,16 +235,34 @@ export function GoogleSignInButton() {
               </div>
             )}
 
+            {/* Botón OAuth oficial si el usuario quiere redirección a Google */}
+            <button
+              type="button"
+              onClick={handleOAuthOfficial}
+              disabled={isOAuthLoading}
+              className="w-full mb-3 flex items-center justify-between p-2.5 rounded-xl border border-blue-200 dark:border-blue-900/60 bg-blue-50/50 dark:bg-blue-950/40 hover:bg-blue-100/50 dark:hover:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-xs font-bold transition-all cursor-pointer"
+            >
+              <div className="flex items-center space-x-2">
+                <Globe className="w-4 h-4 text-blue-600" />
+                <span>Autenticación oficial Supabase / Google</span>
+              </div>
+              {isOAuthLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+              ) : (
+                <span className="text-[10px] font-black uppercase">OAuth ➔</span>
+              )}
+            </button>
+
             {/* Lista de Cuentas Google Rápidas */}
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2 mb-3">
               {PRESET_ACCOUNTS.map((acc) => {
                 const isLoading = loadingAccount === acc.email;
                 return (
                   <button
                     key={acc.email}
                     type="button"
-                    disabled={!!loadingAccount}
-                    onClick={() => completeGoogleLogin(acc.email, acc.name)}
+                    disabled={!!loadingAccount || isOAuthLoading}
+                    onClick={() => completeGoogleLogin(acc.email, acc.name, acc.dni)}
                     className="w-full flex items-center space-x-3.5 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 bg-slate-50 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 transition-all text-left cursor-pointer group disabled:opacity-60"
                   >
                     <div
@@ -250,10 +297,10 @@ export function GoogleSignInButton() {
               <button
                 type="button"
                 onClick={() => setShowCustomInput(true)}
-                className="w-full flex items-center space-x-3 p-3 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+                className="w-full flex items-center space-x-3 p-2.5 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-slate-400 dark:hover:border-slate-600 text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
               >
-                <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
-                  <User className="w-4 h-4" />
+                <div className="w-7 h-7 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 shrink-0">
+                  <User className="w-3.5 h-3.5" />
                 </div>
                 <span>Usar otra cuenta de Google</span>
               </button>
@@ -283,8 +330,8 @@ export function GoogleSignInButton() {
             )}
 
             {/* Pie del Modal */}
-            <p className="mt-5 text-[10px] text-slate-400 dark:text-slate-500 text-center leading-tight">
-              Para continuar, Google compartirá tu nombre, dirección de correo electrónico e idioma preferido con Ruta Norte.
+            <p className="mt-4 text-[10px] text-slate-400 dark:text-slate-500 text-center leading-tight">
+              Para continuar, Google compartirá tu nombre, correo electrónico y foto de perfil con Ruta Norte.
             </p>
           </div>
         </div>

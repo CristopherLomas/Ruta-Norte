@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { LogIn, Loader2, AlertCircle } from "lucide-react";
 import { loginSchema, LoginInput } from "@/lib/validations";
-import { loginAction } from "@/features/auth/actions";
+import { authService } from "@/features/auth/services/authService";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +16,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectParam = searchParams.get("redirect");
+  const redirectParam = searchParams.get("redirect") || searchParams.get("next");
 
   const [serverError, setServerError] = React.useState<string | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -38,17 +38,23 @@ export function LoginForm() {
     setServerError(null);
 
     try {
-      const res = await loginAction(data, redirectParam);
-      if (!res.success) {
-        setServerError(res.error);
-        setIsLoading(false);
-        return;
+      const user = await authService.login({
+        email: data.email,
+        password: data.password,
+      });
+
+      const roleUpper = (user.role || "").toUpperCase();
+      let target = redirectParam || "/pasajero";
+      if (!redirectParam) {
+        if (roleUpper === "ADMIN") target = "/admin";
+        else if (roleUpper === "STAFF") target = "/operaciones";
       }
 
-      router.push(res.data.redirectUrl);
+      router.push(target);
       router.refresh();
-    } catch {
-      setServerError("Ocurrió un error inesperado al conectar con el servidor.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Correo electrónico o contraseña incorrectos.";
+      setServerError(msg);
       setIsLoading(false);
     }
   };

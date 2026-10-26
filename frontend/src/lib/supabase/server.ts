@@ -7,18 +7,17 @@ interface CookieToSet {
   options?: CookieOptions;
 }
 
+const DEFAULT_SUPABASE_URL = "https://npgxydljljhatmjaaxnj.supabase.co";
+const DEFAULT_SUPABASE_ANON_KEY = "sb_publishable_zkuRxgcFOqXNocvK4RDxUA_ZPZlY2MU";
+
 /**
  * Cliente de Supabase para Server Components y Server Actions.
  * Lee y sincroniza cookies de autenticación de forma segura.
  */
 export async function createClient() {
   const cookieStore = cookies();
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseAnonKey) {
-    throw new Error("Faltan las variables de entorno NEXT_PUBLIC_SUPABASE_URL o NEXT_PUBLIC_SUPABASE_ANON_KEY");
-  }
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || DEFAULT_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || DEFAULT_SUPABASE_ANON_KEY;
 
   return createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {

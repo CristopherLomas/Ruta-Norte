@@ -56,14 +56,29 @@ export function NavbarVisual({
     }
 
     // Usuario local
-    const savedUser = localStorage.getItem("rn_user");
-    if (savedUser) {
-      try {
-        setSessionUser(JSON.parse(savedUser));
-      } catch {
-        // Ignorar
+    const syncSavedUser = () => {
+      const savedUser = localStorage.getItem("rn_user");
+      if (savedUser) {
+        try {
+          setSessionUser(JSON.parse(savedUser));
+        } catch {
+          setSessionUser(null);
+        }
+      } else {
+        setSessionUser(null);
       }
-    }
+    };
+
+    syncSavedUser();
+
+    const handleAuthChange = () => {
+      syncSavedUser();
+    };
+
+    window.addEventListener("rn_auth_change", handleAuthChange);
+    return () => {
+      window.removeEventListener("rn_auth_change", handleAuthChange);
+    };
   }, [propUser]);
 
   const activeUser = propUser || sessionUser;

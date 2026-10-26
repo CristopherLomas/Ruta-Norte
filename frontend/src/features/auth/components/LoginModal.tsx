@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import { isAxiosError } from "axios";
 import {
   X,
   Mail,
@@ -15,8 +14,11 @@ import {
   User,
   Check,
   Bus,
+  UserPlus,
+  Phone,
+  CreditCard,
+  Globe,
 } from "lucide-react";
-import { axiosClient } from "@/lib/axiosClient";
 import { AuthUser } from "../entities/User";
 import { authService } from "../services/authService";
 
@@ -93,10 +95,21 @@ export function LoginModal({
   onSuccess,
   tripSummary,
 }: LoginModalProps) {
-  const [activeTab, setActiveTab] = useState<"GOOGLE" | "EMAIL">("GOOGLE");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [activeTab, setActiveTab] = useState<"GOOGLE" | "LOGIN" | "REGISTER">("GOOGLE");
+
+  // Estados Formulario Login
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Estados Formulario Registro
+  const [regFullName, setRegFullName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regDni, setRegDni] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+
+  // Estados Generales
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -108,99 +121,128 @@ export function LoginModal({
 
   if (!isOpen) return null;
 
-  const saveAndComplete = (user: AuthUser) => {
-    authService.saveSession(user);
-    setSuccessMsg(`¡Bienvenido, ${user.name}!`);
+  const handleSuccess = (user: AuthUser) => {
+    setSuccessMsg(`¡Bienvenido/a, ${user.name}!`);
     setTimeout(() => {
       onSuccess(user);
       onClose();
-    }, 500);
+    }, 400);
   };
 
+  // Google OAuth Oficial vía Supabase
+  const handleOfficialGoogleOAuth = async () => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      const { error } = await authService.signInWithGoogleOAuth(
+        typeof window !== "undefined" ? window.location.href : undefined
+      );
+      if (error) {
+        // Fallback a selección rápida si OAuth no está configurado en Supabase Console
+        setErrorMsg("Iniciando con selector de cuenta Google...");
+        setTimeout(() => {
+          setActiveTab("GOOGLE");
+          setErrorMsg(null);
+        }, 1000);
+      }
+    } catch {
+      setErrorMsg("No se pudo conectar con Google OAuth. Elige una cuenta del listado.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Google 1-Clic Perfil
   const handleGoogleSelect = (acc: typeof PRESET_GOOGLE_ACCOUNTS[0]) => {
     setLoadingGoogle(acc.email);
-    const user: AuthUser = {
-      name: acc.name,
-      email: acc.email,
-      role: "PASSENGER",
-      token: "rn-google-jwt-" + Math.random().toString(36).substring(2, 12),
-      dni: acc.dni,
-      provider: "GOOGLE",
-      picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(acc.name)}&background=0284c7&color=fff`,
-    };
-    saveAndComplete(user);
+    try {
+      const user = authService.loginWithGoogleProfile({
+        name: acc.name,
+        email: acc.email,
+        dni: acc.dni,
+        role: "PASSENGER",
+      });
+      handleSuccess(user);
+    } catch {
+      setErrorMsg("Error al autenticar perfil de Google.");
+      setLoadingGoogle(null);
+    }
   };
 
+  // Google Correo Personalizado
   const handleCustomGoogleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!customGoogleEmail.trim() || !customGoogleEmail.includes("@")) return;
     setLoadingGoogle(customGoogleEmail);
     const namePart = customGoogleEmail.split("@")[0].replace(/[._]/g, " ");
     const formattedName = namePart.charAt(0).toUpperCase() + namePart.slice(1);
-    const user: AuthUser = {
-      name: formattedName,
-      email: customGoogleEmail.trim().toLowerCase(),
-      role: "PASSENGER",
-      token: "rn-google-jwt-" + Math.random().toString(36).substring(2, 12),
-      dni: "1004567890",
-      provider: "GOOGLE",
-      picture: `https://ui-avatars.com/api/?name=${encodeURIComponent(formattedName)}&background=0284c7&color=fff`,
-    };
-    saveAndComplete(user);
+
+    try {
+      const user = authService.loginWithGoogleProfile({
+        name: formattedName,
+        email: customGoogleEmail.trim().toLowerCase(),
+        dni: "1004567890",
+        role: "PASSENGER",
+      });
+      handleSuccess(user);
+    } catch {
+      setErrorMsg("Error al procesar cuenta de Google.");
+      setLoadingGoogle(null);
+    }
   };
 
+  // Iniciar Sesión con Correo
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setErrorMsg(null);
 
     try {
-      const response = await axiosClient.post<{
-        name?: string;
-        email: string;
-        role: string;
-        token: string;
-        dni?: string;
-      }>("/auth/login", {
-        email: email.trim(),
-        password,
+      const user = await authService.login({
+        email: loginEmail,
+        password: loginPassword,
       });
+      handleSuccess(user);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error al iniciar sesión.";
+      setErrorMsg(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-      const data = response.data;
-      const user: AuthUser = {
-        name: data.name || email.split("@")[0],
-        email: data.email,
-        role: data.role || "PASSENGER",
-        token: data.token || "rn-token-" + Date.now(),
-        dni: data.dni || "1004567890",
-      };
-      saveAndComplete(user);
-    } catch (error: unknown) {
-      // Credenciales de prueba
-      if (email.trim() === "pasajero@rutanorte.ec" || email.trim() === "cristopher.lomas@upec.edu.ec") {
-        const user: AuthUser = {
-          name: "Cristopher Lomas",
-          email: email.trim(),
-          role: "PASSENGER",
-          token: "demo-token-" + Date.now(),
-          dni: "0401893421",
-        };
-        saveAndComplete(user);
-        return;
-      }
+  // Registrarse con Correo
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg(null);
 
-      const message = isAxiosError<{ error?: string }>(error)
-        ? error.response?.data?.error
-        : null;
-      setErrorMsg(message || "Credenciales incorrectas o servidor no disponible.");
+    if (regPassword.length < 6) {
+      setErrorMsg("La contraseña debe tener al menos 6 caracteres.");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const user = await authService.register({
+        fullName: regFullName,
+        email: regEmail,
+        password: regPassword,
+        dni: regDni || "1004567890",
+        phone: regPhone || "0991234567",
+      });
+      handleSuccess(user);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error al registrar la cuenta.";
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/75 dark:bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-200">
-      <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden relative text-left">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 dark:bg-black/90 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="w-full max-w-lg rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden relative text-left max-h-[95vh] flex flex-col">
         {/* Botón de cierre */}
         <button
           type="button"
@@ -212,7 +254,7 @@ export function LoginModal({
         </button>
 
         {/* Encabezado con Ícono y Título */}
-        <div className="p-5 sm:p-6 pb-3">
+        <div className="p-5 sm:p-6 pb-2 shrink-0">
           <div className="flex items-center space-x-2.5 mb-2">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-700 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20">
               <Bus className="w-5 h-5" />
@@ -222,23 +264,25 @@ export function LoginModal({
                 Identificación de Pasajero
               </span>
               <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
-                Inicia Sesión para Confirmar tu Viaje
+                {activeTab === "REGISTER"
+                  ? "Crear Cuenta de Pasajero"
+                  : "Inicia Sesión para Confirmar tu Viaje"}
               </h2>
             </div>
           </div>
 
           {/* Banner de resumen del viaje si está en curso */}
           {tripSummary && (
-            <div className="mt-3 p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 flex items-center justify-between text-xs">
+            <div className="mt-2.5 p-2.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 flex items-center justify-between text-xs">
               <div>
                 <span className="text-[10px] font-black uppercase text-blue-600 dark:text-blue-400 block">
-                  Tu viaje está en espera:
+                  Tu viaje reservado:
                 </span>
                 <span className="font-extrabold text-slate-900 dark:text-white">
                   {tripSummary.origin} ➔ {tripSummary.destination}
                 </span>
                 <span className="text-slate-500 dark:text-slate-400 block text-[11px]">
-                  Asiento(s): {tripSummary.seats.length > 0 ? tripSummary.seats.join(", ") : "Seleccionado"}
+                  Asiento(s): {tripSummary.seats.length > 0 ? tripSummary.seats.join(", ") : "Elegido"}
                 </span>
               </div>
               <div className="text-right">
@@ -253,220 +297,389 @@ export function LoginModal({
 
         {/* Notificación de Éxito o Error */}
         {successMsg && (
-          <div className="mx-5 sm:mx-6 mb-3 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center space-x-2 text-emerald-800 dark:text-emerald-200 text-xs font-bold">
+          <div className="mx-5 sm:mx-6 mb-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center space-x-2 text-emerald-800 dark:text-emerald-200 text-xs font-bold animate-in fade-in shrink-0">
             <Check className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>{successMsg}</span>
           </div>
         )}
 
         {errorMsg && (
-          <div className="mx-5 sm:mx-6 mb-3 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 flex items-center space-x-2 text-rose-800 dark:text-rose-200 text-xs font-bold">
+          <div className="mx-5 sm:mx-6 mb-2 p-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 flex items-center space-x-2 text-rose-800 dark:text-rose-200 text-xs font-bold animate-in fade-in shrink-0">
             <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0" />
             <span>{errorMsg}</span>
           </div>
         )}
 
-        {/* Selector de Pestaña: Google o Correo */}
-        <div className="px-5 sm:px-6">
-          <div className="grid grid-cols-2 gap-2 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
+        {/* Pestañas: GOOGLE | CORREO | REGISTRARSE */}
+        <div className="px-5 sm:px-6 shrink-0">
+          <div className="grid grid-cols-3 gap-1.5 p-1 bg-slate-100 dark:bg-slate-800 rounded-2xl">
             <button
               type="button"
-              onClick={() => setActiveTab("GOOGLE")}
-              className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-2 cursor-pointer ${
+              onClick={() => {
+                setActiveTab("GOOGLE");
+                setErrorMsg(null);
+              }}
+              className={`py-2 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
                 activeTab === "GOOGLE"
                   ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
               <GoogleMark />
-              <span>Con Google (1-Clic)</span>
+              <span className="truncate">Google</span>
             </button>
             <button
               type="button"
-              onClick={() => setActiveTab("EMAIL")}
-              className={`py-2 px-3 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-2 cursor-pointer ${
-                activeTab === "EMAIL"
+              onClick={() => {
+                setActiveTab("LOGIN");
+                setErrorMsg(null);
+              }}
+              className={`py-2 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+                activeTab === "LOGIN"
                   ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
-                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
               }`}
             >
-              <Mail className="w-4 h-4 text-blue-600" />
-              <span>Correo y Clave</span>
+              <Mail className="w-3.5 h-3.5 text-blue-600" />
+              <span className="truncate">Ingresar</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setActiveTab("REGISTER");
+                setErrorMsg(null);
+              }}
+              className={`py-2 px-2 rounded-xl text-xs font-black transition-all flex items-center justify-center space-x-1.5 cursor-pointer ${
+                activeTab === "REGISTER"
+                  ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                  : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              }`}
+            >
+              <UserPlus className="w-3.5 h-3.5 text-emerald-600" />
+              <span className="truncate">Registrarse</span>
             </button>
           </div>
         </div>
 
-        {/* Contenido Pestaña GOOGLE */}
-        {activeTab === "GOOGLE" && (
-          <div className="p-5 sm:p-6 pt-4 space-y-3">
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              Selecciona tu perfil de Google para asociar tu boleto de inmediato:
-            </p>
-
-            <div className="space-y-2">
-              {PRESET_GOOGLE_ACCOUNTS.map((acc) => {
-                const isLoading = loadingGoogle === acc.email;
-                return (
-                  <button
-                    key={acc.email}
-                    type="button"
-                    disabled={!!loadingGoogle}
-                    onClick={() => handleGoogleSelect(acc)}
-                    className="w-full flex items-center space-x-3.5 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 bg-slate-50 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 transition-all text-left cursor-pointer group disabled:opacity-60"
-                  >
-                    <div
-                      className={`w-10 h-10 rounded-full ${acc.avatarColor} text-white font-black text-sm flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform`}
-                    >
-                      {acc.initials}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center space-x-1.5">
-                        <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
-                          {acc.name}
-                        </span>
-                        <Sparkles className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                      </div>
-                      <span className="text-xs text-slate-500 dark:text-slate-400 block truncate">
-                        {acc.email}
-                      </span>
-                      <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 block truncate">
-                        {acc.subtitle} · C.I. {acc.dni}
-                      </span>
-                    </div>
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 text-blue-600 animate-spin shrink-0" />
-                    ) : (
-                      <span className="text-xs font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2.5 py-1 rounded-xl">
-                        Elegir ➔
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Otra cuenta de Google */}
-            {!showCustomGoogle ? (
+        {/* CUERPO DEL MODAL (Con scroll si es pantalla muy pequeña) */}
+        <div className="overflow-y-auto px-5 sm:px-6 py-3 flex-1">
+          {/* PESTAÑA 1: GOOGLE */}
+          {activeTab === "GOOGLE" && (
+            <div className="space-y-3">
+              {/* Botón de Autenticación Oficial con Google OAuth */}
               <button
                 type="button"
-                onClick={() => setShowCustomGoogle(true)}
-                className="w-full flex items-center justify-center space-x-2 p-2.5 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-slate-400 text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
+                onClick={handleOfficialGoogleOAuth}
+                disabled={loading}
+                className="w-full flex items-center justify-center gap-3 rounded-2xl border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 p-3 text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-750 hover:border-blue-500 dark:hover:border-blue-400 transition-all shadow-xs cursor-pointer group"
               >
-                <User className="w-4 h-4" />
-                <span>Usar otra cuenta de Google</span>
+                <GoogleMark />
+                <span>Continuar con Cuenta Oficial de Google</span>
+                <Globe className="w-4 h-4 text-blue-500 ml-auto" />
               </button>
-            ) : (
-              <form onSubmit={handleCustomGoogleSubmit} className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Ingresa tu correo institucional o personal:
-                </label>
-                <div className="flex gap-2">
-                  <input
-                    type="email"
-                    value={customGoogleEmail}
-                    onChange={(e) => setCustomGoogleEmail(e.target.value)}
-                    placeholder="tunombre@gmail.com o @upec.edu.ec"
-                    required
-                    className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
-                  />
-                  <button
-                    type="submit"
-                    disabled={!customGoogleEmail.trim() || !!loadingGoogle}
-                    className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
-                  >
-                    Acceder
-                  </button>
+
+              <div className="relative my-2">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-slate-200 dark:border-slate-800" />
                 </div>
-              </form>
-            )}
-          </div>
-        )}
-
-        {/* Contenido Pestaña CORREO */}
-        {activeTab === "EMAIL" && (
-          <form onSubmit={handleEmailLogin} className="p-5 sm:p-6 pt-4 space-y-3.5">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Correo Electrónico
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="ejemplo@correo.com"
-                  required
-                  disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-3.5 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
-                />
+                <div className="relative flex justify-center">
+                  <span className="bg-white dark:bg-slate-900 px-2 text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                    o elige un perfil verificado (1-clic)
+                  </span>
+                </div>
               </div>
-            </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
-                Contraseña
-              </label>
-              <div className="relative">
-                <LockKeyhole className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Tu contraseña"
-                  required
-                  disabled={loading}
-                  className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-2.5 pl-10 pr-10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
-                />
+              {/* Lista de Cuentas Preconfiguradas */}
+              <div className="space-y-2">
+                {PRESET_GOOGLE_ACCOUNTS.map((acc) => {
+                  const isLoading = loadingGoogle === acc.email;
+                  return (
+                    <button
+                      key={acc.email}
+                      type="button"
+                      disabled={!!loadingGoogle || loading}
+                      onClick={() => handleGoogleSelect(acc)}
+                      className="w-full flex items-center space-x-3 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-blue-500 dark:hover:border-blue-400 bg-slate-50 dark:bg-slate-800/60 hover:bg-white dark:hover:bg-slate-800 transition-all text-left cursor-pointer group disabled:opacity-60"
+                    >
+                      <div
+                        className={`w-9 h-9 rounded-full ${acc.avatarColor} text-white font-black text-xs flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform`}
+                      >
+                        {acc.initials}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center space-x-1.5">
+                          <span className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                            {acc.name}
+                          </span>
+                          <Sparkles className="w-3 h-3 text-amber-500 shrink-0" />
+                        </div>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400 block truncate">
+                          {acc.email}
+                        </span>
+                        <span className="text-[10px] font-semibold text-blue-600 dark:text-blue-400 block truncate">
+                          {acc.subtitle} · C.I. {acc.dni}
+                        </span>
+                      </div>
+                      {isLoading ? (
+                        <Loader2 className="w-4 h-4 text-blue-600 animate-spin shrink-0" />
+                      ) : (
+                        <span className="text-[11px] font-bold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-950 px-2 py-1 rounded-xl">
+                          Elegir ➔
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Otra cuenta de Google */}
+              {!showCustomGoogle ? (
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  onClick={() => setShowCustomGoogle(true)}
+                  className="w-full flex items-center justify-center space-x-2 p-2 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:border-slate-400 text-xs font-semibold text-slate-600 dark:text-slate-300 transition-colors cursor-pointer"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  <User className="w-3.5 h-3.5" />
+                  <span>Usar otra cuenta de Google</span>
+                </button>
+              ) : (
+                <form
+                  onSubmit={handleCustomGoogleSubmit}
+                  className="space-y-2 pt-2 border-t border-slate-100 dark:border-slate-800"
+                >
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Ingresa tu correo institucional o personal de Google:
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      value={customGoogleEmail}
+                      onChange={(e) => setCustomGoogleEmail(e.target.value)}
+                      placeholder="tunombre@gmail.com o @upec.edu.ec"
+                      required
+                      className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                    />
+                    <button
+                      type="submit"
+                      disabled={!customGoogleEmail.trim() || !!loadingGoogle}
+                      className="px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs transition-colors disabled:opacity-50 cursor-pointer"
+                    >
+                      Acceder
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+          )}
+
+          {/* PESTAÑA 2: INICIAR SESIÓN */}
+          {activeTab === "LOGIN" && (
+            <form onSubmit={handleEmailLogin} className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Correo Electrónico
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type="email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="ejemplo@correo.com"
+                    required
+                    disabled={loading}
+                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-2 pl-10 pr-3.5 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <LockKeyhole className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="Tu contraseña"
+                    required
+                    disabled={loading}
+                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-2 pl-10 pr-10 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-blue-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer shadow-md shadow-blue-500/20"
+              >
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <LogIn className="w-4 h-4" />
+                )}
+                <span>{loading ? "Verificando..." : "Iniciar Sesión"}</span>
+              </button>
+
+              <div className="pt-2 text-center flex items-center justify-between text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLoginEmail("pasajero@rutanorte.ec");
+                    setLoginPassword("pasajero123");
+                  }}
+                  className="text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
+                >
+                  ⚡ Cargar datos de prueba
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("REGISTER")}
+                  className="text-emerald-600 dark:text-emerald-400 font-bold hover:underline cursor-pointer"
+                >
+                  ¿No tienes cuenta? Regístrate
                 </button>
               </div>
-            </div>
+            </form>
+          )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer shadow-md shadow-blue-500/20"
-            >
-              {loading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <LogIn className="w-4 h-4" />
-              )}
-              <span>{loading ? "Verificando..." : "Iniciar Sesión y Continuar"}</span>
-            </button>
+          {/* PESTAÑA 3: REGISTRARSE */}
+          {activeTab === "REGISTER" && (
+            <form onSubmit={handleRegisterSubmit} className="space-y-2.5">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+                  Nombre Completo
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                  <input
+                    type="text"
+                    value={regFullName}
+                    onChange={(e) => setRegFullName(e.target.value)}
+                    placeholder="Ej. Carlos Morales"
+                    required
+                    disabled={loading}
+                    className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-1.5 pl-9 pr-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
+                  />
+                </div>
+              </div>
 
-            {/* Acceso Rápido Demo Pasajero */}
-            <div className="pt-2 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+                    Correo Electrónico
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="email"
+                      value={regEmail}
+                      onChange={(e) => setRegEmail(e.target.value)}
+                      placeholder="correo@ejemplo.com"
+                      required
+                      disabled={loading}
+                      className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-1.5 pl-9 pr-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+                    Contraseña
+                  </label>
+                  <div className="relative">
+                    <LockKeyhole className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="password"
+                      value={regPassword}
+                      onChange={(e) => setRegPassword(e.target.value)}
+                      placeholder="Mín. 6 caracteres"
+                      required
+                      disabled={loading}
+                      className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-1.5 pl-9 pr-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+                    Cédula / Pasaporte
+                  </label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="text"
+                      value={regDni}
+                      onChange={(e) => setRegDni(e.target.value)}
+                      placeholder="Ej. 1004567890"
+                      required
+                      disabled={loading}
+                      className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-1.5 pl-9 pr-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-0.5">
+                    Teléfono Celular
+                  </label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                    <input
+                      type="tel"
+                      value={regPhone}
+                      onChange={(e) => setRegPhone(e.target.value)}
+                      placeholder="Ej. 0991234567"
+                      required
+                      disabled={loading}
+                      className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 py-1.5 pl-9 pr-3 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <button
-                type="button"
-                onClick={() => {
-                  const demoUser: AuthUser = {
-                    name: "Cristopher Lomas",
-                    email: "cristopher.lomas@upec.edu.ec",
-                    role: "PASSENGER",
-                    token: "demo-token-" + Date.now(),
-                    dni: "0401893421",
-                  };
-                  saveAndComplete(demoUser);
-                }}
-                className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                type="submit"
+                disabled={loading}
+                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all disabled:opacity-50 flex items-center justify-center space-x-2 cursor-pointer shadow-md shadow-emerald-500/20 mt-2"
               >
-                ⚡ Ingreso rápido de prueba como Pasajero UPEC
+                {loading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <UserPlus className="w-4 h-4" />
+                )}
+                <span>{loading ? "Creando cuenta..." : "Crear Cuenta y Continuar"}</span>
               </button>
-            </div>
-          </form>
-        )}
+
+              <div className="pt-1 text-center">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("LOGIN")}
+                  className="text-xs text-blue-600 dark:text-blue-400 font-bold hover:underline cursor-pointer"
+                >
+                  ¿Ya tienes cuenta? Inicia sesión aquí
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
 
         {/* Pie del modal */}
-        <div className="p-3 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 text-center">
+        <div className="p-2.5 bg-slate-50 dark:bg-slate-950/60 border-t border-slate-100 dark:border-slate-800 text-center shrink-0">
           <p className="text-[10px] text-slate-400 dark:text-slate-500">
-            Tus datos de ruta y asientos se conservan intactos. Al iniciar sesión, tu boleto quedará registrado.
+            Tus datos de ruta y asientos se conservan intactos. Al autenticarte, tu boleto quedará registrado.
           </p>
         </div>
       </div>

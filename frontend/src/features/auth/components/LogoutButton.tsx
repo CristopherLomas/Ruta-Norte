@@ -4,6 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, Loader2 } from "lucide-react";
 import { logoutAction } from "@/features/auth/actions";
+import { authService } from "@/features/auth/services/authService";
 import { Button } from "@/components/ui/button";
 
 interface LogoutButtonProps {
@@ -23,6 +24,7 @@ export function LogoutButton({
   const handleLogout = async () => {
     setIsLoading(true);
     try {
+      authService.logout();
       await logoutAction();
       router.push("/login");
       router.refresh();

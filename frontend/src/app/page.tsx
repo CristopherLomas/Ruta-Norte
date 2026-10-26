@@ -56,14 +56,32 @@ export default function HomePage() {
   const [purchasedTickets, setPurchasedTickets] = useState<TicketPurchased[]>([]);
   const [updatingTicketStatus, setUpdatingTicketStatus] = useState(false);
 
-  // Carga inicial de sesión de usuario
+  // Carga inicial y sincronización de sesión de usuario
   useEffect(() => {
-    const user = authService.getCurrentUser();
-    if (user) {
+    const syncUser = () => {
+      const user = authService.getCurrentUser();
       setCurrentUser(user);
-      if (user.name) setPassengerName(user.name);
-      if (user.dni) setPassengerDni(user.dni);
-    }
+      if (user?.name) setPassengerName(user.name);
+      if (user?.dni) setPassengerDni(user.dni);
+    };
+
+    syncUser();
+
+    const handleAuthChange = (e: Event) => {
+      const customEvt = e as CustomEvent<AuthUser | null>;
+      if (customEvt.detail) {
+        setCurrentUser(customEvt.detail);
+        if (customEvt.detail.name) setPassengerName(customEvt.detail.name);
+        if (customEvt.detail.dni) setPassengerDni(customEvt.detail.dni);
+      } else {
+        syncUser();
+      }
+    };
+
+    window.addEventListener("rn_auth_change", handleAuthChange);
+    return () => {
+      window.removeEventListener("rn_auth_change", handleAuthChange);
+    };
   }, []);
 
   // Carga de ciudades

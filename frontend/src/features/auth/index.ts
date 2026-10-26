@@ -2,3 +2,8 @@ export * from "./entities/User";
 export * from "./services/authService";
 export * from "./components/LoginModal";
 export * from "./components/GoogleSignInButton";
+export * from "./components/LoginForm";
+export * from "./components/RegisterForm";
+export * from "./components/ForgotPasswordForm";
+export * from "./components/ResetPasswordForm";
+export * from "./components/LogoutButton";

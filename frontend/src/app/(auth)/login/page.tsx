@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { isAxiosError } from "axios";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   ArrowLeft,
   Eye,
@@ -16,19 +15,17 @@ import {
   UserPlus,
   Zap,
   ShieldCheck,
+  User,
 } from "lucide-react";
-import { axiosClient } from "@/lib/axiosClient";
 import { GoogleSignInButton } from "@/features/auth/components/GoogleSignInButton";
+import { authService } from "@/features/auth/services/authService";
+import { AuthUser } from "@/features/auth/entities/User";
 
-interface LoginResponse {
-  email: string;
-  role: string;
-  token: string;
-  [key: string]: unknown;
-}
-
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect") || searchParams.get("next");
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -36,28 +33,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const saveSessionAndRedirect = (user: LoginResponse) => {
-    const storage = rememberMe ? window.localStorage : window.sessionStorage;
-    const otherStorage = rememberMe ? window.sessionStorage : window.localStorage;
+  // Redirigir si ya tiene sesión activa
+  useEffect(() => {
+    const existing = authService.getCurrentUser();
+    if (existing) {
+      navigateByRole(existing);
+    }
+  }, []);
 
-    try {
-      otherStorage.removeItem("rn_user");
-      otherStorage.removeItem("rn_token");
-      storage.removeItem("rn_user");
-      storage.removeItem("rn_token");
-      storage.setItem("rn_user", JSON.stringify(user));
-      storage.setItem("rn_token", user.token);
-      document.cookie = `rn_token=${user.token}; path=/; max-age=86400; SameSite=Lax`;
-    } catch {
-      setErrorMsg(
-        "No se pudo guardar la sesión en este navegador. Habilita el almacenamiento e inténtalo nuevamente."
-      );
+  const navigateByRole = (user: AuthUser) => {
+    if (redirectParam) {
+      router.push(redirectParam);
       return;
     }
-
-    if (user.role === "ADMIN") {
+    const roleUpper = (user.role || "").toUpperCase();
+    if (roleUpper === "ADMIN") {
       router.push("/admin");
-    } else if (user.role === "STAFF") {
+    } else if (roleUpper === "STAFF") {
       router.push("/operaciones");
     } else {
       router.push("/pasajero");
@@ -70,60 +62,51 @@ export default function LoginPage() {
     setErrorMsg(null);
 
     try {
-      const response = await axiosClient.post<LoginResponse>("/auth/login", {
-        email: email.trim(),
+      const user = await authService.login({
+        email,
         password,
+        rememberMe,
       });
-      saveSessionAndRedirect(response.data);
-    } catch (error: unknown) {
-      // Fallback para credenciales demo locales
-      if (email.trim() === "admin@rutanorte.ec" && password === "admin123") {
-        saveSessionAndRedirect({
-          email: "admin@rutanorte.ec",
-          role: "ADMIN",
-          token: "demo-admin-token",
-        });
-        return;
-      }
-      if (email.trim() === "staff@rutanorte.ec" && password === "staff123") {
-        saveSessionAndRedirect({
-          email: "staff@rutanorte.ec",
-          role: "STAFF",
-          token: "demo-staff-token",
-        });
-        return;
-      }
-      if (email.trim() === "pasajero@rutanorte.ec" && password === "pasajero123") {
-        saveSessionAndRedirect({
-          email: "pasajero@rutanorte.ec",
-          role: "PASSENGER",
-          token: "demo-passenger-token",
-        });
-        return;
-      }
-
-      const message = isAxiosError<{ error?: string }>(error)
-        ? error.response?.data?.error
-        : null;
-      setErrorMsg(message || "Credenciales inválidas o servidor no disponible.");
+      navigateByRole(user);
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : "Credenciales inválidas o servidor no disponible.";
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleQuickDemoLogin = (demoRole: "STAFF" | "ADMIN") => {
-    if (demoRole === "ADMIN") {
-      saveSessionAndRedirect({
-        email: "admin@rutanorte.ec",
-        role: "ADMIN",
-        token: "demo-admin-token-123",
-      });
-    } else {
-      saveSessionAndRedirect({
-        email: "staff@rutanorte.ec",
-        role: "STAFF",
-        token: "demo-staff-token-123",
-      });
+  const handleQuickDemoLogin = async (demoRole: "STAFF" | "ADMIN" | "PASSENGER") => {
+    setLoading(true);
+    setErrorMsg(null);
+    try {
+      if (demoRole === "ADMIN") {
+        const user = await authService.login({
+          email: "admin@rutanorte.ec",
+          password: "admin",
+          rememberMe: true,
+        });
+        navigateByRole(user);
+      } else if (demoRole === "STAFF") {
+        const user = await authService.login({
+          email: "staff@rutanorte.ec",
+          password: "staff",
+          rememberMe: true,
+        });
+        navigateByRole(user);
+      } else {
+        const user = await authService.login({
+          email: "cristopher.lomas@upec.edu.ec",
+          password: "password",
+          rememberMe: true,
+        });
+        navigateByRole(user);
+      }
+    } catch {
+      setErrorMsg("Error al ingresar con la cuenta de prueba.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -134,12 +117,18 @@ export default function LoginPage() {
           Iniciar Sesión
         </h2>
         <p className="mt-1 text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-          Ingresa a tu cuenta para gestionar tus viajes
+          Ingresa a tu cuenta para gestionar tus viajes y boletos
         </p>
       </div>
 
-      {/* Botón Funcional de Google */}
-      <GoogleSignInButton />
+      {/* Botón Funcional de Google con Soporte OAuth y 1-Clic */}
+      <GoogleSignInButton
+        redirectTo={redirectParam || undefined}
+        onSuccess={() => {
+          const user = authService.getCurrentUser();
+          if (user) navigateByRole(user);
+        }}
+      />
 
       <div className="relative my-5">
         <div className="absolute inset-0 flex items-center" aria-hidden="true">
@@ -154,7 +143,7 @@ export default function LoginPage() {
 
       {errorMsg && (
         <div
-          className="mb-4 flex items-center gap-2 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/60 p-3 text-xs font-semibold text-rose-800 dark:text-rose-200"
+          className="mb-4 flex items-center gap-2 rounded-xl border border-rose-200 dark:border-rose-900 bg-rose-50 dark:bg-rose-950/60 p-3 text-xs font-semibold text-rose-800 dark:text-rose-200 animate-in fade-in"
           role="alert"
         >
           <ShieldAlert className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
@@ -219,7 +208,7 @@ export default function LoginPage() {
               onClick={() => setShowPassword((visible) => !visible)}
               aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
               aria-pressed={showPassword}
-              className="absolute inset-y-0 right-0 flex items-center rounded-r-xl px-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="absolute inset-y-0 right-0 flex items-center rounded-r-xl px-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 cursor-pointer"
             >
               {showPassword ? (
                 <EyeOff className="h-4 w-4" aria-hidden="true" />
@@ -259,30 +248,41 @@ export default function LoginPage() {
           ) : (
             <LogIn className="h-4 w-4" aria-hidden="true" />
           )}
-          <span>{loading ? "Iniciando..." : "Acceder al Sistema"}</span>
+          <span>{loading ? "Iniciando sesión..." : "Acceder al Sistema"}</span>
         </button>
       </form>
 
-      {/* Botones de Acceso Rápido para Pruebas de Personal */}
+      {/* Botones de Acceso Rápido para Pruebas del Jurado / Evaluadores */}
       <div className="mt-4 pt-3 border-t border-slate-200 dark:border-slate-800">
         <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 text-center mb-2">
-          Acceso Rápido a Paneles Internos
+          Acceso Rápido de Evaluación
         </span>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 gap-2">
           <button
             type="button"
-            onClick={() => handleQuickDemoLogin("STAFF")}
-            className="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+            disabled={loading}
+            onClick={() => handleQuickDemoLogin("PASSENGER")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-colors cursor-pointer text-center"
           >
-            <Zap className="w-3.5 h-3.5 text-amber-500" />
-            <span>Chofer / Taquilla</span>
+            <User className="w-3.5 h-3.5 text-blue-500 mb-0.5" />
+            <span>Pasajero</span>
           </button>
           <button
             type="button"
-            onClick={() => handleQuickDemoLogin("ADMIN")}
-            className="flex items-center justify-center space-x-1.5 py-2 px-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold transition-colors cursor-pointer"
+            disabled={loading}
+            onClick={() => handleQuickDemoLogin("STAFF")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-colors cursor-pointer text-center"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <Zap className="w-3.5 h-3.5 text-amber-500 mb-0.5" />
+            <span>Taquilla/Chofer</span>
+          </button>
+          <button
+            type="button"
+            disabled={loading}
+            onClick={() => handleQuickDemoLogin("ADMIN")}
+            className="flex flex-col items-center justify-center p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-bold transition-colors cursor-pointer text-center"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500 mb-0.5" />
             <span>Administrador</span>
           </button>
         </div>
@@ -309,9 +309,24 @@ export default function LoginPage() {
           className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-medium py-2.5 px-4 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
         >
           <ArrowLeft className="h-4 w-4 text-slate-500 dark:text-slate-400" />
-          <span>Volver al Kiosco de Pasajeros</span>
+          <span>Volver al Kiosco Principal</span>
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="py-12 text-center text-sm text-slate-500">
+          <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-600 mb-2" />
+          <span>Cargando portal de acceso...</span>
+        </div>
+      }
+    >
+      <LoginContent />
+    </Suspense>
   );
 }
