@@ -262,8 +262,8 @@
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-emerald-50 text-[#20A878] flex items-center justify-center font-bold text-sm">03</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Arquitectura Modular Dividida en Frontend y Backend</h2>
-            <p class="text-xs text-slate-500">Separación física empresarial en 3 carpetas independientes: 'frontend/', 'backend/' y 'database/'</p>
+            <h2 class="text-xl font-bold text-slate-900">Arquitectura Package by Feature en Frontend y Backend</h2>
+            <p class="text-xs text-slate-500">Organización empresarial modular: cada dominio agrupa sus propios controladores, servicios, repositorios, entidades y componentes</p>
           </div>
         </div>
 
@@ -275,35 +275,35 @@
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-bold uppercase tracking-wider bg-sky-100 text-sky-800 px-2 py-0.5 rounded-md">CAPA 1: FRONTEND</span>
-                <span class="text-[10px] font-mono text-slate-500">Puerto 3000</span>
+                <span class="text-[10px] font-mono text-slate-500">Next.js 14 / TypeScript</span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Cliente Web React / Next.js</h3>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Kiosco Visual 2.0 (Cero Scroll 100vh)</h3>
               
               <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>12 Módulos Funcionales:</strong> Encapsulados en <code>src/features/</code> (auth, trips, bookings, tickets, etc.).</span>
+                  <span><strong>Package by Feature:</strong> Módulos aislados en <code>src/features/</code> (<code>auth/</code>, <code>kiosk/</code>, <code>tickets/</code>, <code>operations/</code>, <code>admin/</code>).</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Componentes UI:</strong> Catálogo shadcn/ui sobre Radix accesible WCAG 2.1 AA.</span>
+                  <span><strong>Flujo en 5 Pasos:</strong> 1. Origen (fotos HD Wikipedia) → 2. Destino → 3. Horarios &amp; OpenStreetMap → 4. Asiento Horizontal → 5. Boleto QR.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Cartografía Leaflet:</strong> Renderizado de trazado vial real de la Panamericana E35.</span>
+                  <span><strong>Autobús Horizontal:</strong> 40 asientos visibles a la vez sin scroll vertical con cabina y pasillo central.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Selector Gráfico:</strong> Matriz interactiva de asientos con cuenta regresiva.</span>
+                  <span><strong>OpenStreetMap &amp; Leaflet:</strong> Cartografía interactiva que traza la ruta E35 inmediatamente al elegir destino.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-sky-600 font-bold">▸</span>
-                  <span><strong>Escáner QR:</strong> Stream de cámara en navegador para inspectores de andén.</span>
+                  <span><strong>LoginModal Flotante:</strong> Autenticación con Google o credenciales sin perder el contexto de compra.</span>
                 </li>
               </ul>
             </div>
             <div class="bg-white p-2 rounded-lg border border-sky-100 text-[10px] text-slate-600 font-mono">
-              <strong>Carpeta raíz:</strong> <code>frontend/</code>
+              <strong>Carpeta raíz:</strong> <code>frontend/src/features/</code>
             </div>
           </div>
 
@@ -312,35 +312,35 @@
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">CAPA 2: BACKEND</span>
-                <span class="text-[10px] font-mono text-slate-500">Puerto 8080</span>
+                <span class="text-[10px] font-mono text-slate-500">Spring Boot 3.2.4 (Java 17)</span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Spring Boot 3 (Java 17+)</h3>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Package by Feature en Java</h3>
 
               <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Spring Web MVC:</strong> Endpoints RESTful tipados con Jakarta Bean Validation.</span>
+                  <span><strong>Módulos por Funcionalidad:</strong> <code>auth/</code>, <code>catalog/</code>, <code>trips/</code>, <code>tickets/</code>, <code>admin/</code> y <code>config/</code>.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Spring Data JPA:</strong> Consultas transaccionales y bloqueo pesimista <code>@Lock</code>.</span>
+                  <span><strong>Autocontención:</strong> Cada paquete agrupa sus propios Controllers, Services, Repositories, Entities y DTOs.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Spring Security + JWT:</strong> Filtro perimetral con tokens JJWT firmados (HMAC-SHA256).</span>
+                  <span><strong>Spring Data JPA:</strong> Bloqueos pesimistas para impedir sobreventa de asientos en el bus.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Módulos por Capas:</strong> controller, service, repository, entity, dto y config.</span>
+                  <span><strong>Métricas Administrativas:</strong> Nuevo <code>AdminController</code> (/api/v1/admin/metrics) con analítica consolidada.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-emerald-600 font-bold">▸</span>
-                  <span><strong>Swagger / OpenAPI 3:</strong> Documentación interactiva en <code>/swagger-ui.html</code>.</span>
+                  <span><strong>Validaciones Criptográficas:</strong> Token opaco HMAC-SHA256 para validación de boletos QR.</span>
                 </li>
               </ul>
             </div>
             <div class="bg-white p-2 rounded-lg border border-emerald-100 text-[10px] text-slate-600 font-mono">
-              <strong>Carpeta raíz:</strong> <code>backend/</code> (Maven)
+              <strong>Carpeta raíz:</strong> <code>backend/src/main/java/ec/edu/upec/rutanorte/</code>
             </div>
           </div>
 
@@ -349,31 +349,31 @@
             <div>
               <div class="flex items-center justify-between mb-2">
                 <span class="text-[10px] font-bold uppercase tracking-wider bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-md">CAPA 3: DATABASE</span>
-                <span class="text-[10px] font-mono text-slate-500">Puerto 5432</span>
+                <span class="text-[10px] font-mono text-slate-500">PostgreSQL 15+ (Supabase)</span>
               </div>
-              <h3 class="text-sm font-extrabold text-slate-900 mb-2">PostgreSQL 15+ Relacional</h3>
+              <h3 class="text-sm font-extrabold text-slate-900 mb-2">Matriz Completa de Rutas (72 Pares)</h3>
 
               <ul class="space-y-1.5 text-xs text-slate-700 mb-3">
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>18 Tablas Relacionales:</strong> Integridad referencial con UUIDs v4 y cascadas seguras.</span>
+                  <span><strong>9 Ciudades Conectadas:</strong> Tulcán, Julio Andrade, San Gabriel, Bolívar, El Ángel, Ibarra, Atuntaqui, Otavalo, Cotacachi.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>Dataset Maestro:</strong> 18 localidades georreferenciadas en Carchi e Imbabura.</span>
+                  <span><strong>Matriz 9x8 = 72 Rutas:</strong> Viajes disponibles garantizados sin importar el par origen/destino elegido.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>Garantías ACID:</strong> Transacciones consistentes con bloqueos exclusivos en asientos.</span>
+                  <span><strong>Row Level Security (RLS):</strong> Políticas de acceso a nivel de fila activas en todas las tablas.</span>
                 </li>
                 <li class="flex items-start gap-1.5">
                   <span class="text-indigo-600 font-bold">▸</span>
-                  <span><strong>Scripts Versionados:</strong> DDL consolidado en <code>schema.sql</code> y <code>seed.sql</code>.</span>
+                  <span><strong>Auditoría &amp; Transacciones:</strong> Trazabilidad completa de reservas, ventas y validaciones de abordaje.</span>
                 </li>
               </ul>
             </div>
             <div class="bg-white p-2 rounded-lg border border-indigo-100 text-[10px] text-slate-600 font-mono">
-              <strong>Carpeta raíz:</strong> <code>database/</code>
+              <strong>Carpeta raíz:</strong> <code>database/</code> (Supabase Cloud)
             </div>
           </div>
 
@@ -544,8 +544,8 @@ flowchart LR
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">06</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Estructura Física del Repositorio: Carpetas frontend/, backend/ y database/</h2>
-            <p class="text-xs text-slate-500">Organización modular de primer nivel estructurada para que cualquier programador la entienda de inmediato</p>
+            <h2 class="text-xl font-bold text-slate-900">Estructura Package by Feature: frontend/, backend/ y database/</h2>
+            <p class="text-xs text-slate-500">Módulos de negocio completamente aislados con sus propios controladores, servicios, entidades y componentes</p>
           </div>
         </div>
 
@@ -558,29 +558,27 @@ flowchart LR
               <div class="flex items-center justify-between mb-3 border-b border-sky-100 pb-2">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
-                  <span class="font-bold text-sky-950 font-mono text-[13px]">📁 frontend/</span>
+                  <span class="font-bold text-sky-950 font-mono text-[13px]">📁 frontend/src/features/</span>
                 </div>
-                <span class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold">Cliente Web</span>
+                <span class="text-[10px] bg-sky-100 text-sky-800 px-2 py-0.5 rounded font-semibold">Package by Feature</span>
               </div>
 
               <div class="space-y-2 font-mono text-[11px] text-slate-600">
                 <div class="bg-white p-2.5 rounded-xl border border-sky-100">
-                  <strong class="text-slate-800 block mb-1">src/app/ (Vistas por Rol)</strong>
-                  • <code>(public)/</code>: Buscador, asientos y checkout<br>
-                  • <code>(auth)/</code>: Login, registro y reseteo<br>
-                  • <code>(passenger)/</code>: Mis boletos digitales<br>
-                  • <code>(seller)/</code>: Taquilla de venta física<br>
-                  • <code>(inspector)/</code>: Escáner QR de andén<br>
-                  • <code>(operator)/</code>: Despachos, viajes y flota<br>
-                  • <code>(admin)/</code>: Rutas, flota y reportes
+                  <strong class="text-slate-800 block mb-1">features/kiosk/ (Kiosco Cero Scroll)</strong>
+                  • <code>CityCard.tsx</code>: Tarjetas HD Wikipedia (Carchi + Imbabura)<br>
+                  • <code>BusSeatMap.tsx</code>: Plano horizontal de 40 asientos<br>
+                  • <code>KioskRouteMap.tsx</code>: Cartografía OpenStreetMap E35<br>
+                  • <code>TripCard.tsx</code>: Horarios y turnos de viaje
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-sky-100">
-                  <strong class="text-slate-800 block mb-1">src/features/ (12 Módulos)</strong>
-                  Módulos de negocio (auth, routes, trips, bookings, tickets, etc.) con sus componentes y lógica.
+                  <strong class="text-slate-800 block mb-1">features/auth/ (Autenticación)</strong>
+                  • <code>LoginModal.tsx</code>: Modal con Google One-Tap<br>
+                  • <code>services/authService.ts</code>: Manejo de sesión activa
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-sky-100">
-                  <strong class="text-slate-800 block mb-1">src/services/apiClient.ts</strong>
-                  Cliente HTTP tipado que consume la API Spring Boot (puerto 8080) con JWT Bearer.
+                  <strong class="text-slate-800 block mb-1">features/tickets/, operations/, admin/</strong>
+                  Boleto QR con token criptográfico, taquilla rápida y panel de verificación de pagos.
                 </div>
               </div>
             </div>
@@ -595,35 +593,29 @@ flowchart LR
               <div class="flex items-center justify-between mb-3 border-b border-emerald-100 pb-2">
                 <div class="flex items-center gap-2">
                   <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                  <span class="font-bold text-emerald-950 font-mono text-[13px]">📁 backend/</span>
+                  <span class="font-bold text-emerald-950 font-mono text-[13px]">📁 backend/src/main/java/</span>
                 </div>
                 <span class="text-[10px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded font-semibold">Spring Boot 3</span>
               </div>
 
               <div class="space-y-2 font-mono text-[11px] text-slate-600">
                 <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
-                  <strong class="text-slate-800 block mb-1">controller/ (@RestController)</strong>
-                  • <code>AuthController</code> (/api/auth)<br>
-                  • <code>TripController</code> (/api/trips)<br>
-                  • <code>BookingController</code> (/api/bookings)<br>
-                  • <code>PaymentController</code> (/api/payments)<br>
-                  • <code>InspectorController</code> (/api/inspector)
+                  <strong class="text-slate-800 block mb-1">ec.edu.upec.rutanorte/</strong>
+                  • <code>auth/</code>: AuthController, AuthService, User<br>
+                  • <code>catalog/</code>: CatalogController, Bus, City<br>
+                  • <code>trips/</code>: TripController, TripService, Trip<br>
+                  • <code>tickets/</code>: TicketController, QR Validator<br>
+                  • <code>admin/</code>: AdminController, AdminService<br>
+                  • <code>config/</code>: SecurityConfig, GlobalHandler
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
-                  <strong class="text-slate-800 block mb-1">service/ &amp; repository/</strong>
-                  • <code>BookingService</code> (bloqueo a 10 min)<br>
-                  • <code>TicketService</code> (token QR criptográfico)<br>
-                  • <code>BusSeatRepository</code> (@Lock pesimista)
-                </div>
-                <div class="bg-white p-2.5 rounded-xl border border-emerald-100">
-                  <strong class="text-slate-800 block mb-1">config/ (Seguridad &amp; JWT)</strong>
-                  • <code>SecurityConfig</code> (CORS + RBAC)<br>
-                  • <code>JwtService</code> &amp; <code>JwtAuthFilter</code>
+                  <strong class="text-slate-800 block mb-1">Patrón de Diseño</strong>
+                  Cada módulo agrupa sus propios controller, service, repository, entity y DTOs sin capas cruzadas.
                 </div>
               </div>
             </div>
             <div class="mt-3 bg-emerald-50 p-2 rounded-lg text-[10px] text-emerald-900 font-mono">
-              <strong>Ejecución:</strong> <code>cd backend &amp;&amp; mvn spring-boot:run</code> (:8080)
+              <strong>Compilación:</strong> <code>mvn compile</code> (33 fuentes Java 17)
             </div>
           </div>
 
@@ -635,26 +627,22 @@ flowchart LR
                   <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span>
                   <span class="font-bold text-indigo-950 font-mono text-[13px]">📁 database/</span>
                 </div>
-                <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">PostgreSQL 15+</span>
+                <span class="text-[10px] bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded font-semibold">Supabase Cloud</span>
               </div>
 
               <div class="space-y-2 font-mono text-[11px] text-slate-600">
                 <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                  <strong class="text-slate-800 block mb-1">schema.sql (DDL Consolidado)</strong>
-                  18 tablas completas: perfiles, roles, cooperativas, localidades, paradas, rutas, buses, asientos, viajes, reservas, pagos, boletos e incidencias.
+                  <strong class="text-slate-800 block mb-1">seed_v2.sql (Matriz 72 Rutas)</strong>
+                  9 ciudades conectadas bidireccionalmente con 8 salidas diarias garantizadas.
                 </div>
                 <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                  <strong class="text-slate-800 block mb-1">seed.sql (Dataset Maestro)</strong>
-                  18 localidades georreferenciadas (Tulcán a Otavalo), paradas, rutas E35, flota y usuarios de demostración.
-                </div>
-                <div class="bg-white p-2.5 rounded-xl border border-indigo-100">
-                  <strong class="text-slate-800 block mb-1">migrations/ (Historial SQL)</strong>
-                  Scripts versionados 000001 a 000004 para control de cambios formal.
+                  <strong class="text-slate-800 block mb-1">schema.sql (18 Tablas Relacionales)</strong>
+                  Garantías ACID con bloqueos pesimistas en asientos, roles RBAC y RLS activado.
                 </div>
               </div>
             </div>
             <div class="mt-3 bg-indigo-50 p-2 rounded-lg text-[10px] text-indigo-900 font-mono">
-              <strong>Importación:</strong> <code>psql -d rutanorte -f database/schema.sql</code> (:5432)
+              <strong>Nube:</strong> PostgreSQL 15 en Supabase Cloud
             </div>
           </div>
 
@@ -668,6 +656,7 @@ flowchart LR
           </div>
           <span class="bg-emerald-500/20 text-emerald-300 px-2.5 py-1 rounded font-mono text-[11px] border border-emerald-500/30">CORS Habilitado (:3000 &lt;-&gt; :8080)</span>
         </div>
+      </section>
       </section>
 
       <!-- ========================================== -->
@@ -910,50 +899,74 @@ erDiagram
       </section>
 
       <!-- ========================================== -->
-      <!-- 11. FLUJOS DE NEGOCIO E2E                 -->
+      <!-- 11. FLUJOS DE NEGOCIO E2E: KIOSCO 5 PASOS -->
       <!-- ========================================== -->
       <section id="flujos" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">11</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Flujo Completo de Negocio (End-to-End)</h2>
-            <p class="text-xs text-slate-500">Paso a paso desde la búsqueda hasta el embarque verificado</p>
+            <h2 class="text-xl font-bold text-slate-900">Flujo Kiosco Visual 2.0 (Cero Scroll 100vh en 5 Pasos)</h2>
+            <p class="text-xs text-slate-500">Experiencia aislada, visual e intuitiva para usuarios de todas las edades</p>
           </div>
         </div>
 
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">1</span>
-            <h4 class="font-bold text-slate-900 mb-1">Búsqueda & Trazado</h4>
-            <p class="text-slate-600">Selección de origen y destino con visualización del recorrido en mapa Leaflet y tiempo estimado.</p>
+        <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">1</span>
+              <h4 class="font-bold text-slate-900 mb-1">1. Origen (¿De dónde sales?)</h4>
+              <p class="text-slate-600 text-[11px] leading-relaxed">Catálogo visual de 9 ciudades con fotos reales HD de Wikipedia (Carchi e Imbabura) 100% visibles sin scroll.</p>
+            </div>
+            <span class="text-[9px] font-bold text-amber-600 mt-2">5 Carchi + 4 Imbabura</span>
           </div>
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">2</span>
-            <h4 class="font-bold text-slate-900 mb-1">Selección de Asientos</h4>
-            <p class="text-slate-600">Mapa gráfico de la unidad (disponibles en verde, ocupados en rojo). Bloqueo temporal a 10 min.</p>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">2</span>
+              <h4 class="font-bold text-slate-900 mb-1">2. Destino (¿A dónde vas?)</h4>
+              <p class="text-slate-600 text-[11px] leading-relaxed">Selección de ciudad de llegada con exclusión automática del origen y cálculo dinámico de ruta.</p>
+            </div>
+            <span class="text-[9px] font-bold text-blue-600 mt-2">72 pares posibles</span>
           </div>
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">3</span>
-            <h4 class="font-bold text-slate-900 mb-1">Pago Simulado</h4>
-            <p class="text-slate-600">Cobro de prueba académico sin pasarelas reales. Confirmación inmediata y emisión de boleto.</p>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">3</span>
+              <h4 class="font-bold text-slate-900 mb-1">3. Horarios &amp; OpenStreetMap</h4>
+              <p class="text-slate-600 text-[11px] leading-relaxed">Apenas se elige el destino, se proyecta el mapa vial interactivo con OpenStreetMap, marcadores A/B y turnos.</p>
+            </div>
+            <span class="text-[9px] font-bold text-emerald-600 mt-2">Cartografía Leaflet E35</span>
           </div>
-          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-            <span class="w-5 h-5 rounded-full bg-[#20A878] text-white flex items-center justify-center font-bold text-[10px] mb-2">4</span>
-            <h4 class="font-bold text-slate-900 mb-1">Embarque con QR</h4>
-            <p class="text-slate-600">El inspector escanea con la cámara móvil, el sistema valida y el boleto cambia a usado.</p>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="w-5 h-5 rounded-full bg-[#173B57] text-white flex items-center justify-center font-bold text-[10px] mb-2">4</span>
+              <h4 class="font-bold text-slate-900 mb-1">4. Asiento Horizontal &amp; Pago</h4>
+              <p class="text-slate-600 text-[11px] leading-relaxed">Autobús dispuesto horizontalmente con 40 asientos visibles a la vez. Modal de inicio de sesión sin perder el flujo.</p>
+            </div>
+            <span class="text-[9px] font-bold text-indigo-600 mt-2">Google One-Tap Modal</span>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+            <div>
+              <span class="w-5 h-5 rounded-full bg-[#20A878] text-white flex items-center justify-center font-bold text-[10px] mb-2">5</span>
+              <h4 class="font-bold text-slate-900 mb-1">5. Boleto QR Digital</h4>
+              <p class="text-slate-600 text-[11px] leading-relaxed">Emisión inmediata de boleto con código QR opaco, comprobante de pago descargable y validación por inspector.</p>
+            </div>
+            <span class="text-[9px] font-bold text-emerald-600 mt-2">Token Seguro HMAC</span>
           </div>
         </div>
       </section>
 
       <!-- ========================================== -->
-      <!-- 12. MAPAS Y RUTEO VIAL REAL               -->
+      <!-- 12. MAPAS Y CARTOGRAFÍA OPENSTREETMAP      -->
       <!-- ========================================== -->
       <section id="mapas" class="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200">
         <div class="flex items-center gap-3 mb-5">
           <div class="w-9 h-9 rounded-xl bg-blue-50 text-[#173B57] flex items-center justify-center font-bold text-sm">12</div>
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Mapas Interactivos y Ruteo Vial Real</h2>
-            <p class="text-xs text-slate-500">Cartografía OpenStreetMap y cálculo vial OSRM sin líneas rectas</p>
+            <h2 class="text-xl font-bold text-slate-900">Cartografía Vial OpenStreetMap y Ruteo OSRM en Tiempo Real</h2>
+            <p class="text-xs text-slate-500">Mapeo satelital y vectorial interactivo proyectado de inmediato al elegir el destino</p>
           </div>
         </div>
 
@@ -961,19 +974,32 @@ erDiagram
           <div class="space-y-2">
             <div class="flex items-start gap-2">
               <span class="text-[#20A878] font-bold">✔</span>
-              <span><strong>Geometría Vial Exacta:</strong> Sigue las curvas reales de la carretera Panamericana E35 y enlaces cantonales.</span>
+              <span><strong>Aparición Inmediata:</strong> En el Paso 3, el mapa OpenStreetMap se renderiza al instante ubicando los terminales de salida (Punto A) y llegada (Punto B).</span>
             </div>
             <div class="flex items-start gap-2">
               <span class="text-[#20A878] font-bold">✔</span>
-              <span><strong>Waypoints en Secuencia:</strong> Respeta el orden estricto de paradas intermedias de <code>route_stops</code>.</span>
+              <span><strong>Trazado Vial E35:</strong> Dibuja la polilínea real de la carretera Panamericana Norte E35 con cálculo exacto de distancia en km y tiempo estimado de viaje en bus.</span>
             </div>
             <div class="flex items-start gap-2">
               <span class="text-[#20A878] font-bold">✔</span>
-              <span><strong>Auto-encuadre (Fit Bounds):</strong> Centra y ajusta el zoom automáticamente para mostrar todo el recorrido.</span>
+              <span><strong>Marcadores Vectoriales HTML:</strong> Iconos Leaflet <code>L.divIcon</code> de alto contraste que evitan problemas de carga de imágenes en producción.</span>
+            </div>
+            <div class="flex items-start gap-2">
+              <span class="text-[#20A878] font-bold">✔</span>
+              <span><strong>Auto-Encuadre (Fit Bounds):</strong> La cámara centra y amplía de forma automática la región exacta entre el origen y destino seleccionados.</span>
             </div>
           </div>
-          <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 font-mono text-[11px]">
-            <strong>Módulo de Mapas:</strong> src/lib/maps/routing.ts (interfaz RoutingProvider) y components/maps/RouteMap.tsx (Leaflet SSR: false).
+          <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200 font-mono text-[11px] flex flex-col justify-between">
+            <div>
+              <strong class="text-slate-800 block mb-1">Módulo KioskRouteMap:</strong>
+              • Componente: <code>frontend/src/features/kiosk/components/KioskRouteMap.tsx</code><br>
+              • Tiles: OpenStreetMap Foundation (OSM)<br>
+              • Motor de Rutas: OSRM (Open Source Routing Machine)<br>
+              • SSR: <code>dynamic(() =&gt; ..., { ssr: false })</code>
+            </div>
+            <div class="mt-2 text-emerald-700 font-bold text-[10px]">
+              ✓ Cero costos de API propietaria · 100% Abierto y Fiable
+            </div>
           </div>
         </div>
       </section>

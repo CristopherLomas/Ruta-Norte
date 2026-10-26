@@ -9,6 +9,7 @@ import { kioskService, FALLBACK_CITIES } from "@/features/kiosk/services/kioskSe
 import { CityCard } from "@/features/kiosk/components/CityCard";
 import { TripCard } from "@/features/kiosk/components/TripCard";
 import { BusSeatMap } from "@/features/kiosk/components/BusSeatMap";
+import { KioskRouteMap } from "@/features/kiosk/components/KioskRouteMap";
 import { TicketPurchased } from "@/features/tickets";
 import { ticketService } from "@/features/tickets/services/ticketService";
 import { TicketQrCard } from "@/features/tickets/components/TicketQrCard";
@@ -37,6 +38,7 @@ export default function HomePage() {
 
   // Estados de Horarios
   const [selectedShift, setSelectedShift] = useState<"ALL" | "MORNING" | "AFTERNOON" | "NIGHT">("ALL");
+  const [mobileStep3Tab, setMobileStep3Tab] = useState<"MAP" | "TRIPS">("MAP");
   const [trips, setTrips] = useState<Trip[]>([]);
   const [selectedTrip, setSelectedTrip] = useState<Trip | null>(null);
 
@@ -473,37 +475,63 @@ export default function HomePage() {
         )}
 
         {/* =================================================================== */}
-        {/* PASO 3: SELECCIONA HORARIO Y SALIDA                                 */}
+        {/* PASO 3: SELECCIONA HORARIO Y MAPA INTERACTIVO OPENSTREETMAP        */}
         {/* =================================================================== */}
-        {step === 3 && (
-          <div className="h-full flex flex-col justify-between py-1">
-            {/* Cabecera con Ruta y Filtros */}
-            <div className="shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center space-x-3">
+        {step === 3 && originCity && destinationCity && (
+          <div className="h-full min-h-0 flex flex-col justify-between py-0.5 overflow-hidden">
+            {/* Cabecera con Ruta, Filtros y Switch Móvil */}
+            <div className="shrink-0 flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center space-x-2 sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => setStep(2)}
                   className="px-2.5 py-1 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center space-x-1 cursor-pointer transition-colors"
                 >
                   <ArrowLeft className="w-3.5 h-3.5" />
-                  <span>Volver a Destino</span>
+                  <span>Cambiar Destino</span>
                 </button>
                 <div>
                   <span className="text-[10px] font-extrabold uppercase text-slate-400 dark:text-slate-500 block">
-                    Ruta Seleccionada
+                    Corredor Norte E35 · Ruta Interprovincial
                   </span>
-                  <div className="flex items-center space-x-1.5 text-base sm:text-lg font-black text-slate-900 dark:text-white">
-                    <span>{originCity?.name}</span>
-                    <ArrowRight className="w-4 h-4 text-emerald-500" />
-                    <span>{destinationCity?.name}</span>
+                  <div className="flex items-center space-x-1.5 text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                    <span className="text-emerald-600 dark:text-emerald-400">{originCity.name}</span>
+                    <ArrowRight className="w-4 h-4 text-slate-400" />
+                    <span className="text-blue-600 dark:text-blue-400">{destinationCity.name}</span>
                   </div>
                 </div>
               </div>
 
+              {/* Botón de alternancia de vista para móviles */}
+              <div className="flex lg:hidden items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setMobileStep3Tab("MAP")}
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                    mobileStep3Tab === "MAP"
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "text-slate-600 dark:text-slate-400"
+                  }`}
+                >
+                  🗺️ Mapa E35
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMobileStep3Tab("TRIPS")}
+                  className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                    mobileStep3Tab === "TRIPS"
+                      ? "bg-blue-600 text-white shadow-xs"
+                      : "text-slate-600 dark:text-slate-400"
+                  }`}
+                >
+                  🕒 Horarios ({filteredTrips.length})
+                </button>
+              </div>
+
               {/* Filtros de Turno */}
-              <div className="flex items-center gap-1.5 overflow-x-auto">
+              <div className="flex items-center gap-1 overflow-x-auto">
                 {[
-                  { id: "ALL", label: "Todos los horarios" },
+                  { id: "ALL", label: "Todos" },
                   { id: "MORNING", label: "🌅 Mañana" },
                   { id: "AFTERNOON", label: "☀️ Tarde" },
                   { id: "NIGHT", label: "🌙 Noche" },
@@ -518,9 +546,9 @@ export default function HomePage() {
                           tab.id as "ALL" | "MORNING" | "AFTERNOON" | "NIGHT"
                         )
                       }
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
+                      className={`px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer shrink-0 ${
                         active
-                          ? "bg-blue-600 text-white shadow-md shadow-blue-500/20 scale-102"
+                          ? "bg-blue-600 text-white shadow-xs scale-102"
                           : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800"
                       }`}
                     >
@@ -531,15 +559,46 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Lista de Salidas */}
-            <div className="flex-1 overflow-y-auto pr-1 py-2 space-y-2.5">
-              {filteredTrips.map((trip) => (
-                <TripCard
-                  key={trip.id}
-                  trip={trip}
-                  onSelect={handleSelectTrip}
-                />
-              ))}
+            {/* Contenido en Paralelo (Desktop) o Alternado (Mobile): Mapa OpenStreetMap + Lista de Viajes */}
+            <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 pt-1.5 overflow-hidden">
+              {/* Panel Izquierdo: Mapa Interactivo con Cartografía OpenStreetMap */}
+              <div
+                className={`lg:w-[46%] w-full h-full min-h-0 ${
+                  mobileStep3Tab === "MAP" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+                }`}
+              >
+                <KioskRouteMap origin={originCity} destination={destinationCity} />
+              </div>
+
+              {/* Panel Derecho: Lista de Salidas y Horarios de Buses */}
+              <div
+                className={`flex-1 h-full min-h-0 ${
+                  mobileStep3Tab === "TRIPS" ? "flex flex-col" : "hidden lg:flex lg:flex-col"
+                }`}
+              >
+                <div className="flex-1 overflow-y-auto pr-1 space-y-2">
+                  {filteredTrips.length > 0 ? (
+                    filteredTrips.map((trip) => (
+                      <TripCard
+                        key={trip.id}
+                        trip={trip}
+                        onSelect={handleSelectTrip}
+                      />
+                    ))
+                  ) : (
+                    <div className="h-full flex flex-col items-center justify-center p-6 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 text-slate-500">
+                      <p className="text-sm font-bold">No hay salidas disponibles para este turno</p>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedShift("ALL")}
+                        className="mt-2 text-xs font-bold text-blue-600 hover:underline cursor-pointer"
+                      >
+                        Ver todos los horarios
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         )}
